@@ -7,7 +7,25 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { libraryViews } from "../views/libraryEntries"
 
-const panels = [
+const getElementByIdOrWarn = (id: string): HTMLElement | null => {
+    const ele = document.getElementById(id)
+    if(!ele) console.warn(`Could not find element with id ${id}`)
+    return ele
+}
+
+interface TutorialPanelConfig {
+    title: string,
+    text: string,
+    continueText?: string,
+    abortText?: string,
+    hideContinue?: boolean,
+    dispatch?: Array<()=>void>,
+    clear?: Array<()=>void>,
+    action?: () => void,
+    nextRoute?: string,
+}
+
+const panels: Array<TutorialPanelConfig> = [
     {
         title: "Welcome to the DECADES visualisation software",
         text: "Would you like to take a quick tour?",
@@ -54,7 +72,10 @@ const panels = [
         text: `Plots are very customisable. The timeframe over which to plot can be
                changed by clicking on the "Timeframe" menu at the top of the page.
                I've done this for you.`,
-        action: () => {document.getElementById("timeframe-navbar-item").click()}
+        action: () => {
+            const el = getElementByIdOrWarn("timeframe-navbar-name")
+            el && el.click()
+        }
     },
     {
         title: "Customising the Plot",
@@ -69,8 +90,9 @@ const panels = [
                changed the time. If the end time is "ongoing", the plot will update as new
                data become available. Give it a try now.`,
         action: () => {
-            const tf = document.getElementById("timeframe-navbar")
-            const tfItem = document.getElementById("timeframe-navbar-item")
+            const tf = getElementByIdOrWarn("timeframe-navbar")
+            const tfItem = getElementByIdOrWarn("timeframe-navbar-item")
+            if(!(tf && tfItem)) return
             if(tf.classList.contains("is-active")) tfItem.click()
         },
         nextRoute: "/options"
@@ -139,8 +161,9 @@ const panels = [
                into a single page. The views menu should now be open. Let's look at the
                views library first. Click "Library..." and/or Continue...`,
         action: () => {
-            const views = document.getElementById("views-navbar")
-            const viewsItem = document.getElementById("views-navbar-item")
+            const views = getElementByIdOrWarn("views-navbar")
+            const viewsItem = getElementByIdOrWarn("views-navbar-item")
+            if(!(views && viewsItem)) return
             if(!views.classList.contains("is-active")) viewsItem.click()
         },
         nextRoute: "/view-library"
@@ -152,8 +175,9 @@ const panels = [
                view description. The first view is called "${libraryViews[0].title}", 
                try loading it now.`,
         action: () => {
-            const views = document.getElementById("views-navbar")
-            const viewsItem = document.getElementById("views-navbar-item")
+            const views = getElementByIdOrWarn("views-navbar")
+            const viewsItem = getElementByIdOrWarn("views-navbar-item")
+            if(!(views && viewsItem)) return
             if(views.classList.contains("is-active")) viewsItem.click()
         }
     },
@@ -162,8 +186,9 @@ const panels = [
         text: `Once loaded, the view will be avaiable in the "Views" menu. Click it
                and/or Continue... to go to the view configuration page.`,
         action: () => {
-            const views = document.getElementById("views-navbar")
-            const viewsItem = document.getElementById("views-navbar-item")
+            const views = getElementByIdOrWarn("views-navbar")
+            const viewsItem = getElementByIdOrWarn("views-navbar-item")
+            if(!(views && viewsItem)) return
             if(!views.classList.contains("is-active")) viewsItem.click()
         },
         dispatch: [
@@ -179,8 +204,9 @@ const panels = [
                launch the view by clicking the blue "Plot" button under the "Plot Configurations"
                panel. Try it now.`,
         action: () => {
-            const views = document.getElementById("views-navbar")
-            const viewsItem = document.getElementById("views-navbar-item")
+            const views = getElementByIdOrWarn("views-navbar")
+            const viewsItem = getElementByIdOrWarn("views-navbar-item")
+            if(!(views && viewsItem)) return
             if(views.classList.contains("is-active")) viewsItem.click()
         },
     },

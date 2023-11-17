@@ -110,7 +110,7 @@ const ViewConfigButtons = (props) => {
     })()
 
     const plotButton = plotEnabled
-        ? <Button.Primary fullWidth rrLink to={viewUrl} target="_blank">Plot</Button.Primary>
+        ? <Button.Primary fullWidth to={viewUrl} target="_blank">Plot</Button.Primary>
         : <Button.Primary fullWidth disabled>Plot</Button.Primary>
 
     return (

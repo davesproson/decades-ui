@@ -1,10 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface ParamFilterState {
+	filterText: string
+}
 
 export const paramFilterSlice = createSlice({
 	name: 'paramfilter',
-	initialState: {filterText: ""},
+	initialState: {filterText: ""} as ParamFilterState,
 	reducers: {
-		setFilterText: (state, action) => {
+		setFilterText: (state, action: PayloadAction<{filterText: string}>) => {
 			state.filterText = action.payload.filterText;
 		}
 	},

@@ -467,7 +467,7 @@ const OptionsButton = () => {
     const text = location.pathname !== "/" ? "Home" : "Options"
 
     return (
-        <Button.Dark rrLink outlined to={to}>
+        <Button.Dark outlined to={to}>
             {text}
         </Button.Dark>
     )

@@ -1,10 +1,30 @@
-import { useSelector, useDispatch } from "react-redux"
+import PropTypes, { InferProps } from "prop-types";
+
 import { panels } from "./panels"
 import { useTutorialAction } from "./hooks"
 import { setShowTutorial, incrementPosition } from "../redux/tutorialSlice"
 import { useNavigate } from "react-router-dom"
 import { enableTutorial } from "../settings"
 import { Button } from "../components/buttons"
+import { useSelector, useDispatch } from "../redux/store"
+
+const TutorialPanelPropTypes = {
+    key: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    continueText: PropTypes.string,
+    abortText: PropTypes.string,
+    hideContinue: PropTypes.bool,
+    nextRoute: PropTypes.string,
+    next: PropTypes.func,
+    abort: PropTypes.func,
+    action: PropTypes.func,
+    clear: PropTypes.arrayOf(PropTypes.func),
+    dispatch: PropTypes.arrayOf(PropTypes.func),
+}
+
+type TutorialPanelProps = InferProps<typeof TutorialPanelPropTypes>
+
 
 /**
  * The TutorialPanel is the actual UI for the tutorial. It is responsible for rendering
@@ -20,8 +40,8 @@ import { Button } from "../components/buttons"
  * @param {function} props.next - The function to call when the continue button is clicked
  * @param {function} props.abort - The function to call when the abort button is clicked
  * @param {function} props.action - The action to run when the panel is shown
- * @param {function} props.clear - The actions to dispatch when the panel is hidden
- * @param {function} props.dispatch - The actions to dispatch when the panel is shown
+ * @param {Array<function>} props.clear - The actions to dispatch when the panel is hidden
+ * @param {Array<function>} props.dispatch - The actions to dispatch when the panel is shown
  * 
  * @component
  * @example
@@ -31,20 +51,23 @@ import { Button } from "../components/buttons"
  * <TutorialPanel title={title} text={text} />
  * )
  */
-const TutorialPanel = (props) => {
+const TutorialPanel = (props: TutorialPanelProps) => {
     useTutorialAction(props.action, props.dispatch, props.clear)
     const navigate = useNavigate()
-    
     const onContinue = () => {
         if(props.nextRoute) {
             navigate(props.nextRoute)
         }
-        props.next()
+        props.next && props.next()
     }
 
     const continueButton = props.hideContinue
         ? null
         : <Button.Success onClick={onContinue}>{props.continueText || "Continue"}</Button.Success>
+
+    if(!props.abort) {
+        props.abort = () => {}
+    }
 
     return (
         <div style={{
@@ -72,7 +95,13 @@ const TutorialPanel = (props) => {
         </div>
     )
 }
+TutorialPanel.propTypes = TutorialPanelPropTypes
 
+const TutorialDispatcherProptypes = {
+    position: PropTypes.number.isRequired,
+    children: PropTypes.arrayOf(PropTypes.element).isRequired,
+}
+type TutorialDispatcherProps = InferProps<typeof TutorialDispatcherProptypes>
 /**
  * A dispatcher for the tutorial panels. Bit of a legacy thing, from when TutorialPanels
  * were specified explicitly in the JSX. Now they are specified in the panels array.
@@ -91,7 +120,11 @@ const TutorialPanel = (props) => {
  * </TutorialDispatcher>
  * )
  */
-const TutorialDispatcher = (props) => props.children[props.position]
+const TutorialDispatcher = (props: TutorialDispatcherProps) => {
+    const child = props.children[props.position]
+    return <>{child}</>
+}
+TutorialDispatcher.propTypes = TutorialDispatcherProptypes
 
 /**
  * The tutorial component. This is the main component for the tutorial. It is responsible
@@ -112,7 +145,9 @@ const Tutorial = () => {
     if(!enableTutorial) return null
     if(!show) return null
 
-    const tutorialSeen = JSON.parse(window.sessionStorage.getItem("showTutorial"))
+    const tutorialSeen = JSON.parse(
+        window.sessionStorage.getItem("showTutorial") || "false"
+    ) as boolean
     if(tutorialSeen === false) {
        return null
     } 
@@ -120,12 +155,18 @@ const Tutorial = () => {
     return (
         <TutorialDispatcher position={position}>
             {panels.map((panel, i) => {
-                return <TutorialPanel key={i} {...panel}  
-                                      next={()=>dispatch(incrementPosition())}
-                                      abort={()=>dispatch(setShowTutorial(false))}/>
+                return (
+                    <TutorialPanel 
+                        key={i} 
+                        next={()=>dispatch(incrementPosition())}
+                        abort={()=>dispatch(setShowTutorial(false))}
+                        {...panel}  
+                    />
+                )
             })}
         </TutorialDispatcher>
     )
 }
 
 export default Tutorial
+

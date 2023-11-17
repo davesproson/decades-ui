@@ -31,7 +31,10 @@ export const apiEndpoints = {
 
 export const enableTutorial = true
 
-export const apiTransforms = {}
+type TransformType<T> = {
+    [key: string]: (data: T) => T
+}
+export const apiTransforms: TransformType<any> = {}
 
 export const geoCoords = {
     'latitude': 'gin_latitude',

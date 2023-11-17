@@ -11,15 +11,27 @@ const View = () => {
         }
         return `${base}${x}`
     })
-    const nRows = parseInt(searchParams.get('nRows')) || urls.length
-    const nCols = parseInt(searchParams.get('nCols')) || 1
+
+    const nRowsString = searchParams.get('nRows') || urls.length.toString()
+    const nRows = parseInt(nRowsString) || urls.length
+
+    const nColsString = searchParams.get('nCols') || "1"
+    const nCols = parseInt(nColsString) || 1
 
     return (
         <div style={{ top: 0, left: 0, width: '100%', height: '100%', position: 'absolute' }}>
             {urls.map((url, i) => {
                 const opts = new URLSearchParams(url.split('?')[1])
-                const width = `${(opts.get('viewWidth') || 100 / nCols) - 1 / nCols}%`
-                const height = `${(opts.get('viewHeight') || 100 / nRows) - 1 / nRows}%`
+
+                const viewWidth = parseFloat(
+                    opts.get('viewWidth') || (100 / nCols).toString()
+                )
+                const viewHeight = parseFloat(
+                    opts.get('viewHeight') || (100 / nRows).toString()
+                )
+                
+                const width = `${(viewWidth) - 1 / nCols}%`
+                const height = `${(viewHeight) - 1 / nRows}%`
                 
                 return (
                     <iframe key={i} src={url}  width={width} frameBorder="0" scrolling="no"

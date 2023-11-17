@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { setParams, setParamsDispatched } from "./redux/parametersSlice";
 import { setServer } from "./redux/optionsSlice";
 import { apiEndpoints, apiTransforms } from "./settings";
+import { useSelector, useDispatch } from "./redux/store";
 
-
-const useTransform = (name) => {
+const useTransform = (name: string) => {
     if(apiTransforms[name]) return apiTransforms[name];
-    return (data) => data;
+    return (data: any) => data;
 }
-
 
 const useDispatchParameters = () => {
     
@@ -79,8 +78,8 @@ const useServers = () => {
                     dispatch(setServer(serverToSet))
                 }
             })
-            .catch((e) => {   
-                console.log("Error fetching servers")
+            .catch(() => {   
+                console.error("Error fetching servers")
                 dispatch(setServer(null))
             })   
             

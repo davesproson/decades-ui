@@ -1,4 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface CustomTimeframe {
+    start: number | null,
+    end: number | null
+};
+
+interface Timeframe {
+    selected: boolean,
+    value: string,
+    label: string
+};
+
+type OptionsState = {
+    swapOrientation: boolean,
+    plotStyle: {
+        options: string[],
+        value: string
+    },
+    scrollingWindow: boolean,
+    dataHeader: boolean,
+    ordinateAxis: string,
+    server: string | undefined,
+    timeframes: Array<Timeframe>,
+    useCustomTimeframe: boolean,
+    customTimeframe: CustomTimeframe
+};
 
 export const optionsSlice = createSlice({
 	name: 'options',
@@ -24,8 +50,8 @@ export const optionsSlice = createSlice({
         customTimeframe: {
             start: null,
             end: null
-        }
-    },
+        } 
+    } as OptionsState,
 	reducers: {
         toggleSwapOrientation: (state) => {
             state.swapOrientation = !state.swapOrientation;
@@ -43,27 +69,40 @@ export const optionsSlice = createSlice({
                 state.plotStyle.value = state.plotStyle.options[0];
             }
         },
-        setTimeframe: (state, action) => {
+        setTimeframe: (state, action: PayloadAction<{value: string}>) => {
+ 
+            const matchedTimeframe = state.timeframes.find(
+                x=>x.value===action.payload.value
+            )
+
+            if(!matchedTimeframe) {
+                console.error(`Invalid timeframe value: ${action.payload.value}`);
+                return;
+            }
+
             for(const timeframe of state.timeframes) {
                 timeframe.selected = false;
             }
-            state.timeframes.find(x=>x.value===action.payload.value).selected = true;
+
+            matchedTimeframe.selected = true;
+            
+
             state.useCustomTimeframe = false;
             state.customTimeframe = {
                 start: null,
                 end: null
             }
         },
-        setCustomTimeframe: (state, action) => {
+        setCustomTimeframe: (state, action: PayloadAction<CustomTimeframe>) => {
             for(const x of state.timeframes) {
                 x.selected = false;
             }
             state.useCustomTimeframe = true;
 
-            if(action.payload.start !== undefined) {
+            if(action.payload.start !== null) {
                 state.customTimeframe.start = action.payload.start;
             }
-            if(action.payload.end !== undefined) {
+            if(action.payload.end !== null) {
                 state.customTimeframe.end = action.payload.end;
                 if(state.customTimeframe.start === null){
                     state.customTimeframe.start = action.payload.end - 30*60*1000;

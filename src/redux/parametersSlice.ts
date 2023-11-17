@@ -1,6 +1,39 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const getNewAxis = (units, axes) => {
+type ParameterID = string | number;
+
+interface Parameter {
+    id: ParameterID,
+    name: string,
+    raw: string,
+    units: string,
+    selected: boolean,
+    status: string | null,
+    axisId: number | null
+};
+
+interface DecadesParameter {
+    ParameterIdentifier: number,
+    ParameterName: string,
+    DisplayText: string,
+    DisplayUnits: string,
+    available: string | null
+};
+
+
+interface Axis {
+    id: number,
+    units: string
+};
+
+type ParamsState = {
+    params: Parameter[],
+    axes: Axis[],
+    paramSet: string,
+    paramsDispatched: boolean
+}
+
+const getNewAxis = (units: string, axes: Array<Axis>): Axis => {
     for(let i=1; i<axes.length+1; i++) {
         if(!axes.find(axis => axis.id === i)) {
             return {
@@ -16,7 +49,7 @@ const getNewAxis = (units, axes) => {
     }
 }
 
-const paramFromDecadesParam = (param) => {
+const paramFromDecadesParam = (param: DecadesParameter): Parameter => {
     return {
         id: param.ParameterIdentifier,
         raw: param.ParameterName,
@@ -32,20 +65,19 @@ export const paramSlice = createSlice({
 
 	name: 'params',
 	initialState: {
-        // Params = {axisId=null, id, name, raw, units, selected=False, status=null}
         params: [],
         axes: [],
         paramSet: '',
         paramsDispatched: false
-    },
+    } as ParamsState,
 	reducers: {
-        setParamsDispatched: (state, action) => {
+        setParamsDispatched: (state, action: PayloadAction<boolean>) => {
             state.paramsDispatched = action.payload;
         },
-        setParamSet: (state, action) => {
+        setParamSet: (state, action: PayloadAction<string>) => {
             state.paramSet = action.payload;
         },
-		addParam: (state, action) => {
+		addParam: (state, action: PayloadAction<Parameter>) => {
 			const param = {
 				id: action.payload.id.toString(),
 				name: action.payload.name,
@@ -53,10 +85,10 @@ export const paramSlice = createSlice({
                 units: action.payload.units,
 				selected: false,
                 status: null
-			};
-			state.push(param);
+			} as Parameter;
+			state.params.push(param);
 		},
-        setParams: (state, action) => {
+        setParams: (state, action: PayloadAction<Array<DecadesParameter>>) => {
             const params = action.payload;
             state.params = new Array();
             for(const param of params) {
@@ -64,13 +96,13 @@ export const paramSlice = createSlice({
                 state.params.push(paramToAdd);
             }
         },
-        setParamStatus: (state, action) => {
+        setParamStatus: (state, action: PayloadAction<Parameter>) => {
             const param = state.params.find(param => param.id === action.payload.id);
             if (param) {
                 param.status = action.payload.status;
             }
         },
-        toggleParamSelected: (state, action) => {
+        toggleParamSelected: (state, action: PayloadAction<{id: ParameterID}>) => {
             const param = state.params.find(param => param.id === action.payload.id);
             if (param) {
                 param.selected = !param.selected;
@@ -105,20 +137,30 @@ export const paramSlice = createSlice({
             state.params.forEach(param => param.selected = false);
             state.axes = []
         },
-        addNewAxis: (state, action) => {
+        addNewAxis: (state, action: PayloadAction<{paramId: ParameterID}>) => {
             const paramId = action.payload.paramId;
             const param = state.params.find(param => param.id === paramId);
-            const nParamsWithUnit = state.params.filter(p => p.selected && p.units === param.units).length;
+            if(!param) {
+                console.error(`Could not find param with id ${paramId}`);
+                return;
+            }
+            const nParamsWithUnit = state.params.filter(
+                p => p.selected && p.units === param.units
+            ).length;
 
             if(nParamsWithUnit === 1) return
             const newAxis = getNewAxis(param.units, state.axes);
             state.axes.push(newAxis);
             param.axisId = newAxis.id;
         },
-        selectAxis: (state, action) => {
+        selectAxis: (state, action: PayloadAction<{axisId: number, paramId: ParameterID}>) => {
             const paramId = action.payload.paramId;
             const axisId = action.payload.axisId;
             const param = state.params.find(param => param.id === paramId);
+            if(!param) {
+                console.error(`Could not find param with id ${paramId}`);
+                return;
+            }
             param.axisId = axisId;
 
             const usedAxes = [...new Set(

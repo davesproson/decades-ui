@@ -1,7 +1,8 @@
 import { base } from "../settings"
 import { onLuxe } from "../utils"
+import { LibraryViews } from "./views.types"
 
-const libraryViews = [
+const libraryViews: LibraryViews = [
     {
         title: "Aircraft position and attitude",
         description: `2x2 grid which displays a map, a plot of altitudes, 
