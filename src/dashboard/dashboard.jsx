@@ -187,7 +187,7 @@ const LargeDashPanel = (props) => {
         border: "1px solid black",
         borderRadius: "5px",
         zIndex: showPlot ? 99999 : 999,
-        background: inAlarm ? "" : "white",
+        background: inAlarm ? "" : "",
     }
 
     const editLimitsButton = props.useURL

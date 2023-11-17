@@ -1,4 +1,4 @@
-const deployment = 'dev'
+export const deployment = 'dev'
 
 export const serverPrefix = ""
 export const serverProtocol = {
@@ -6,6 +6,9 @@ export const serverProtocol = {
     'dev': "http",
     'prod': "http"
 }[deployment]
+
+export const wsProtocol = serverProtocol === "https" ? "wss" : "ws"
+export const useWebSocketData = false
 
 export const base = {
     "demo": "/decades-demo/",
@@ -25,6 +28,7 @@ export const apiEndpoints = {
     'parameters': `${apiBase}/parano.json`,
     'parameter_availability': `${apiBase}/params/availability`,
     'data': `${apiBase}/livedata`,
+    'data_ws': `${apiBase}/livedata_ws`,
     'tank_status': `${apiBase}/tank_status`,
     'flightsummary': `${apiBase}/flightsummary/get`,
 }

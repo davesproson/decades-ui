@@ -275,6 +275,9 @@ const MoreSelector = () => {
                 <Link to="/alarm-config"  className="navbar-item">
                     Alarms...
                 </Link>
+                <Link to="/timer-config"  className="navbar-item">
+                    Timers...
+                </Link>
             </div>
         </div>
     )
@@ -376,7 +379,7 @@ const PlotButton = () => {
             </>
         )
     }
-    
+
     return (
         <>
             <Button.Primary anchor style={leftStyle} href={plotUrl} target="_blank" rel="noopener noreferrer">

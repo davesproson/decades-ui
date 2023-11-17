@@ -1,8 +1,6 @@
-import 'bulma/css/bulma.min.css';
-
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom'
-import { useServers } from './hooks';
+import { useServers, useDarkMode } from './hooks';
 import { Loader } from './components/loader';
 import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -21,6 +19,8 @@ const ViewLibrary = lazy(() => import('./views/viewLibrary'))
 const Tutorial = lazy(() => import('./tutorial/tutorial'))
 const AlarmList = lazy(() => import('./alarms/alarm'))
 const JsonView = lazy(() => import('./views/jsonView'))
+const Timers = lazy(() => import('./timers/timer'))
+const TimerConfig = lazy(() => import('./timers/config'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useEffect } from 'react';
@@ -36,10 +36,11 @@ import { useEffect } from 'react';
  * )
  */
 const DecadesVista = () => {
-
+  
   useServers()
   const [searchParams, _] = useSearchParams()
   const dispatch = useDispatch()
+  const [darkMode, setDarkMode] = useDarkMode()
 
   useEffect(() => {
     const paramSet = searchParams.get('paramset')
@@ -59,6 +60,7 @@ const DecadesVista = () => {
           <Route path="/config-view" element={<Suspense><ViewConfig /></Suspense>} />
           <Route path="/view-library" element={<Suspense><ViewLibrary /></Suspense>} />
           <Route path="/alarm-config" element={<Suspense><AlarmList openExternal={true}/></Suspense>} />
+          <Route path="/timer-config" element={<Suspense><TimerConfig openExternal={true}/></Suspense>} />
         </Route>
         <Route path="/view" element={<Suspense><View /></Suspense>} />
         <Route path="/jsonview" element={<Suspense><JsonView /></Suspense>} />
@@ -66,8 +68,7 @@ const DecadesVista = () => {
         <Route path="/dashboard" element={<Suspense><DashboardDispatcher useURL={true}/></Suspense>} />
         <Route path="/tephigram" element={<Suspense><Tephigram /></Suspense>} />
         <Route path="/alarms" element={<Suspense><AlarmList /></Suspense>} />
-        
-
+        <Route path="/timers" element={<Suspense><Timers /></Suspense>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Suspense>

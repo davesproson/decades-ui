@@ -1,7 +1,7 @@
 
 import { usePlotUrl } from '../plot/hooks';
 import { PlotOptionCard } from './plotOptions';
-import { AxisOptionsCard } from './axisOptions';
+import { AxisSelectionCard, AxisScalingCard } from './axisOptions';
 import { Button } from '../components/buttons';
 
 const AddressBar = () => {
@@ -24,7 +24,8 @@ const Options = () => {
             <div className="section">
                 <AddressBar />
                 <PlotOptionCard />
-                <AxisOptionsCard />
+                <AxisSelectionCard />
+                <AxisScalingCard />
             </div>
         </div>
     )

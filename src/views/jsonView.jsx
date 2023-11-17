@@ -1,9 +1,14 @@
+import noscroll from "../../assets/css/no-scroll.css"
+
 import { VistaErrorBoundary } from '../components/error'
 import PlotDispatcher  from '../plot/plot'
 import Dashboard  from '../dashboard/dashboard'
 import Tephigram from '../tephigram/tephigram'
 import AlarmList from '../alarms/alarm'
+import Timers from '../timers/timer'
 import { useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { libraryViews } from './libraryEntries'
 
 const UrlView = (props) => {
     return (
@@ -14,6 +19,11 @@ const UrlView = (props) => {
 }
 
 const _View = (props) => {
+
+    useEffect(()=>{
+        if(!props.top) return
+        document.title = props.title || 'DECADES View'
+    }, [])
 
     const elements = props.elements
 
@@ -33,18 +43,13 @@ const _View = (props) => {
         height: props.top ? "100vh" : null //"100ch"
     }
 
-    const bgcolor = i => {
-        const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink']
-        return "white"; colors[i % colors.length]
-    }
-
     return (
         
         <div style={style}>
             {elements.map((element, i) => {
                 const Element = getElement.get(element.type) 
                 return (
-                    <div key={i} style={{backgroundColor: bgcolor(i), display: "grid"}}>
+                    <div key={i} style={{display: "grid"}}>
                         
                         <Element  {...element} />
                     </div>
@@ -68,15 +73,24 @@ const getElement = new Map([
     ['view', _View],
     ['dashboard', (props) => Dashboard({...props, useURL: false})],
     ['url', UrlView],
-    ['alarms', AlarmList]
+    ['alarms', AlarmList],
+    ['timers', (props) => Timers(props)]
 ])
 
 const JsonView = (props) => {
-    const cfg = props.cfg || JSON.parse(localStorage.getItem('viewConfig'))
+    let cfg = props.cfg || JSON.parse(localStorage.getItem('viewConfig'))
+    const [searchParams] = useSearchParams()
+    const viewName = searchParams.get('view')
+
+    const v3Views = libraryViews.filter(v => v.config.version === 3)
+    const v3View = v3Views.find(v => v.title === viewName)
+    if(v3View) {
+        cfg = v3View.config
+        if(!cfg.title) cfg.title = v3View.title
+    }
 
     useEffect(()=>{
         document.getElementsByTagName('html')[0].style.overflow = "hidden"
-        localStorage.removeItem('viewConfig')
     }, [])
 
     return (

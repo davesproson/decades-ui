@@ -15,6 +15,7 @@ import { getAxesArray } from '../plot/plotUtils';
 import { Tag, BooleanTag } from '../components/tags';
 import { Input, FieldInput, GroupedField } from '../components/forms';
 import { Button } from '../components/buttons';
+import { useDarkMode } from '../hooks';
 
 /**
  * Provides a form for adding a view to the advanced view. It's a
@@ -51,12 +52,12 @@ const ConfigViewArea = React.forwardRef((props, ref) => {
 
     // Validate the form data
     const validate = () => {
-        if(rowPc == "") {
-            setRowPc(new Array(rows).fill(100/rows).join(","))
+        if (rowPc == "") {
+            setRowPc(new Array(rows).fill(100 / rows).join(","))
         }
 
-        if(colPc == "") {
-            setColPc(new Array(cols).fill(100/cols).join(","))
+        if (colPc == "") {
+            setColPc(new Array(cols).fill(100 / cols).join(","))
         }
 
         if (rows === "" || cols === "") {
@@ -196,6 +197,18 @@ const ConfigTephiArea = () => {
 }
 
 /**
+ * Add some timers to the advanced view. We currenly just use a blank timer page.
+ */
+const ConfigTimerArea = () => {
+    return (
+        <div className="mt-2">
+            Add a timer to the view. Currently this will give a blank area
+            to which you can add timers.
+        </div>
+    )
+}
+
+/**
  * Add a dashboard to the advanced view. It's a forwardRef which uses an
  * imperative handle to get the data back out. The current dashboard
  * configuration is used, and is simply displayed to the user here.
@@ -226,7 +239,7 @@ const ConfigDashboardArea = React.forwardRef((props, ref) => {
     return (
         <div className="mt-2">
             <p>Add a dashboard to the to the view, with the currently selected set of
-            parameters.</p> 
+                parameters.</p>
             <p className="mt-2">
                 Currently selected parameters are: {paramList}
             </p>
@@ -242,7 +255,7 @@ const ConfigDashboardArea = React.forwardRef((props, ref) => {
  * @param {*} props.split - a callback to split the view
  * @param {*} props.hide - a callback to hide the widget
  * @param {*} props.setViewType - a callback to set the view type. Allowed values are
- *                                "plot", "tephi", "dashboard"
+ *                                "plot", "tephi", "dashboard", "timers"
  * @param {*} props.setData - a callback to set the data for the view
  * @param {boolean} props.top - whether the widget is the ancestor view
  * 
@@ -272,6 +285,9 @@ const ConfigWidget = (props) => {
             break
         case "DASHBOARD":
             wjsx = <ConfigDashboardArea ref={dashRef} />
+            break
+        case "TIMERS":
+            wjsx = <ConfigTimerArea />
             break
         default:
             wjsx = null
@@ -316,6 +332,12 @@ const ConfigWidget = (props) => {
                 props.hide()
                 dispatch(setAdvancedConfigSaved(false))
                 break
+            case "TIMERS":
+                // We're adding a timer
+                props.setViewType("timers")
+                props.hide()
+                dispatch(setAdvancedConfigSaved(false))
+                break
             case "DASHBOARD":
                 // We're adding a dashboard
                 props.setViewType("dashboard")
@@ -342,6 +364,7 @@ const ConfigWidget = (props) => {
                 <li className={getClass("PLOT")}><a onClick={() => setWidget("PLOT")}>Plot</a></li>
                 <li className={getClass("TEPHI")}><a onClick={() => setWidget("TEPHI")}>Tephi</a></li>
                 <li className={getClass("DASHBOARD")}><a onClick={() => setWidget("DASHBOARD")}>Dashboard</a></li>
+                <li className={getClass("TIMERS")}><a onClick={() => setWidget("TIMERS")}>Timers</a></li>
             </>
         )
     }
@@ -387,6 +410,7 @@ const _AdvancedViewConfig = (props) => {
     const [showWidget, setShowWidget] = useState(false)
     const [data, setData] = useState(props.data)
     const dispatch = useDispatch()
+    const [darkMode, setDarkMode] = useDarkMode()
 
 
     const [children, setChildren] = useState([])
@@ -433,11 +457,14 @@ const _AdvancedViewConfig = (props) => {
         setChildren(children)
     }
 
+    const defaultBorder = {
+        outline: darkMode ? "1px solid gray" : "1px solid black"
+    }
     const borderStyle = saved
-        ? { outline: "1px solid black" }
+        ? defaultBorder
         : props.top
             ? { outline: "3px solid red" }
-            : { outline: "1px solid black" }
+            : defaultBorder
 
     const style = {
         display: "grid",
@@ -449,11 +476,12 @@ const _AdvancedViewConfig = (props) => {
     }
 
     const getElement = () => {
+        const dmFilter = darkMode ? "invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%)" : ""
 
         const ImageElement = (props) => {
             return (
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <img onClick={resetToView} src={props.src} alt="plot" style={{ height: "64px", width: "64px" }} />
+                    <img onClick={resetToView} src={props.src} alt="plot" style={{ height: "64px", width: "64px", filter: dmFilter}} />
                 </div>
             )
         }
@@ -477,6 +505,10 @@ const _AdvancedViewConfig = (props) => {
                     return <ImageElement src="dashboard.svg" />
                 case "alarms":
                     return <ImageElement src="alarm.svg" />
+                case "timers":
+                    return <ImageElement src="timer.svg" />
+                case "url":
+                    return <ImageElement src="link.svg" />
             }
         }
         return null
@@ -521,13 +553,14 @@ const AdvancedViewConfig = () => {
     const currentConfig = useSelector(state => state.view.advancedConfig)
     const saved = useSelector(state => state.view.advancedConfigSaved)
     const dispatch = useDispatch()
+    const [viewTitle, setViewTitle] = useState(currentConfig?.title || "")
 
     useEffect(() => {
         return () => dispatch(setAdvancedConfigSaved(true))
     }, [])
 
     const parseElement = (element) => {
-        const allowedTypes = ["view", "plot", "tephi", "dashboard", "alarms"]
+        const allowedTypes = ["view", "plot", "tephi", "dashboard", "alarms", "timers", "url"]
         const eType = element.getAttribute("data-type")
 
         const getRowColPercent = (rowcol) => {
@@ -546,57 +579,37 @@ const AdvancedViewConfig = () => {
             return 1
         }
 
-        const retObj = {
-            "type": eType
-        }
-
-        switch (eType) {
-            case "view": {
-                return {
-                    ...retObj,
-                    "rows": getNRowsNCols("row"),
-                    "columns": getNRowsNCols("col"),
-                    "rowPercent": getRowColPercent("row"),
-                    "columnPercent": getRowColPercent("col"),
-                    "elements": Array.from(element.children)
-                        .map(x => x?.children[0])
-                        .filter(x => allowedTypes.includes(x?.getAttribute("data-type")))
-                        .map(parseElement)
-                }
-            }
-            case "plot": {
-                return {
-                    ...retObj,
-                    ...JSON.parse(element.getAttribute("data-data"))
-                }
-            }
-            case "tephi": {
-                return retObj
-            }
-            case "dashboard": {
-                return {
-                    ...retObj,
-                    ...JSON.parse(element.getAttribute("data-data"))
-                }
-            }
-            case "alarms": {
-                return {
-                    ...retObj,
-                    ...JSON.parse(element.getAttribute("data-data"))
-                }
+        if (eType === "view") {
+            return {
+                "type": "view",
+                "rows": getNRowsNCols("row"),
+                "columns": getNRowsNCols("col"),
+                "rowPercent": getRowColPercent("row"),
+                "columnPercent": getRowColPercent("col"),
+                "elements": Array.from(element.children)
+                    .map(x => x?.children[0])
+                    .filter(x => allowedTypes.includes(x?.getAttribute("data-type")))
+                    .map(parseElement)
             }
         }
 
+        return {
+            "type": eType,
+            ...JSON.parse(element.getAttribute("data-data"))
+        }
     }
 
     const saveCurrentConfig = () => {
         const a = document.getElementById(ref)
-        dispatch(setAdvancedConfig(parseElement(a)))
+        let parsed = parseElement(a)
+        parsed['title'] = viewTitle
+        dispatch(setAdvancedConfig(parsed))
         dispatch(setAdvancedConfigSaved(true))
     }
 
     const resetCurrentConfig = () => {
         dispatch(setAdvancedConfig(null))
+        setViewTitle("")
         dispatch(setAdvancedConfigSaved(true))
     }
 
@@ -619,6 +632,7 @@ const AdvancedViewConfig = () => {
     return (
         <>
             {warning}
+            <FieldInput placeholder="View Title" value={viewTitle} onChange={(e) => { setViewTitle(e.target.value) }} />
             <_AdvancedViewConfig top={true} data={currentConfig} id={ref} />
             <div className="is-flex is-justify-content-space-between mt-2">
                 <div>

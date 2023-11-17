@@ -5,6 +5,10 @@ import { setServer } from "./redux/optionsSlice";
 import { apiEndpoints, apiTransforms } from "./settings";
 import { useSelector, useDispatch } from "./redux/store";
 
+import vistaLight from '../assets/css/vista-light.css?inline'
+import vistaDark from '../assets/css/vista-dark.css?inline'
+
+
 const useTransform = (name: string) => {
     if(apiTransforms[name]) return apiTransforms[name];
     return (data: any) => data;
@@ -89,6 +93,30 @@ const useServers = () => {
 
 }
 
+const useDarkMode = () => {
+    const darkModeStorageName = "vistaDarkMode"
+
+    const getDarkMode = () => {
+        return localStorage.getItem(darkModeStorageName) === 'true';
+    }
+    
+    const [darkMode, _setDarkMode] = useState(getDarkMode())
+    const setDarkMode = (mode) => {
+        localStorage.setItem(darkModeStorageName, mode);
+        _setDarkMode(mode);
+    }
+
+    useEffect(() => {
+        if(darkMode) {
+          document.getElementById("vista-css").innerHTML =  vistaDark
+        } else {
+          document.getElementById("vista-css").innerHTML =  vistaLight
+        }
+      }, [darkMode])
+
+    return [darkMode, setDarkMode];
+}
+
 export { 
-    useDispatchParameters, useServers, useGetParameters
+    useDispatchParameters, useServers, useGetParameters, useDarkMode
 }

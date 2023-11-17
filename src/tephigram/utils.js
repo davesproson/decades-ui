@@ -6,18 +6,18 @@
  *  traces - an array of traces containing lines of constant temp,
  *           theta, pressure, mass mixing ratio and sat. adiabats.
  *===================================================================*/
-const getTraces = () => {
-    const traces = getIsotherms(isoThermMin, isoThermMax, dIsoTherm);
-    let _traces = getThetas(thetaMin, thetaMax, dTheta);
+const getTraces = (darkMode) => {
+    const traces = getIsotherms(isoThermMin, isoThermMax, dIsoTherm, darkMode);
+    let _traces = getThetas(thetaMin, thetaMax, dTheta, darkMode);
     traces.push.apply(traces, _traces);
 
-    _traces = getIsobars(pressMin, pressMax, dPress);
+    _traces = getIsobars(pressMin, pressMax, dPress, darkMode);
     traces.push.apply(traces, _traces);
 
-    _traces = getMassMixRatios();
+    _traces = getMassMixRatios(darkMode);
     traces.push.apply(traces, _traces);
 
-    _traces = getSatAdiabats();
+    _traces = getSatAdiabats(darkMode);
     traces.push.apply(traces, _traces);
 
 
@@ -149,7 +149,7 @@ const xyToTphi = (x, y) =>  {
  *      an array of trace objects which can be directly used with
  *      plotly.
  *===================================================================*/
-const getIsotherms = (isoThermMin, isoThermMax, dIsoTherm) => {
+const getIsotherms = (isoThermMin, isoThermMax, dIsoTherm, darkMode) => {
     const isotherms = []; 
     const isotherm_labels = [];
     const t1 = [-40.0,190.0];
@@ -216,7 +216,7 @@ const getIsotherms = (isoThermMin, isoThermMax, dIsoTherm) => {
  *      an array of trace objects which can be directly used with
  *      plotly.
  *===================================================================*/
-const getThetas = (thetaMin, thetaMax, dTheta) => {
+const getThetas = (thetaMin, thetaMax, dTheta, darkMode) => {
     const thetas = [];
     const theta_labels = [];
     const t1 = [-80, 50];
@@ -270,7 +270,7 @@ const getThetas = (thetaMin, thetaMax, dTheta) => {
  *      an array of trace objects which can be directly used with
  *      plotly.
  *===================================================================*/
-const getIsobars = (pressMin, pressMax, dPress) => {
+const getIsobars = (pressMin, pressMax, dPress, darkMode) => {
     const isobars = [];
 
     for(let press=pressMax; press>=pressMin; press-=dPress) {
@@ -294,13 +294,13 @@ const getIsobars = (pressMin, pressMax, dPress) => {
         let _line
         if(_pres == 1000 || _pres == 500 || _pres == 250) {
             _line = {
-                color: '#0000aa',
+                color: darkMode ? "cyan" : '#0000aa',
                 width: 1.5,
                 dash: 'dash'
             }
         } else {
             _line = {
-                color: '#0000aa',
+                color: darkMode ? "cyan" : '#0000aa',
                 width: .5,
                 dash: 'dash'
             }
@@ -328,7 +328,7 @@ const getIsobars = (pressMin, pressMax, dPress) => {
             _trace.textposition = 'center';
             _trace.textfont = {
                 size: 10,
-                color: '0000aa'
+                color: darkMode ? "cyan" : '0000aa'
             };
         }
 
@@ -346,7 +346,7 @@ const getIsobars = (pressMin, pressMax, dPress) => {
  *      an array of trace objects which can be directly used with
  *      plotly.
  *===================================================================*/
-const getMassMixRatios = () => {
+const getMassMixRatios = (darkMode) => {
 
     const massMixLines = [
         .005, .0625, .125, .25, .5, 1, 2, 4, 8, 16, 32
@@ -392,14 +392,15 @@ const getMassMixRatios = () => {
             mode: 'lines+text',
             hoverinfo: 'none',
             line: {
-                color: '#000000',
+                color: darkMode ? "white" : '#000000',
                 width: .5,
                 dash: 'dot'
             },
             text: Array(3).fill(massMixLines[i] + ' g/kg'),
             textposition: 'center',
             textfont: {
-                size: 8
+                size: 8,
+                color: darkMode ? "white" : '#000000'
             }
         });
     });

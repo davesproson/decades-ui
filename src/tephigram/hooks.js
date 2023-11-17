@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getData, getTimeLims, plotIsOngoing } from "../plot/plotUtils";
 import { getTraces, populateTephigram } from "./utils";
-import { useServers } from "../hooks";
+import { useServers, useDarkMode } from "../hooks";
 
 const useTephiUrl = () => {
     const params = useSelector(state => state.vars.params);
@@ -66,6 +66,7 @@ const useTephigram = (ref) => {
     const paramsArray = params.split(',')
     const servers = useServers()
     const [server, setServer] = useState(null)
+    const [darkMode, setDarkMode] = useDarkMode()
 
     useEffect(() => {
         if(server) return
@@ -83,7 +84,7 @@ const useTephigram = (ref) => {
             server: server
         }
 
-        let plotTraces = getTraces()
+        let plotTraces = getTraces(darkMode)
         const n = plotTraces.length;
         const colors = [
             "#0000aa", "#00aa00", "#aa0000", "#00aaaa", "#aa00aa"
@@ -107,12 +108,16 @@ const useTephigram = (ref) => {
         import('plotly.js-dist').then((Plotly) => {
             Plotly.newPlot(ref.current, plotTraces  ,  {
                 margin: {t: 0, l: 0, r: 0, b: 0},   
+                plot_bgcolor: darkMode ? "black" : "white",
+                paper_bgcolor: darkMode ? "black" : "white",
                 legend: {   
                     font: { 
-                        size: 8,    
+                        size: 8,   
+                        color: darkMode ? "white" : "black"
                     },  
                     x: 0,   
-                    y: 0    
+                    y: 0    ,
+                    bgcolor: darkMode ? "black" : "white",
                 },  
                 
                 hoverinfo: 'none',  

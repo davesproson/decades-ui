@@ -39,6 +39,11 @@ const getNewAxis = (units: string, axes: Array<Axis>): Axis => {
             return {
                 id: i,
                 units: units,
+                scaling: {
+                    auto: true,
+                    min: "",
+                    max: ""
+                }
             }
         }
     }
@@ -46,6 +51,11 @@ const getNewAxis = (units: string, axes: Array<Axis>): Axis => {
     return {
         id: id,
         units: units,
+        scaling: {
+            auto: true,
+            min: "",
+            max: ""
+        }
     }
 }
 
@@ -168,6 +178,12 @@ export const paramSlice = createSlice({
             )];
 
             state.axes = state.axes.filter(axis => usedAxes.includes(axis.id));
+        },
+        setAxisScaling: (state, action) => {
+            const axisId = action.payload.axisId;
+            const scaling = action.payload.scaling;
+            const axis = state.axes.find(axis => axis.id === axisId);
+            axis.scaling = scaling;
         }
 	},
 });
@@ -175,7 +191,7 @@ export const paramSlice = createSlice({
 
 export const { 
     addParam, setParams, toggleParamSelected, unselectAllParams, addNewAxis,
-    selectAxis, setParamStatus, setParamSet, setParamsDispatched
+    selectAxis, setParamStatus, setParamSet, setParamsDispatched, setAxisScaling
 } = paramSlice.actions;
 
 export default paramSlice.reducer;

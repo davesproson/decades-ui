@@ -22,6 +22,7 @@ type CommonButtonProps = {
     children: React.ReactNode
     to?: string
     anchor?: boolean,
+    extraClasses?: string,
     rest?: any,
     onClick?: () => void
 }
@@ -32,6 +33,7 @@ const Button = ({kind, outlined, fullWidth, small, to, children, anchor, ...rest
     if(outlined) buttonClass += " is-outlined"
     if(fullWidth) buttonClass += " is-fullwidth"
     if(small) buttonClass += " is-small"
+    if(extraClasses) buttonClass += ` ${extraClasses}`
 
     if(to) {
         return (

@@ -1,4 +1,6 @@
-import { serverProtocol, apiEndpoints, badData } from '../settings'
+import { 
+    serverProtocol, wsProtocol, apiEndpoints, badData, useWebSocketData 
+} from '../settings'
 
 
 /**
@@ -170,7 +172,7 @@ const updatePlot = (options, data, ref) => {
  */
 function getYAxis(options, param) {
     for(let i=0; i<options.axes.length; i++) {
-        const paramsOnAxis = options.axes[i].split(",")
+        const paramsOnAxis = options.axes[i].split('|')[0].split(",")
         if(paramsOnAxis.includes(param)) {
             return i ? 'y' + (i+1) : 'y'
         }
@@ -187,7 +189,7 @@ function getYAxis(options, param) {
  */
 function getXAxis(options, param) {
     for(let i=0; i<options.axes.length; i++) {
-        const paramsOnAxis = options.axes[i].split(",")
+        const paramsOnAxis = options.axes[i].split('|')[0].split(",")
         if(paramsOnAxis.includes(param)) {
             return i ? 'x' + (i+1) : 'x'
         }
@@ -227,6 +229,72 @@ const getDataUrl = (options, start, end) => {
     }
 
     return url
+}
+
+/**
+ * Start listening for data from the server via a websocket. This is all
+ * a bit buggy, but I just don't care enough to fix it.
+ * 
+ * @param {Object} options - The plot options object
+ * @param {function} callback - The callback to call when data is fetched
+ * @param {Object} ref - The react ref to the plot
+ * @param {Object} signal - The signal object to abort the data fetch
+ * @returns {void}
+ */
+const startDataWS = ({options, callback, ref, signal}) => {
+
+    if(!callback) callback = updatePlot
+
+    const server = options.server ? options.server : location.host
+    const url = `${wsProtocol}://${server}${apiEndpoints.data_ws}`
+    let consolidatedData = {}
+
+    const ws = new WebSocket(url)
+
+    ws.onopen = () => ws.send([options.ordvar, ...options.params].join(','))
+
+    ws.onmessage = (event) => {
+        if(signal.abort) {
+            console.log('Aborting data fetch (WS) due to signal')
+            ws.close()
+            return
+        }
+        const data = JSON.parse(event.data)
+
+        const oldTime = consolidatedData.utc_time ? consolidatedData.utc_time[0] : null
+        const newTime = data[1] / 1000
+
+        // If we have a new time, just move on and assume that any data that hasn't 
+        // arrived yet is not going to arrive, so insert bad data for it
+        if(oldTime && (newTime > oldTime)) {
+            for(const param of [options.ordvar, ...options.params]) {
+                if(!Object.keys(consolidatedData).includes(param)) {
+                    consolidatedData[param] = [badData]
+                }
+            }
+        }
+
+        // Update the data object with the new data
+        consolidatedData = {
+            ...consolidatedData,
+            [data[0]]: [data[2]],
+            utc_time: [newTime],
+        }
+
+        // Check if we have all the data we need to update the plot
+        let sendData = true
+        for(const param of [options.ordvar, ...options.params]) {
+            if(!(Object.keys(consolidatedData).includes(param))) {
+                sendData = false
+            }
+        }
+
+        // If we have all the data, update the plot
+        if(sendData) {
+            callback(options, consolidatedData, ref)
+            consolidatedData = {utc_time: [newTime]}
+        }
+    }
 }
 
 /**
@@ -285,6 +353,9 @@ const startData = ({options, start, end, callback, ref, signal}) => {
                 }
 
                 callback(options, data, ref)
+
+                // GTFO if using websockets
+                if(useWebSocketData) return startDataWS({options, callback, ref, signal})
                 
                 newStart = data.utc_time[data.utc_time.length-1] + 1 || start
                 
@@ -324,24 +395,49 @@ const getData = async (options, start, end) => {
 }
 
 /**
- * Build an axis array reprensenting the axes and parameters
+ * Build an axis array reprensenting the axes and parameters. This may look
+ * something like:
+ * 
+ * ["x,y", "z"]
+ * 
+ * This would represent two axes, the first with x and y parameters, and the
+ * second with z.
+ * 
+ * The scaling is also included if it is not auto, for example
+ * 
+ * ["x,y", "z|0:100"]
+ * 
+ * This would represent two axes, the first with x and y parameters, and the
+ * second with z, with the scaling set to 0 to 100.
  * 
  * @param {*} vars - The redux parametersSlice
- * @returns {Array} - An array of the axes, with each axis being a comma separated list of parameters
+ * @returns {Array} - An array of the axes, with each axis being a comma separated
+ *                    list of parameters, including the scaling if it is not auto
  */
 const getAxesArray = (vars) => {
     const params = vars.params
-    let axes = {}
+
+    let axesObj = {}
     for(const ax of vars.axes) {
-        axes[ax.id] = []
+        axesObj[ax.id] = {
+            params: [],
+            scaling: ax.scaling
+        }
     }
 
     for(const param of params.filter(x=>x.selected)) {
-        axes[param.axisId].push(param.raw)
+        axesObj[param.axisId].params.push(
+            param.raw
+        )
     }
 
-    axes = Object.values(axes).map(x=>x.join(','))
-    return axes
+    return Object.values(axesObj).map(x=>{
+        let retval = x?.params?.join(',')
+        if(x?.scaling?.auto === false) {
+            retval += `|${x.scaling.min}:${x.scaling.max}`
+        }
+        return retval
+    })
 }
 
 export { 

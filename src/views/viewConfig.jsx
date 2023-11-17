@@ -1,9 +1,8 @@
 
 import { useSelector, useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
 import {
     addColumn, addRow, removeColumn, removeRow, setPlot, reset, saveView, setConfig,
-    setAdvancedConfig, setViewConfigTab
+    setViewConfigTab
 } from '../redux/viewSlice'
 import { usePlotUrl, getUrl } from '../plot/hooks'
 import { useRef, useState } from 'react';
@@ -15,7 +14,7 @@ import { Modal } from '../components/modal';
 import { Control, GroupedField, Field, Label, Input } from '../components/forms';
 import { Button } from '../components/buttons';
 
-const ViewConfigButtons = (props) => {
+const ViewConfigButtons = () => {
     const dispatch = useDispatch()
     const viewState = useSelector(s => s.view)
     const viewUrl = useViewUrl()
@@ -60,14 +59,14 @@ const ViewConfigButtons = (props) => {
         for (const plot of json.plots) {
             const options = {
                 timeframe: plot.timeframe,
-                params: plot.params,
+                params: [...[plot.params]],
                 ordinateAxis: plot.ordvar === 'javascript_time' ? 'utc_time' : plot.ordvar,
                 plotStyle: plot.style,
                 swapOrientation: plot.swapxy,
                 scrollingWindow: plot.scrolling,
                 server: plot.server,
                 dataHeader: plot.data_header,
-                axes: plot.axis
+                axes: [...[plot.axis]]
             }
             plots.push(getUrl(options))
         }
@@ -93,6 +92,7 @@ const ViewConfigButtons = (props) => {
                 parseMap[version](json)
             } catch (e) {
                 alert("Error parsing file - please check it is a valid view config file")
+                console.log(e)
             }
         }
         reader.readAsText(selectedFile)
@@ -145,22 +145,34 @@ const ViewConfigButtons = (props) => {
     )
 }
 
+/**
+ * Renders an input block for a simple plot configuration in the basic view config
+ * 
+ * @param {Object} props
+ * @param {number} props.n - The index of the plot
+ * 
+ * @returns {JSX.Element}
+ */
 const PlotInputBlock = (props) => {
     const dispatch = useDispatch()
     const url = useSelector(s => s.view.plots)
     const plotUrl = usePlotUrl()
     const params = useSelector(s => s.vars.params)
 
+    // Check if any params are selected
     const paramsSelected = params.filter(x => x.selected).length > 0
 
+    // Callback for when the input changes
     const onChange = (e) => {
         dispatch(setPlot({ index: props.n, url: e.target.value }))
     }
 
+    // Callback for when the "Use current config" button is clicked
     const onUseCurrentConfig = (e) => {
         dispatch(setPlot({ index: props.n, url: plotUrl }))
     }
 
+    // Render
     return (
         <div className="panel-block">
             <div className="field is-grouped is-flex-grow-1">
@@ -178,23 +190,34 @@ const PlotInputBlock = (props) => {
     )
 }
 
-const ViewConfigPlotSelector = (props) => {
+/**
+ * Renders a panel for selecting plot configurations.
+ * 
+ * @returns {React.Component} - React component
+ */
+const BasicViewConfigPlotSelector = () => {
     const plots = useSelector(s => s.view.plots)
 
     return (
-
         <div className="panel is-dark mt-2">
             <p className="panel-heading">
                 Plot Configurations
             </p>
             {plots.map((url, i) => <PlotInputBlock key={i} n={i} url={url} />)}
-
-
         </div>
 
     )
 }
 
+/**
+ * Renders a modal for saving the current view configuration.
+ * 
+ * @param {Object} props - React props
+ * @param {boolean} props.active - Whether the modal is active
+ * @param {function} props.close - Function to close the modal
+ * 
+ * @returns {React.Component} - React component
+ */
 const SaveModal = (props) => {
     const dispatch = useDispatch()
     const viewState = useSelector(s => s.view)
@@ -203,6 +226,9 @@ const SaveModal = (props) => {
     const active = props.active;
     const close = props.close
 
+    /**
+     * Saves the current view configuration to the store.
+     */
     const save = () => {
         const savedView = {
             plots: [...viewState.plots],
@@ -216,16 +242,29 @@ const SaveModal = (props) => {
         close()
     }
 
+    /**
+     * Updates the view name state.
+     * 
+     * @param {Object} e - Event object
+     * @param {string} e.target.value - The new view name
+     */
     const onViewNameChange = (e) => {
         setViewName(e.target.value)
     }
 
+    /**
+     * Checks if the enter key was pressed and saves the view if it was.
+     * 
+     * @param {Object} e - Event object
+     * @param {string} e.key - The key that was pressed
+     */
     const checkKey = (e) => {
         if (e.key === "Enter") {
             save()
         }
     }
 
+    // Render the modal
     return (
         <Modal active={active} close={close}>
             <Modal.Content>
@@ -247,14 +286,29 @@ const SaveModal = (props) => {
     )
 }
 
-const ViewConfigNumSelector = (props) => {
+/**
+ * A component that allows the user to select the number of rows or columns
+ * in the basic view configuration panel.
+ * 
+ * @param {Object} props
+ * @param {string} props.dim The dimension to select (either "rows" or "columns")
+ * @param {function} props.selector A selector function that returns the current value of the dimension
+ * @param {function[]} props.reducers An array of two reducer functions that increase and decrease the dimension
+ * 
+ * @returns {JSX.Element}
+ */
+const BasicViewConfigNumSelector = (props) => {
 
+    // Get the current value of the dimension from the store
     const value = useSelector(props.selector)
     const dispatch = useDispatch()
 
+    // Get the reducer functions from the props for increasing and decreasing the dimension
+    // and create functions that dispatch them
     const add = () => dispatch(props.reducers[0]())
     const remove = () => dispatch(props.reducers[1]())
 
+    // Return the component
     return (
         <div className="column">
             <GroupedField>
@@ -277,7 +331,14 @@ const ViewConfigNumSelector = (props) => {
     )
 }
 
-const BasicViewConfig = (props) => {
+/**
+ * Returns a basic view configuration panel. This is simply a panel with
+ * two number selectors for the number of rows and columns in the view,
+ * into which the url of a plot can be entered.
+ * 
+ * @returns {JSX.Element} The basic view configuration panel.
+ */
+const BasicViewConfig = () => {
 
     return (
         <>
@@ -288,34 +349,60 @@ const BasicViewConfig = (props) => {
 
                 <div className="panel-block">
                     <div className="columns">
-                        <ViewConfigNumSelector dim="Rows" selector={s => s.view.nRows}
+                        <BasicViewConfigNumSelector dim="Rows" selector={s => s.view.nRows}
                             reducers={[addRow, removeRow]} />
 
-                        <ViewConfigNumSelector dim="Columns" selector={s => s.view.nCols}
+                        <BasicViewConfigNumSelector dim="Columns" selector={s => s.view.nCols}
                             reducers={[addColumn, removeColumn]} />
                     </div>
                 </div>
             </div>
-            <ViewConfigPlotSelector />
+            <BasicViewConfigPlotSelector />
             <ViewConfigButtons />
         </>
 
     )
 }
 
+/**
+ * Return the view configuration panel. This allows the user to configure
+ * a view using a 'basic', 'advanced' or 'json' interface.
+ * 
+ * @returns {JSX.Element} The view configuration panel.
+ */
 const ViewConfig = () => {
-    // const [uiType, setUiType] = useState("BASIC")
     const uiType = useSelector(state => state.view.viewConfigTab)
     const dispatch = useDispatch()
 
+    /**
+     * Set the type of the view configuration panel. This is dispatched
+     * to the store and used to determine which view configuration panel
+     * is displayed.
+     * 
+     * @param {string} type The type of the view configuration panel,
+     *                     either 'BASIC', 'ADVANCED' or 'JSON'.
+     */
     const setUiType = (type) => {
         dispatch(setViewConfigTab(type))
     }
 
+    /**
+     * Get the class of the tab with the given type. This is used to
+     * determine which tab is active.
+     * 
+     * @param {string} type The type of the tab.
+     * @returns {string} The class of the tab.
+     */
     const getClass = (type) => {
         return type === uiType ? "is-active" : ""
     }
 
+    /**
+     * Get the view configuration panel with the given type.
+     * 
+     * @param {string} type The type of the view configuration panel.
+     * @returns {JSX.Element} The view configuration panel.
+     */
     const getUi = (type) => {
         switch (type) {
             case "BASIC":
@@ -327,6 +414,7 @@ const ViewConfig = () => {
         }
     }
 
+    // Return the view configuration panel.
     return (
         <div className="container has-navbar-fixed-top">
             <div className="tabs is-centered">
