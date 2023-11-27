@@ -18,7 +18,7 @@
     "base-64": "^1.0.0",
     "bulmaswatch": "^0.8.1",
     "mathjs": "^11.6.0",
-    "plotly.js-dist": "^2.16.4",
+    "plotly.js-dist-min": "^2.27.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -28,14 +28,16 @@
   },
   "devDependencies": {
     "@types/base-64": "^1.0.2",
+    "@types/plotly.js-dist-min": "^2.3.4",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/uuid": "^9.0.7",
     "@vitejs/plugin-react": "^2.2.0",
     "bulma": "^0.9.4",
     "jsdoc": "^4.0.0",
-    "typescript": "^5.2.2",
     "sass": "^1.65.1",
-    "vite": "^3.2.3"
+    "typescript": "^5.2.2",
+    "vite": "^3.2.3",
+    "vite-plugin-checker": "^0.6.2"
   }
 }
