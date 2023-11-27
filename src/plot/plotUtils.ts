@@ -24,7 +24,14 @@ type GetDataPlotOptions = PlotURLOptions | TephigramOptions
 const paramFromRawName = (rawName: string, parameters: Array<DecadesParameter>) => {
     const param = parameters.find(x => x.ParameterName === rawName)
     if(!param) {
-        throw new Error(`Parameter ${rawName} not found in parameters list`)
+        console.log(`Parameter ${rawName} not found in parameters list, assuming raw`)
+        return {
+            ParameterIdentifier: rawName,
+            ParameterName: rawName,
+            DisplayText: rawName,
+            DisplayUnits: '?',
+            available: null
+        }
     }
     return param
 }
