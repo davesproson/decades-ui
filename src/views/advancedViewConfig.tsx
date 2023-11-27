@@ -650,9 +650,7 @@ const AdvancedViewConfig = () => {
                     .map(x => x?.children[0])
                     .filter(x => {
                         const dataType = x?.getAttribute("data-type")
-                        if(dataType === null) {
-                            throw new Error("data-type attribute not found")
-                        }
+                        if(dataType === null) return false
                         return allowedTypes.includes(dataType)
                     })
                     .map(parseElement)
