@@ -9,7 +9,6 @@ interface ExtendedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
     to?: string
     anchor?: boolean,
     extraClasses?: string,
-    // rest?: any,
     href?: string,
     rel?: string,
     target?: string,
@@ -32,13 +31,19 @@ const Button = (props: ExtendedButtonProps) => {
 
     if(props.anchor) {
         if(!props.href) console.error("Anchor button requires href prop")
+        const hrefProps = {
+            href: props.href,
+            rel: props.rel || "noopener noreferrer",
+            target: props.target || "_blank",
+            style: props.style || {}
+        }
         return (
-            <a className={buttonClass} href={props.href} rel={props.rel}>{props.children}</a>
+            <a className={buttonClass} {...hrefProps}>{props.children}</a>
         )
     }
 
     return (
-        <button className={buttonClass} style={props.style} >{props.children}</button>
+        <button className={buttonClass} {...props}>{props.children}</button>
     )
 }
 
