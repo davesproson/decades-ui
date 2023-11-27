@@ -21,7 +21,9 @@ const Button = (props: ExtendedButtonProps) => {
     if(props.outlined) buttonClass += " is-outlined"
     if(props.fullWidth) buttonClass += " is-fullwidth"
     if(props.small) buttonClass += " is-small"
-    if(props.extraClasses) buttonClass += ` ${props.extraClasses}`
+    if(props.extraClasses) {
+        buttonClass += ` ${props.extraClasses}`
+    }
 
     if(props.to) {
         return (
@@ -42,8 +44,9 @@ const Button = (props: ExtendedButtonProps) => {
         )
     }
 
+    const { kind, outlined, fullWidth, small, extraClasses, ...rest } = props
     return (
-        <button className={buttonClass} {...props}>{props.children}</button>
+        <button className={buttonClass} {...rest}>{props.children}</button>
     )
 }
 
