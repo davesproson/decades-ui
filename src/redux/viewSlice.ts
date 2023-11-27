@@ -52,7 +52,7 @@ export const viewSlice = createSlice({
             "elements": []
         },
         advancedConfigSaved: true,
-        viewConfigTab: "BASIC"
+        viewConfigTab: "ADVANCED"
     } as ViewState,
 	reducers: {
         setViewConfigTab: (state, action: PayloadAction<ViewConfigTabType>) => {
