@@ -458,7 +458,6 @@ interface AdvancedViewConfigProps {
 }
 const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
 
-
     const [nRows, setNRows] = useState<number>(1)
     const [nCols, setNCols] = useState<number>(1)
     const [rowPercent, setRowPercent] = useState<number[]>([100])
@@ -469,8 +468,6 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
     const [data, setData] = useState(props.data)
     const dispatch = useDispatch()
     const [darkMode, _setDarkMode] = useDarkMode()
-
-
     const [children, setChildren] = useState<React.ReactElement[]>([])
 
     const saved = useSelector(state => state.view.advancedConfigSaved)
@@ -657,10 +654,10 @@ const AdvancedViewConfig = () => {
             }
         }
 
-        const elementData = element.getAttribute("data-data") || ""
+        const elementData = element.getAttribute("data-data") 
         return {
             "type": eType,
-            ...JSON.parse(elementData)
+            ...JSON.parse(elementData || "{}")
         } 
     }
 
