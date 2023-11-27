@@ -468,7 +468,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
     const [data, setData] = useState(props.data)
     const dispatch = useDispatch()
     const [darkMode, _setDarkMode] = useDarkMode()
-    const [children, setChildren] = useState<React.ReactElement[]>([])
+    const [myChildren, setMyChildren] = useState<React.ReactElement[]>([])
 
     const saved = useSelector(state => state.view.advancedConfigSaved)
 
@@ -486,7 +486,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
                         <_AdvancedViewConfig id={element.id} data={element} showWidget={props.showWidget} />
                     )
                 }
-                setChildren(children)
+                setMyChildren(children)
             }
         }
     }, [props.data])
@@ -509,7 +509,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
             (_x, i) => <_AdvancedViewConfig id={i.toString()} showWidget={props.showWidget} />
         )
 
-        setChildren(children)
+        setMyChildren(children)
     }
 
     const defaultBorder = {
@@ -542,7 +542,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
         }
 
 
-        if (!children?.length) {
+        if (!myChildren?.length) {
             switch (vType) {
                 case "view":
                     return (
@@ -581,7 +581,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
             setData={setData} />
         : null
 
-    const mappedChildren = children?.map((element, i) => {
+    const mappedChildren = myChildren?.map((element, i) => {
         return (
             <div key={i} style={{ display: "grid" }}>
                 {element}
@@ -609,12 +609,6 @@ const AdvancedViewConfig = () => {
     const saved = useSelector(state => state.view.advancedConfigSaved)
     const dispatch = useDispatch()
     const [viewTitle, setViewTitle] = useState(currentConfig?.title || "")
-
-    useEffect(() => {
-        return () => {
-            dispatch(setAdvancedConfigSaved(true))
-        }
-    }, [])
 
     const parseElement = (element: Element): Version3ViewElement => {
         const allowedTypes = ["view", "plot", "tephi", "dashboard", "alarms", "timers", "url"]
@@ -694,6 +688,7 @@ const AdvancedViewConfig = () => {
             </article>
         )
 
+    // console.log(currentConfig)
     return (
         <>
             {warning}
