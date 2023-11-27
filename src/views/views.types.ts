@@ -1,8 +1,29 @@
 interface Version2View {
     version: 2,
-    nRows: number,
-    nCols: number,
+    config: {
+        nRows: number,
+        nCols: number,
+    },
     plots: Array<string>
+}
+
+interface Version1View {
+    version: 1,
+    config: {
+        nx: number,
+        ny: number,
+    },
+    plots: Array<{
+        timeframe: string,
+        params: Array<string>,
+        ordvar: string,
+        style: string,
+        swapxy: boolean
+        scrolling: boolean,
+        server: string,
+        data_header: boolean,
+        axis: Array<string>
+    }>,
 }
 
 interface AlarmConfig {
@@ -29,25 +50,91 @@ interface DashboardViewConfig {
     limits?: Array<{param: string, min: number} | {param: string, max: number}>
 }
 
+interface URLViewConfig {
+    type: "url",
+    url: string
+}
+
+interface TephigramViewConfig {
+    type: "tephi"
+}
+
+interface TimerViewConfig {
+    type: "timers",
+    initialTimers: Array<{
+        type: "countdown" | "countup",
+        name: string,
+        initialTime: number
+    }>
+}
+
+interface PlotViewConfig {
+    type: "plot",
+    params: Array<string>,
+    axes: Array<string>,
+    timeframe: string,
+    plotStyle: string,
+    scrolling: boolean,
+    header: boolean,
+    ordvar: string,
+    swapxy: boolean
+}
+
+type ViewConfig = (
+      AlarmViewConfig 
+    | DashboardViewConfig
+    | URLViewConfig
+    | PlotViewConfig
+    | TimerViewConfig
+    | TephigramViewConfig
+    | Version3ViewElement
+)
+
 interface Version3ViewElement {
     type: "view" 
     rows: number,
     columns: number,
     rowPercent: Array<number>,
     columnPercent: Array<number>,
-    elements: Array<AlarmViewConfig | DashboardViewConfig | Version3ViewElement>
+    elements: Array<ViewConfig>,
+    title?: string,
 }
 
 interface Version3View extends Version3ViewElement {
     version: 3
+    name?: string,
+    id?: string,
 }
 
-interface LibraryView {
+interface Version3LibraryView {
     title: string,
-    description: string,
-    config: Version2View | Version3View
+    description?: string,
+    config: Version3View
 }
+
+interface Version2LibraryView {
+    title: string,
+    description?: string,
+    config: Version2View
+}
+
+interface Version1LibraryView {
+    title: string,
+    description?: string,
+    config: Version1View
+}
+
+type LibraryView = Version3LibraryView | Version2LibraryView | Version1LibraryView
 
 type LibraryViews = Array<LibraryView>
 
-export type { LibraryViews }
+export type { 
+    LibraryViews,
+    LibraryView,
+    Version3ViewElement,
+    Version3LibraryView,
+    Version2View,
+    Version2LibraryView,
+    Version1View,
+    Version1LibraryView,
+}

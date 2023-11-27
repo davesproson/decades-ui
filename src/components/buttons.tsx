@@ -1,110 +1,99 @@
 import { Link } from "react-router-dom"
-import PropTypes  from "prop-types"
 
 
-const ButtonPropTypes = {
-    kind: PropTypes.string,
-    outlined: PropTypes.bool,
-    fullWidth: PropTypes.bool,
-    small: PropTypes.bool,
-    children: PropTypes.node.isRequired,
-    to: PropTypes.string,
-    anchor: PropTypes.bool,
-    rest: PropTypes.any,
-    onClick: PropTypes.func
-}
-
-type CommonButtonProps = {
+interface ExtendedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     kind?: string,
     outlined?: boolean,
     fullWidth?: boolean,
     small?: boolean,
-    children: React.ReactNode
     to?: string
     anchor?: boolean,
     extraClasses?: string,
-    rest?: any,
-    onClick?: () => void
+    // rest?: any,
+    href?: string,
+    rel?: string,
+    target?: string,
+    style?: React.CSSProperties
 }
 
-const Button = ({kind, outlined, fullWidth, small, to, children, anchor, ...rest}: CommonButtonProps) => {
+const Button = (props: ExtendedButtonProps) => {
     let buttonClass = "button"
-    if(kind) buttonClass += ` is-${kind}`
-    if(outlined) buttonClass += " is-outlined"
-    if(fullWidth) buttonClass += " is-fullwidth"
-    if(small) buttonClass += " is-small"
-    if(extraClasses) buttonClass += ` ${extraClasses}`
+    if(props.kind) buttonClass += ` is-${props.kind}`
+    if(props.outlined) buttonClass += " is-outlined"
+    if(props.fullWidth) buttonClass += " is-fullwidth"
+    if(props.small) buttonClass += " is-small"
+    if(props.extraClasses) buttonClass += ` ${props.extraClasses}`
 
-    if(to) {
+    if(props.to) {
         return (
-            <Link className={buttonClass} to={to} role="button">{children}</Link>
+            <Link className={buttonClass} to={props.to} role="button">{props.children}</Link>
         )
     }
 
-    if(anchor) {
+    if(props.anchor) {
+        if(!props.href) console.error("Anchor button requires href prop")
         return (
-            <a className={buttonClass} {...rest} >{children}</a>
+            <a className={buttonClass} href={props.href} rel={props.rel}>{props.children}</a>
         )
     }
 
     return (
-        <button className={buttonClass} {...rest} >{children}</button>
+        <button className={buttonClass} style={props.style} >{props.children}</button>
     )
 }
-Button.propTypes = ButtonPropTypes
 
 
 // A partial application of the button component to create a primary button
-const Primary = (props: CommonButtonProps) => {
+const Primary = (props: ExtendedButtonProps) => {
     return (
         <Button kind="primary" {...props} />
     )
 }
 
 // A partial application of the button component to create a secondary button
-const Secondary = (props: CommonButtonProps) => {
+const Secondary = (props: ExtendedButtonProps) => {
     return (
         <Button kind="secondary" {...props} />
     )
 }   
 
 // A partial application of the button component to create a danger button
-const Danger = (props: CommonButtonProps) => {
+const Danger = (props: ExtendedButtonProps) => {
     return (
         <Button kind="danger" {...props} />
     )
 }
 
 // A partial application of the button component to create a success button
-const Success = (props: CommonButtonProps) => {
+const Success = (props: ExtendedButtonProps) => {
     return (
         <Button kind="success" {...props} />
     )
 }
 
 // A partial application of the button component to create a warning button
-const Warning = (props: CommonButtonProps) => {
+const Warning = (props: ExtendedButtonProps) => {
     return (
         <Button kind="warning" {...props} />
     )
 }
 
 // A partial application of the button component to create a info button
-const Info = (props: CommonButtonProps) => {
+const Info = (props: ExtendedButtonProps) => {
     return (
         <Button kind="info" {...props} />
     )
 }
 
 // A partial application of the button component to create a light button
-const Light = (props: CommonButtonProps) => {
+const Light = (props: ExtendedButtonProps) => {
     return (
         <Button kind="light" {...props} />
     )
 }
 
 // A partial application of the button component to create a dark button
-const Dark = (props: CommonButtonProps) => {
+const Dark = (props: ExtendedButtonProps) => {
     return (
         <Button kind="dark" {...props} />
     )

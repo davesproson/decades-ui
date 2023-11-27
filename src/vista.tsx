@@ -40,7 +40,7 @@ const DecadesVista = () => {
   useServers()
   const [searchParams, _] = useSearchParams()
   const dispatch = useDispatch()
-  const [darkMode, setDarkMode] = useDarkMode()
+  const [_darkMode, _setDarkMode] = useDarkMode()
 
   useEffect(() => {
     const paramSet = searchParams.get('paramset')
@@ -50,7 +50,7 @@ const DecadesVista = () => {
   }, [searchParams, dispatch])
 
   return (
-    <VistaErrorBoundary >
+    <VistaErrorBoundary>
     <Suspense fallback={<Loader text="Initializing..."/>}>
       <Routes>
         <Route path="/" element={<><Navbar /><Tutorial /></>} >
@@ -59,13 +59,14 @@ const DecadesVista = () => {
           <Route path="/timeframe" element={<Suspense><TimeframeSelector /></Suspense>} />
           <Route path="/config-view" element={<Suspense><ViewConfig /></Suspense>} />
           <Route path="/view-library" element={<Suspense><ViewLibrary /></Suspense>} />
-          <Route path="/alarm-config" element={<Suspense><AlarmList openExternal={true}/></Suspense>} />
-          <Route path="/timer-config" element={<Suspense><TimerConfig openExternal={true}/></Suspense>} />
+          <Route path="/alarm-config" element={<Suspense><AlarmList /></Suspense>} />
+          <Route path="/timer-config" element={<Suspense><TimerConfig /></Suspense>} />
         </Route>
         <Route path="/view" element={<Suspense><View /></Suspense>} />
         <Route path="/jsonview" element={<Suspense><JsonView /></Suspense>} />
+        {/* @ts-ignore TODO - why the whining here? */}
         <Route path="/plot" element={<Suspense><PlotDispatcher /></Suspense>} />
-        <Route path="/dashboard" element={<Suspense><DashboardDispatcher useURL={true}/></Suspense>} />
+        <Route path="/dashboard" element={<Suspense><DashboardDispatcher /></Suspense>} />
         <Route path="/tephigram" element={<Suspense><Tephigram /></Suspense>} />
         <Route path="/alarms" element={<Suspense><AlarmList /></Suspense>} />
         <Route path="/timers" element={<Suspense><Timers /></Suspense>} />

@@ -4,6 +4,10 @@ interface CustomTimeframe {
     start: number | null,
     end: number | null
 };
+interface CustomTimeframeSetter {
+    start?: number | null,
+    end?: number | null
+}
 
 interface Timeframe {
     selected: boolean,
@@ -93,19 +97,21 @@ export const optionsSlice = createSlice({
                 end: null
             }
         },
-        setCustomTimeframe: (state, action: PayloadAction<CustomTimeframe>) => {
+        setCustomTimeframe: (state, action: PayloadAction<CustomTimeframeSetter>) => {
             for(const x of state.timeframes) {
                 x.selected = false;
             }
             state.useCustomTimeframe = true;
 
-            if(action.payload.start !== null) {
+            if(action.payload.start != null) {
                 state.customTimeframe.start = action.payload.start;
             }
-            if(action.payload.end !== null) {
+            if(action.payload.end !== undefined) {
                 state.customTimeframe.end = action.payload.end;
                 if(state.customTimeframe.start === null){
-                    state.customTimeframe.start = action.payload.end - 30*60*1000;
+                    state.customTimeframe.start = (
+                        (action.payload.end || new Date().getTime()) - 30*60*1000
+                    )
                 }
             }
         },
@@ -125,3 +131,5 @@ export const {
 } = optionsSlice.actions;
 
 export default optionsSlice.reducer;
+
+export type { OptionsState }

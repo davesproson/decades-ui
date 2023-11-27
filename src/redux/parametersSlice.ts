@@ -8,7 +8,7 @@ interface Parameter {
     raw: string,
     units: string,
     selected: boolean,
-    status: string | null,
+    status: boolean | null,
     axisId: number | null
 };
 
@@ -17,13 +17,18 @@ interface DecadesParameter {
     ParameterName: string,
     DisplayText: string,
     DisplayUnits: string,
-    available: string | null
+    available: boolean | null
 };
 
 
 interface Axis {
     id: number,
-    units: string
+    units: string,
+    scaling: {
+        auto: boolean,
+        min: string,
+        max: string
+    }
 };
 
 type ParamsState = {
@@ -102,7 +107,7 @@ export const paramSlice = createSlice({
             const params = action.payload;
             state.params = new Array();
             for(const param of params) {
-                const paramToAdd = paramFromDecadesParam(param)     
+                const paramToAdd = paramFromDecadesParam(param)
                 state.params.push(paramToAdd);
             }
         },
@@ -183,6 +188,10 @@ export const paramSlice = createSlice({
             const axisId = action.payload.axisId;
             const scaling = action.payload.scaling;
             const axis = state.axes.find(axis => axis.id === axisId);
+            if(!axis) {
+                console.error(`Could not find axis with id ${axisId}`);
+                return;
+            }
             axis.scaling = scaling;
         }
 	},
@@ -195,3 +204,5 @@ export const {
 } = paramSlice.actions;
 
 export default paramSlice.reducer;
+
+export type { ParamsState, DecadesParameter, Parameter, Axis }

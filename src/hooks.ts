@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-// import { useDispatch } from "react-redux";
 import { setParams, setParamsDispatched } from "./redux/parametersSlice";
 import { setServer } from "./redux/optionsSlice";
 import { apiEndpoints, apiTransforms } from "./settings";
 import { useSelector, useDispatch } from "./redux/store";
+import { DecadesParameter } from "./redux/parametersSlice";
 
 import vistaLight from '../assets/css/vista-light.css?inline'
 import vistaDark from '../assets/css/vista-dark.css?inline'
@@ -30,9 +30,9 @@ const useDispatchParameters = () => {
         fetch(endPoint)
             .then(response => response.json())
             .then(data => {
-                data = useTransform('parameters')(data)
-                dispatch(setParams(data))
+                // data = useTransform('parameters')(data)
                 dispatch(setParamsDispatched(true))
+                dispatch(setParams(data))
             })
             .catch((e) => {
                 console.log("Error fetching parameter availability:", e)
@@ -41,7 +41,7 @@ const useDispatchParameters = () => {
 }
 
 const useGetParameters = () => {
-    const [params, setParams] = useState(null);
+    const [params, setParams] = useState<Array<DecadesParameter> | null>(null);
     const paramSet = useSelector(state => state.vars.paramSet);
 
     let endPoint = `${apiEndpoints.parameters}`
@@ -101,17 +101,15 @@ const useDarkMode = () => {
     }
     
     const [darkMode, _setDarkMode] = useState(getDarkMode())
-    const setDarkMode = (mode) => {
-        localStorage.setItem(darkModeStorageName, mode);
+    const setDarkMode = (mode: boolean) => {
+        localStorage.setItem(darkModeStorageName, mode.toString());
         _setDarkMode(mode);
     }
 
     useEffect(() => {
-        if(darkMode) {
-          document.getElementById("vista-css").innerHTML =  vistaDark
-        } else {
-          document.getElementById("vista-css").innerHTML =  vistaLight
-        }
+        const vistaCss = document.getElementById("vista-css")
+        if(!vistaCss) return;
+        vistaCss.innerHTML = darkMode ? vistaDark : vistaLight
       }, [darkMode])
 
     return [darkMode, setDarkMode];

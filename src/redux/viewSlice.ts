@@ -9,7 +9,8 @@ interface AdvancedConfig  {
     columns: number,
     rowPercent: Array<number>,
     columnPercent: Array<number>,
-    elements: Array<AdvancedConfig>
+    elements: Array<AdvancedConfig>,
+    title?: string,
 }
 
 interface ViewState {
@@ -145,3 +146,5 @@ export const {
 } = viewSlice.actions;
 
 export default viewSlice.reducer;
+
+export type { AdvancedConfig }
