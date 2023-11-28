@@ -114,16 +114,16 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
             }
             Plotly.newPlot(ref.current, plotTraces  ,  {
                 margin: {t: 0, l: 0, r: 0, b: 0},   
-                plot_bgcolor: darkMode ? "black" : "white",
-                paper_bgcolor: darkMode ? "black" : "white",
+                plot_bgcolor: darkMode ? "#0a0a0a" : "white",
+                paper_bgcolor: darkMode ? "#0a0a0a" : "white",
                 legend: {   
                     font: { 
                         size: 8,   
-                        color: darkMode ? "white" : "black"
+                        color: darkMode ? "white" : "#0a0a0a"
                     },  
                     x: 0,   
                     y: 0    ,
-                    bgcolor: darkMode ? "black" : "white",
+                    bgcolor: darkMode ? "#0a0a0a" : "white",
                 },  
                 yaxis: {    
                     range: [1678, 1820],    

@@ -11,7 +11,7 @@ import { PlotInternalOptions, PlotURLOptions } from './plot.types';
 
 
 // Options for dark mode. These are currently hard-coded, and disabled
-const darkBg = "#000000"
+const darkBg = "#0a0a0a";
 
 interface OptionsState {
     timeframe: string,
