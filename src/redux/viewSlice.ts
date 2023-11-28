@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type ViewType = "view" | "plot" | "tephi" | "dashboard"
+type ViewType = (
+    "view" | "plot" | "tephi" | "dashboard" | "url" | "timers" | "alarms"
+)
 type ViewConfigTabType = "BASIC" | "ADVANCED" | "JSON"
 
 interface AdvancedConfig  {
@@ -45,6 +47,7 @@ export const viewSlice = createSlice({
         savedViews: [],
         advancedConfig: {
             "type": "view",
+            "title": "",
             "rows": 1,
             "columns": 1,
             "rowPercent": [100],
@@ -66,6 +69,7 @@ export const viewSlice = createSlice({
             if(action.payload === null) {
                 state.advancedConfig = {
                     "type": "view",
+                    "title": "",
                     "rows": 1,
                     "columns": 1,
                     "rowPercent": [100],

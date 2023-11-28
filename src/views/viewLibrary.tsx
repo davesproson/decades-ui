@@ -70,7 +70,7 @@ const LibraryCard = (props: LibraryCardProps) => {
     const viewIsLoaded = savedViews.some(v => v.name === props.title)
 
     const load = () => {
-        dispatch(saveView({ name: props.title, id: uuidv4(), ...props.config }))
+        dispatch(saveView({ name: props.title, id: uuidv4(), title: props.title, ...props.config }))
     }
 
     const loadButtonText = viewIsLoaded ? "Loaded" : "Load"

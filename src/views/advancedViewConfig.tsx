@@ -7,16 +7,14 @@
  */
 
 import React from 'react';
-import { useEffect } from 'react';
-import { useImperativeHandle, useState, useId, useRef } from 'react';
+import { useImperativeHandle, useState, useRef } from 'react';
 import { useSelector, useDispatch } from '../redux/store';
-import { setAdvancedConfig, setAdvancedConfigSaved } from '../redux/viewSlice';
+import { setAdvancedConfig } from '../redux/viewSlice';
 import { getAxesArray } from '../plot/plotUtils';
 import { Tag, BooleanTag } from '../components/tags';
 import { Input, FieldInput, GroupedField } from '../components/forms';
 import { Button } from '../components/buttons';
 import { useDarkMode } from '../hooks';
-import { Version3ViewElement } from './views.types';
 import { AdvancedConfig } from '../redux/viewSlice';
 
 // A Generic interface for the config handle
@@ -128,7 +126,7 @@ const ConfigViewArea = React.forwardRef<ConfigHandle<ConfigViewData>, {}>((_prop
 
     // Validate the row and column percentages - these must be comma separated
     // numbers which add up to 100
-    const setter = (e: React.ChangeEvent<HTMLInputElement>, setter:  React.Dispatch<React.SetStateAction<string>>) => {
+    const setter = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
         let val = e.target.value
         setter(val)
         // validate()
@@ -290,7 +288,6 @@ interface ConfigWidgetProps {
     split: (rows: number, cols: number, rowPc: number[], colPc: number[]) => void,
     hide: () => void,
     top: boolean,
-    setViewType: (type: string) => void,
     setData: (data: any) => void
 }
 /**
@@ -300,8 +297,6 @@ interface ConfigWidgetProps {
  * @param {boolean} props.visible - whether the widget is visible
  * @param {*} props.split - a callback to split the view
  * @param {*} props.hide - a callback to hide the widget
- * @param {*} props.setViewType - a callback to set the view type. Allowed values are
- *                                "plot", "tephi", "dashboard", "timers"
  * @param {*} props.setData - a callback to set the data for the view
  * @param {boolean} props.top - whether the widget is the ancestor view
  * 
@@ -312,7 +307,6 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
 
     const modalClass = props.visible ? "modal is-active" : "modal"
     const [widget, setWidget] = useState("VIEW")
-    const dispatch = useDispatch()
     const viewRef = useRef<ConfigHandle<ConfigViewData>>(null)
     const plotRef = useRef<ConfigHandle<ConfigPlotData>>(null)
     const dashRef = useRef<ConfigHandle<ConfigDashboardData>>(null)
@@ -354,7 +348,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
         switch (widget) {
             case "VIEW":
                 // We're splitting the view
-                if((handle = viewRef.current) == null) {
+                if ((handle = viewRef.current) == null) {
                     throw new Error("View handle not found")
                 }
                 data = handle.getData()
@@ -363,40 +357,43 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                     return
                 }
                 props.hide()
-                dispatch(setAdvancedConfigSaved(false))
                 props.split(data.rows, data.cols, data.rowPc, data.colPc)
                 break
             case "PLOT":
                 // We're adding a plot
-                props.setViewType("plot")
-                if((handle = plotRef.current) == null) {
+                if ((handle = plotRef.current) == null) {
                     throw new Error("Plot handle not found")
                 }
-                props.setData(handle.getData())
+                props.setData({
+                    type: "plot",
+                    ...handle.getData()
+                })
                 props.hide()
-                dispatch(setAdvancedConfigSaved(false))
                 break
             case "TEPHI":
                 // We're adding a tephigram
-                props.setViewType("tephi")
+                props.setData({
+                    type: "tephi"
+                })
                 props.hide()
-                dispatch(setAdvancedConfigSaved(false))
                 break
             case "TIMERS":
                 // We're adding a timer
-                props.setViewType("timers")
+                props.setData({
+                    type: "timers"
+                })
                 props.hide()
-                dispatch(setAdvancedConfigSaved(false))
                 break
             case "DASHBOARD":
                 // We're adding a dashboard
-                props.setViewType("dashboard")
-                if((handle = dashRef.current) == null) {
+                if ((handle = dashRef.current) == null) {
                     throw new Error("Dashboard handle not found")
                 }
-                props.setData(handle.getData())
+                props.setData({
+                    type: "dashboard",
+                    ...handle.getData()
+                })
                 props.hide()
-                dispatch(setAdvancedConfigSaved(false))
                 break
         }
     }
@@ -450,254 +447,167 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
     )
 }
 
+
+const emptyConfig = (): AdvancedConfig => {
+    return {
+        type: "view",
+        rows: 1,
+        columns: 1,
+        rowPercent: [100],
+        columnPercent: [100],
+        elements: []
+    }
+}
+
 interface AdvancedViewConfigProps {
-    id: string,
-    showWidget: boolean,
+    config: AdvancedConfig,
+    setConfig: (cfg: AdvancedConfig) => void,
     data?: any,
     top?: boolean
 }
 const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
 
-    const [nRows, setNRows] = useState<number>(1)
-    const [nCols, setNCols] = useState<number>(1)
-    const [rowPercent, setRowPercent] = useState<number[]>([100])
-    const [columnPercent, setColumnPercent] = useState<number[]>([100])
-    const [vType, setVType] = useState<string>(props?.data?.type || "view")
-    const [showWidget, setShowWidget] = useState<boolean>(false)
-    // TODO: what is data?
-    const [data, setData] = useState(props.data)
-    const dispatch = useDispatch()
+    const [showWidget, setShowWidget] = useState(false)
     const [darkMode, _setDarkMode] = useDarkMode()
-    const [myChildren, setMyChildren] = useState<React.ReactElement[]>([])
 
-    const saved = useSelector(state => state.view.advancedConfigSaved)
-
-    useEffect(() => {
-        if (props.data) {
-            setNRows(props.data.rows)
-            setNCols(props.data.columns)
-            setRowPercent(props.data.rowPercent)
-            setColumnPercent(props.data.columnPercent)
-            setVType(props.data.type)
-            const children = []
-            if (props.data.type === "view") {
-                for (let element of props.data.elements) {
-                    children.push(
-                        <_AdvancedViewConfig id={element.id} data={element} showWidget={props.showWidget} />
-                    )
-                }
-                setMyChildren(children)
-            }
-        }
-    }, [props.data])
-
-    // Currently disabled due to tricky bug!
-    const resetToView = () => {
-        setVType("view")
-        dispatch(setAdvancedConfigSaved(false))
+    const setConfig = (cfg: AdvancedConfig, i: number) => {
+        let newConfig = { ...props.config }
+        newConfig.elements[i] = cfg
+        props.setConfig(newConfig)
     }
-
-    const innerHeight = window.innerHeight
 
     const split = (rows: number, columns: number, rowPc: number[], colPc: number[]) => {
-        setRowPercent(rowPc)
-        setColumnPercent(colPc)
-        setNCols(rows)
-        setNRows(columns)
+        const title = {
+            title: props.top ? props?.config?.title : undefined
+        }
+        props.setConfig({
+            type: "view",
+            rows: rows,
+            columns: columns,
+            rowPercent: rowPc,
+            columnPercent: colPc,
+            elements: new Array(rows * columns).fill(emptyConfig()),
+            ...title
+        })
 
-        const children = new Array(rows * columns).fill(null).map(
-            (_x, i) => <_AdvancedViewConfig id={i.toString()} showWidget={props.showWidget} />
-        )
-
-        setMyChildren(children)
     }
 
-    const defaultBorder = {
-        outline: darkMode ? "1px solid gray" : "1px solid black"
-    }
-    const borderStyle = saved
-        ? defaultBorder
-        : props.top
-            ? { outline: "3px solid red" }
-            : defaultBorder
+    const borderStyle = props.top ? "3px solid black" : "1px solid gray"
 
-    const style = {
+    const style: React.CSSProperties = {
         display: "grid",
-        gridTemplateRows: rowPercent?.map(x => `${x}%`)?.join(" ") || "100%",
-        gridTemplateColumns: columnPercent?.map(x => `${x}%`)?.join(" ") || "100%",
+        gridTemplateRows: props.config?.rowPercent?.map(x => `${x}%`)?.join(" ") || "100%",
+        gridTemplateColumns: props.config?.columnPercent?.map(x => `${x}%`)?.join(" ") || "100%",
         width: props.top ? "100%" : "",
         height: props.top ? 2 * innerHeight / 3 : "",
-        ...borderStyle
+        outline: borderStyle,
+        borderRadius: props.top ? "5px" : undefined,
     }
 
-    const getElement = () => {
-        const dmFilter = darkMode ? "invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%)" : ""
+    const widget = <ConfigWidget
+        visible={showWidget}
+        split={split}
+        hide={() => setShowWidget(false)}
+        top={props.top || false}
+        setData={props.setConfig} />
 
-        const ImageElement = (props: {src: string}) => {
-            return (
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <img onClick={resetToView} src={props.src} alt="plot" style={{ height: "64px", width: "64px", filter: dmFilter}} />
-                </div>
-            )
-        }
+    const elements = props.config.elements
 
-
-        if (!myChildren?.length) {
-            switch (vType) {
-                case "view":
-                    return (
-                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                            <Button.Info onClick={() => setShowWidget(true)}>
-                                Configure
-                            </Button.Info>
-                        </div>
-                    )
-                case "plot":
-                    return <ImageElement src="chart.svg" />
-                case "tephi":
-                    return <ImageElement src="tephi.svg" />
-                case "dashboard":
-                    return <ImageElement src="dashboard.svg" />
-                case "alarms":
-                    return <ImageElement src="alarm.svg" />
-                case "timers":
-                    return <ImageElement src="timer.svg" />
-                case "url":
-                    return <ImageElement src="link.svg" />
-            }
-        }
-        return null
-    }
-
-
-    const gridElement = getElement()
-
-    const widget = showWidget
-        ? <ConfigWidget visible={showWidget}
-            hide={() => setShowWidget(false)}
-            split={split}
-            top={props.top || false}
-            setViewType={setVType}
-            setData={setData} />
-        : null
-
-    const mappedChildren = myChildren?.map((element, i) => {
+    const dmFilter = darkMode ? "invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%)" : ""
+    const ImageElement = (props: { src: string }) => {
         return (
-            <div key={i} style={{ display: "grid" }}>
-                {element}
+            <div style={{ outline: borderStyle, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <img onClick={() => { }} src={props.src} alt="plot" style={{ height: "64px", width: "64px", filter: dmFilter }} />
             </div>
         )
-    })
+    }
 
-    const dataData = JSON.stringify(data)
+    if (!elements?.length) {
+
+        switch (props.config.type) {
+            case ("view"):
+                return (
+                    <>
+                        {widget}
+                        <div style={style}>
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                <Button.Info onClick={() => {
+                                    setShowWidget(true)
+                                }} >Configure</Button.Info>
+                            </div>
+                        </div>
+                    </>
+                )
+            case "plot":
+                return <ImageElement src="chart.svg" />
+            case "tephi":
+                return <ImageElement src="tephi.svg" />
+            case "dashboard":
+                return <ImageElement src="dashboard.svg" />
+            case "alarms":
+                return <ImageElement src="alarm.svg" />
+            case "timers":
+                return <ImageElement src="timer.svg" />
+            case "url":
+                return <ImageElement src="link.svg" />
+
+        }
+    }
 
     return (
-        <>
-            {widget}
-            <div style={style} data-data={dataData} id={props?.id?.toString()} data-type={vType} data-nrows={nRows} data-ncols={nCols} data-rowpercent={rowPercent} data-colpercent={columnPercent}>
-                {gridElement}
-                {mappedChildren}
-            </div>
-        </>
+        <div style={style}>
+            {elements.map((x: AdvancedConfig, i: number) => {
+                return <_AdvancedViewConfig key={i} config={x} setConfig={(cfg: AdvancedConfig) => setConfig(cfg, i)} />
+            })}
+        </div>
     )
+
 }
 
 
 const AdvancedViewConfig = () => {
-    const ref = useId()
     const currentConfig = useSelector(state => state.view.advancedConfig)
-    const saved = useSelector(state => state.view.advancedConfigSaved)
     const dispatch = useDispatch()
-    const [viewTitle, setViewTitle] = useState(currentConfig?.title || "")
+    // const [viewTitle, setViewTitle] = useState("")
 
-    const parseElement = (element: Element): Version3ViewElement => {
-        const allowedTypes = ["view", "plot", "tephi", "dashboard", "alarms", "timers", "url"]
-        const eType = element.getAttribute("data-type")
-
-        const getRowColPercent = (rowcol: string) => {
-            const rowPercent = element.getAttribute(`data-${rowcol}percent`)
-            if (rowPercent) {
-                return rowPercent.split(",").map(parseFloat)
+    /**
+     * Function to make the config mutable, so we can edit it - the state
+     * returned by useSelector is immutable
+     * 
+     * @param {AdvancedConfig} cfg - the config to make mutable
+     */
+    const mutable = (cfg: AdvancedConfig) => {
+        let newConfig = { ...cfg }
+        newConfig.elements = newConfig.elements.map(x => {
+            if (x.type === "view") {
+                return mutable(x)
             }
-            return [100]
-        }
-
-        const getNRowsNCols = (rowcol: string) => {
-            const nRowsNCols = element.getAttribute(`data-n${rowcol}s`)
-            if (nRowsNCols) {
-                return parseInt(nRowsNCols)
-            }
-            return 1
-        }
-
-        if (eType === "view") {
-            return {
-                "type": "view",
-                "rows": getNRowsNCols("row"),
-                "columns": getNRowsNCols("col"),
-                "rowPercent": getRowColPercent("row"),
-                "columnPercent": getRowColPercent("col"),
-                "elements": Array.from(element.children)
-                    .map(x => x?.children[0])
-                    .filter(x => {
-                        const dataType = x?.getAttribute("data-type")
-                        if(dataType === null) return false
-                        return allowedTypes.includes(dataType)
-                    })
-                    .map(parseElement)
-            }
-        }
-
-        const elementData = element.getAttribute("data-data") 
-        return {
-            "type": eType,
-            ...JSON.parse(elementData || "{}")
-        } 
+            return x
+        })
+        return newConfig
     }
 
-    const saveCurrentConfig = () => {
-        const a = document.getElementById(ref)
-        if(a === null) {
-            throw new Error("Element not found")
-        }
-        let parsed = parseElement(a)
-        parsed.title = viewTitle
-        dispatch(setAdvancedConfig(parsed as AdvancedConfig))
-        dispatch(setAdvancedConfigSaved(true))
-    }
+    // Create a mutable copy of the config
+    const config = mutable(currentConfig)
 
-    const resetCurrentConfig = () => {
-        dispatch(setAdvancedConfig(null))
-        setViewTitle("")
-        dispatch(setAdvancedConfigSaved(true))
-    }
-
+    // Launch the view in a new tab
     const launch = () => {
-        saveCurrentConfig()
         localStorage.setItem("viewConfig", JSON.stringify(currentConfig))
         window.open("jsonview", "_blank")
     }
 
-    const warning = saved
-        ? null
-        : (
-            <article className="message is-danger">
-                <div className="message-body">
-                    <p>Config has changed. Ensure you save before navigating away from this page.</p>
-                </div>
-            </article>
-        )
-
-    // console.log(currentConfig)
     return (
         <>
-            {warning}
-            <FieldInput placeholder="View Title" value={viewTitle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setViewTitle(e.target.value) }} />
-            <_AdvancedViewConfig top={true} data={currentConfig} id={ref} showWidget={false} />
+            <FieldInput placeholder="View Title" value={config.title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { dispatch(setAdvancedConfig({...config, title:e.target.value})) }} />
+
+
+            <_AdvancedViewConfig config={config} setConfig={(c: AdvancedConfig) => dispatch(setAdvancedConfig(c))} top={true} />
             <div className="is-flex is-justify-content-space-between mt-2">
                 <div>
-                    <Button.Success onClick={saveCurrentConfig}>Save</Button.Success>
-                    <Button.Danger onClick={resetCurrentConfig}>Reset</Button.Danger>
+                    {/* <Button.Success onClick={() => { }}>Save</Button.Success> */}
+                    <Button.Danger onClick={()=>{
+                        dispatch(setAdvancedConfig({...emptyConfig(), title: ""}))
+                    }}>Reset</Button.Danger>
                 </div>
                 <div>
                     <Button.Info onClick={launch}>Launch</Button.Info>
@@ -705,6 +615,7 @@ const AdvancedViewConfig = () => {
             </div>
         </>
     )
+
 }
 
 export { AdvancedViewConfig }
