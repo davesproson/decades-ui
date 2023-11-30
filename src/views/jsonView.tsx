@@ -1,5 +1,4 @@
-// @ts-ignore
-import noscroll from "../../assets/css/no-scroll.css"
+import "../../assets/css/no-scroll.css"
 
 import { VistaErrorBoundary } from '../components/error'
 import PlotDispatcher  from '../plot/plot'

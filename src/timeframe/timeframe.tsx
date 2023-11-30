@@ -4,6 +4,7 @@ import { setCustomTimeframe } from '../redux/optionsSlice'
 import { getTimeLims } from '../plot/plotUtils'
 import { useEffect } from 'react'
 import { useFlightSummary } from './hooks'
+import { useBrainFade } from '../hooks'
 import { Button } from '../components/buttons'
 import { FlightSummaryEntry, FlightSummaryEntryProps } from './timeframe.types'
 
@@ -284,6 +285,7 @@ const TimeframeSelector = () => {
     const timeframes = useSelector(state => state.options.timeframes)
     const usingCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
     const customTimeframe = useSelector(state => state.options.customTimeframe)
+    const ref = useBrainFade<HTMLDivElement>()
 
     let timeframe = timeframes.find(tf => tf.selected)
     let startTime, endTime
@@ -303,7 +305,7 @@ const TimeframeSelector = () => {
     const endOnGoing = endTime === null
 
     return (
-        <div className="container has-navbar-fixed-top">
+        <div ref={ref} className="container has-navbar-fixed-top">
             <TimeframeTextBox />
             <TimeFrameSelectorBox startTime={startTime} endOnGoing={endOnGoing}/>
             <FlightSummarySelector />

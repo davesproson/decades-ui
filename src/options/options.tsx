@@ -1,8 +1,8 @@
-
 import { usePlotUrl } from '../plot/hooks';
 import { PlotOptionCard } from './plotOptions';
 import { AxisSelectionCard, AxisScalingCard } from './axisOptions';
 import { Button } from '../components/buttons';
+import { useBrainFade } from "../hooks";
 
 const AddressBar = () => {
     const address = usePlotUrl()
@@ -22,8 +22,11 @@ const AddressBar = () => {
 }
 
 const Options = () => {
+
+    const ref = useBrainFade<HTMLDivElement>()
+
     return (
-        <div className="container has-navbar-fixed-top">
+        <div ref={ref} className="container has-navbar-fixed-top disappear">
             <div className="section">
                 <AddressBar />
                 <PlotOptionCard />

@@ -1,6 +1,6 @@
 
 import { useDispatch, useSelector } from "../redux/store"
-import { useDispatchParameters } from "../hooks"
+import { useDispatchParameters, useBrainFade } from "../hooks"
 import { toggleParamSelected } from "../redux/parametersSlice"
 import { Loader } from "../components/loader"
 import { VistaError } from "../components/error"
@@ -55,6 +55,7 @@ const ParameterTable = () => {
     const filterText = useSelector(state => state.paramfilter)
     const server = useSelector(state => state.options.server)
     useDispatchParameters()
+    const ref = useBrainFade<HTMLDivElement>()
 
     const paramsChecked = vars.params.length && vars.params.every(x => x.status !== null)
 
@@ -78,7 +79,7 @@ const ParameterTable = () => {
                                      status={param.status} />)
 
     return (
-        <div className="container mt-4 has-navbar-fixed-top">
+        <div ref={ref} className="container mt-4 has-navbar-fixed-top disappear">
             <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{"margin": "auto"}}>
                 <thead>
                     <tr>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { setParams, setParamsDispatched } from "./redux/parametersSlice";
 import { setServer } from "./redux/optionsSlice";
 import { apiEndpoints, apiTransforms } from "./settings";
@@ -115,6 +115,25 @@ const useDarkMode = () => {
     return [darkMode, setDarkMode];
 }
 
+const useBrainFade = <T extends HTMLElement>() => {
+    const ref = useRef<T>(null)
+    import ('../assets/css/transition.css')
+
+    useEffect(() => {
+        if(!ref.current) return;
+        setTimeout(() => {
+            ref.current?.classList.add("appear")
+            ref.current?.classList.remove("disappear")
+        }, 0)
+        return () => {
+            ref.current?.classList.remove("appear")
+            ref.current?.classList.add("disappear")
+        }
+    }, [ref.current])
+
+    return ref;
+}
+
 export { 
-    useDispatchParameters, useServers, useGetParameters, useDarkMode
+    useDispatchParameters, useServers, useGetParameters, useDarkMode, useBrainFade
 }

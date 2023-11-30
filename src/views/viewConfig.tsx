@@ -14,6 +14,7 @@ import { Modal } from '../components/modal';
 import { Control, GroupedField, Field, Label, Input } from '../components/forms';
 import { Button } from '../components/buttons';
 import { Version1View, Version2View } from './views.types';
+import { useBrainFade } from '../hooks';
 
 const ViewConfigButtons = () => {
     const dispatch = useDispatch()
@@ -422,6 +423,7 @@ const BasicViewConfig = () => {
 const ViewConfig = () => {
     const uiType = useSelector(state => state.view.viewConfigTab)
     const dispatch = useDispatch()
+    const ref = useBrainFade<HTMLDivElement>()
 
     type UiType = "BASIC" | "ADVANCED" | "JSON"
 
@@ -467,7 +469,7 @@ const ViewConfig = () => {
 
     // Return the view configuration panel.
     return (
-        <div className="container has-navbar-fixed-top">
+        <div ref={ref} className="container has-navbar-fixed-top">
             <div className="tabs is-centered">
                 <ul>
                     <li className={getClass("BASIC")}><a onClick={() => setUiType("BASIC")}>Basic</a></li>

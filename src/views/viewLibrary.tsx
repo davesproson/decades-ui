@@ -4,6 +4,7 @@ import { saveView } from "../redux/viewSlice"
 import { libraryViews } from "./libraryEntries"
 import { Button } from "../components/buttons"
 import { v4 as uuidv4 } from 'uuid'
+import { useBrainFade } from "../hooks"
 
 interface LoadedInfoProps {
     loaded: boolean,
@@ -67,6 +68,8 @@ interface LibraryCardProps {
 const LibraryCard = (props: LibraryCardProps) => {
     const dispatch = useDispatch()
     const savedViews = useSelector(s => s.view.savedViews)
+    const ref = useBrainFade<HTMLDivElement>()
+
     const viewIsLoaded = savedViews.some(v => v.name === props.title)
 
     const load = () => {
@@ -82,7 +85,7 @@ const LibraryCard = (props: LibraryCardProps) => {
     )
 
     return (
-        <div className="card mt-2">
+        <div ref={ref} className="card mt-2">
             <div className="card-content">
                 <div className="content">
                             
