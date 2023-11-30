@@ -81,12 +81,12 @@ const TimerContainer = (
     const panelStyle = {
         border: "1px solid black",
         borderRadius: "5px",
-        background: inAlarm
-            ? "#ec6463"
-            : inWarning
-                ? "orange"
-                : "white",
     }
+    const extraClasses = inAlarm
+        ? "has-background-danger"
+        : inWarning
+            ? "has-background-warning"
+            : ""
 
     // Format the time. We probably want to move this to a utils file or similar
     const formatTime = (time: number) => {
@@ -98,7 +98,7 @@ const TimerContainer = (
 
     // Render the component
     return (
-        <div className="m-2 is-flex is-flex-grow-1" style={panelStyle}>
+        <div className={`m-2 is-flex is-flex-grow-1 ${extraClasses}`} style={panelStyle}>
 
             <div className={`is-flex is-flex-direction-column is-flex-grow-1`} >
                 <div className={`is-flex is-flex-direction-row is-justify-content-space-between`} style={{
