@@ -21,9 +21,11 @@ const AlarmList = lazy(() => import('./alarms/alarm'))
 const JsonView = lazy(() => import('./views/jsonView'))
 const Timers = lazy(() => import('./timers/timer'))
 const TimerConfig = lazy(() => import('./timers/config'))
+const GaugePanelDispatcher = lazy(() => import('./gauge/gauge'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useEffect } from 'react';
+// import GaugePanelDispatcher from './gauge/gauge';
 
 /**
  * The main app component. This is the entry point for the application, which
@@ -70,6 +72,7 @@ const DecadesVista = () => {
         <Route path="/tephigram" element={<Suspense><Tephigram /></Suspense>} />
         <Route path="/alarms" element={<Suspense><AlarmList /></Suspense>} />
         <Route path="/timers" element={<Suspense><Timers /></Suspense>} />
+        <Route path="/gauge" element={<Suspense><GaugePanelDispatcher /></Suspense>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Suspense>
