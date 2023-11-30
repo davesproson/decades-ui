@@ -492,7 +492,11 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
 
     }
 
-    const borderStyle = props.top ? "3px solid black" : "1px solid gray"
+    const borderStyle = props.top 
+        ? darkMode
+            ? "3px solid lightgray"  
+            : "3px solid black" 
+        : "1px solid gray"
 
     const style: React.CSSProperties = {
         display: "grid",
