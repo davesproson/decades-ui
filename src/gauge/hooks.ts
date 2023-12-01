@@ -12,7 +12,6 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
     const [configs, setConfigs] = useState<Array<GaugeConfig> | null>(null)
 
     useEffect(() => {
-        console.log('effect1')
         if(configs !== null) return
         if(!parameters) return
         const _cf = configsIn.map(config => {
@@ -34,12 +33,9 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
     }, [parameters])
 
     useEffect(() => {
-        console.log('effect2')
         if(!configs) return
-        console.log('effect2.1')
         const params = configs.map(config => config.parameter)
         const interval = setInterval(() => {
-            // console.log('get data')
             getData({params: params}).then(data => {
                 const _cf = configs.map(config => {
                     const value = data[config.parameter]
