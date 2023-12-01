@@ -551,13 +551,17 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
         top={props.top || false}
         setData={props.setConfig} />
 
+    const resetToView = () => {
+        props.setConfig(emptyConfig())
+    }
+
     const elements = props.config.elements
 
     const dmFilter = darkMode ? "invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%)" : ""
     const ImageElement = (props: { src: string }) => {
         return (
             <div style={{ outline: borderStyle, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <img onClick={() => { }} src={props.src} alt="plot" style={{ height: "64px", width: "64px", filter: dmFilter }} />
+                <img onClick={resetToView} src={props.src} alt="plot" style={{ height: "64px", width: "64px", filter: dmFilter }} />
             </div>
         )
     }
