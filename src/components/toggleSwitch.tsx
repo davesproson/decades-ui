@@ -35,10 +35,10 @@ const ToggleSwitch = (props: ToggleSwitchProps) => {
     return (
         <Field addons>
             <Control>
-                <OnButton onClick={toggle}>on</OnButton>
+                <OnButton onClick={toggle}>On</OnButton>
             </Control>
             <Control>
-                <OffButton onClick={toggle}>off</OffButton>
+                <OffButton onClick={toggle}>Off</OffButton>
             </Control>
         </Field>
     )

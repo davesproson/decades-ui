@@ -78,19 +78,11 @@ const Gauge = (props: GaugeConfig) => {
 
 const GaugePanel = (props: GaugePanelProps) => {
 
+    const configs = useGauge(props.configs || [])
 
-    const configs = useGauge(props.configs || [{
-        parameter: "deiced_true_air_temp_c",
-        min: -20,
-        max: 50,
-        dangerBelow: -10,
-        dangerAbove: 35,
-        value: null,
-    }])
+    if (!configs) return <></>
 
-    if (!configs) return null
-
-    let direction = props.direction || "column"
+    let direction = props.direction || "row"
 
     if (direction === "row") {
         var templateColumns = "1fr ".repeat(configs.length)
@@ -102,7 +94,7 @@ const GaugePanel = (props: GaugePanelProps) => {
 
     return (
         <div style={{
-            position: "absolute",
+            position: "relative",
             top: 0,
             left: 0,
             height: "100%",

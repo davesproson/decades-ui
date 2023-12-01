@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type ViewType = (
-    "view" | "plot" | "tephi" | "dashboard" | "url" | "timers" | "alarms"
+    "view" | "plot" | "tephi" | "dashboard" | "url" | "timers" | "alarms" | "gauge"
 )
 type ViewConfigTabType = "BASIC" | "ADVANCED" | "JSON"
 

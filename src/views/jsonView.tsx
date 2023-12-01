@@ -15,6 +15,7 @@ import { DashboardProps } from "../dashboard/dashboard.types"
 import { TimerConfig } from "../timers/timers.types"
 import { Version3LibraryView, Version3ViewElement } from "./views.types"
 import { Loader } from "../components/loader"
+import { GaugePanel } from "../gauge/gauge"
 
 const UrlView = (props: {url: string}) => {
     return (
@@ -88,6 +89,7 @@ const getElement: {[key: string]: (props: any)=>React.JSX.Element} = {
     'url': UrlView,
     'alarms': AlarmList,
     'timers': (props: {initialTimers: Array<TimerConfig>}) => Timers(props),
+    'gauge': (props: any) => GaugePanel({...props})
 }
 
 const JsonView = () => {

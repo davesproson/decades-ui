@@ -10,10 +10,10 @@
 
 .appear {
     opacity: 1;
-    transition: opacity .15s ease-in;
+    transition: opacity .25s ease-in;
 }
 
 .disappear {
     opacity: 0;
-    transition: opacity .15s ease-out;
+    transition: opacity .25s ease-out;
 }

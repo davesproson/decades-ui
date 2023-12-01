@@ -3,8 +3,8 @@ interface GaugeConfig {
     longName?: string,
     units?: string,
     value: number | null,
-    min: number,
-    max: number,
+    min: number | null,
+    max: number | null,
     dangerBelow?: number | null,
     dangerAbove?: number | null,
 }

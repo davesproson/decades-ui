@@ -79,7 +79,7 @@ const ParameterTable = () => {
                                      status={param.status} />)
 
     return (
-        <div ref={ref} className="container mt-4 has-navbar-fixed-top disappear">
+        <div ref={ref} className="container mt-4 has-navbar-fixed-top">
             <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{"margin": "auto"}}>
                 <thead>
                     <tr>

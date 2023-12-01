@@ -12,7 +12,8 @@ import ToggleSwitch from '../components/toggleSwitch';
 interface OptionBlockProps {
     flexDirection?: 'row' | 'column'
     title?: string
-    optionComponent: JSX.Element
+    optionComponent?: JSX.Element
+    children?: JSX.Element | JSX.Element[]
 }
 const OptionBlock = (props: OptionBlockProps) => {
 
@@ -33,7 +34,7 @@ const OptionBlock = (props: OptionBlockProps) => {
     return (
         <div className={classOpts} style={styleOpts}>
             {titleElem}
-            {props.optionComponent}
+            {props.optionComponent || props.children}
         </div>
     )
 }

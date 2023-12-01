@@ -281,6 +281,9 @@ const MoreSelector = () => {
                 <Link to="/timer-config"  className="navbar-item">
                     Timers...
                 </Link>
+                <Link to="/gauge-config"  className="navbar-item">
+                    Gauges...
+                </Link>
             </div>
         </div>
     )

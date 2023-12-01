@@ -2,6 +2,7 @@ import { useDispatch } from "../redux/store"
 import PropTypes from "prop-types"
 import { Button } from "./buttons"
 import { Control, Field } from "./forms"
+import { capitalize } from "../utils"
 
 interface OptionSwitchProps {
     value: string
@@ -40,10 +41,10 @@ const OptionSwitch = (props: OptionSwitchProps) => {
     return (
         <Field addons>
             <Control>
-                <LeftButton onClick={toggle}>{props.options[0]}</LeftButton>
+                <LeftButton onClick={toggle}>{capitalize(props.options[0])}</LeftButton>
             </Control>
             <Control>
-                <RightButton onClick={toggle}>{props.options[1]}</RightButton>
+                <RightButton onClick={toggle}>{capitalize(props.options[1])}</RightButton>
             </Control>
         </Field>
     )

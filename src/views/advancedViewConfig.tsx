@@ -6,7 +6,7 @@
  * be improved in the future.
  */
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { useImperativeHandle, useState, useRef } from 'react';
 import { useSelector, useDispatch } from '../redux/store';
 import { setAdvancedConfig } from '../redux/viewSlice';
@@ -16,6 +16,7 @@ import { Input, FieldInput, GroupedField } from '../components/forms';
 import { Button } from '../components/buttons';
 import { useDarkMode } from '../hooks';
 import { AdvancedConfig } from '../redux/viewSlice';
+import { GaugePanelProps } from '../gauge/gauge.types';
 
 // A Generic interface for the config handle
 interface ConfigHandle<T> {
@@ -244,6 +245,25 @@ const ConfigTimerArea = () => {
     )
 }
 
+const ConfigGaugeArea = forwardRef((_props, ref) => {
+
+    const gaugeOptions = useSelector(state => state.gauges)
+
+    useImperativeHandle(ref, () => {
+        return {
+            getData: () => {
+                return gaugeOptions
+            }
+        }
+    })
+
+    return (
+        <div className="mt-2">
+            Add one or more gauges to the view. See gauge configuration for more details.
+        </div>
+    )
+})
+
 /**
  * Add a dashboard to the advanced view. It's a forwardRef which uses an
  * imperative handle to get the data back out. The current dashboard
@@ -310,6 +330,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
     const viewRef = useRef<ConfigHandle<ConfigViewData>>(null)
     const plotRef = useRef<ConfigHandle<ConfigPlotData>>(null)
     const dashRef = useRef<ConfigHandle<ConfigDashboardData>>(null)
+    const gaugeRef = useRef<ConfigHandle<GaugePanelProps>>(null)
 
     let wjsx
 
@@ -328,6 +349,9 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
             break
         case "TIMERS":
             wjsx = <ConfigTimerArea />
+            break
+        case "GAUGE":
+            wjsx = <ConfigGaugeArea ref={gaugeRef}/>
             break
         default:
             wjsx = null
@@ -384,6 +408,17 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                 })
                 props.hide()
                 break
+            case "GAUGE":
+                // We're adding a gauge
+                if((handle = gaugeRef.current) == null) {
+                    throw new Error("Gauge handle not found")
+                }
+                props.setData({
+                    type: "gauge",
+                    ...handle.getData()
+                })
+                props.hide()
+                break
             case "DASHBOARD":
                 // We're adding a dashboard
                 if ((handle = dashRef.current) == null) {
@@ -414,6 +449,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                 <li className={getClass("TEPHI")}><a onClick={() => setWidget("TEPHI")}>Tephi</a></li>
                 <li className={getClass("DASHBOARD")}><a onClick={() => setWidget("DASHBOARD")}>Dashboard</a></li>
                 <li className={getClass("TIMERS")}><a onClick={() => setWidget("TIMERS")}>Timers</a></li>
+                <li className={getClass("GAUGE")}><a onClick={() => setWidget("GAUGE")}>Gauges</a></li>
             </>
         )
     }
@@ -554,6 +590,8 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
                 return <ImageElement src="timer.svg" />
             case "url":
                 return <ImageElement src="link.svg" />
+            case "gauge":
+                return <ImageElement src="gauge.svg" />
 
         }
     }
