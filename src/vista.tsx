@@ -75,7 +75,7 @@ const DecadesVista = () => {
         <Route path="/alarms" element={<Suspense><AlarmList /></Suspense>} />
         <Route path="/timers" element={<Suspense><Timers /></Suspense>} />
         <Route path="/gauge" element={<Suspense><GaugePanelDispatcher /></Suspense>} />
-        <Route path="/heading" element={<Suspense><HeadingIndicator /></Suspense>} />
+        <Route path="/heading" element={<Suspense><HeadingIndicator standalone={true}/></Suspense>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Suspense>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getData } from "../plot/plotUtils"
 import { badData } from "../settings"
 
@@ -26,4 +26,28 @@ const useHeadingIndicator = () => {
     return { heading, trackAngle, windAngle }
 }
 
-export { useHeadingIndicator }
+const useHeadingResizer = (): [React.RefObject<HTMLDivElement>, {[key: string]: number}] => {
+    const ref = useRef<HTMLDivElement>(null)
+    const [widthOrHeight, setWidthOrHeight] = useState<{ [key: string]: number }>({ width: 0 })
+
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver(entries => {
+            const { width, height } = entries[0].contentRect
+            if (width > height) {
+                setWidthOrHeight({ height: height })
+            } else {
+                setWidthOrHeight({ width: width })
+            }
+        })
+        if (ref.current) {
+            resizeObserver.observe(ref.current)
+        }
+        return () => {
+            resizeObserver.disconnect()
+        }
+    }, [ref, setWidthOrHeight])
+
+    return [ref, widthOrHeight]
+}
+
+export { useHeadingIndicator, useHeadingResizer }
