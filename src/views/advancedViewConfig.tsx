@@ -245,6 +245,15 @@ const ConfigTimerArea = () => {
     )
 }
 
+const ConfigHeadingArea = () => {
+    return (
+        <div className="mt-2">
+            Add a heading indicator to the view. There are no options
+            associtated with this widget.
+        </div>
+    )
+}
+
 const ConfigGaugeArea = forwardRef((_props, ref) => {
 
     const gaugeOptions = useSelector(state => state.gauges)
@@ -353,6 +362,9 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
         case "GAUGE":
             wjsx = <ConfigGaugeArea ref={gaugeRef}/>
             break
+        case "HEADING":
+            wjsx = <ConfigHeadingArea />
+            break
         default:
             wjsx = null
     }
@@ -430,6 +442,13 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                 })
                 props.hide()
                 break
+            case "HEADING":
+                // We're adding a heading indicator
+                props.setData({
+                    type: "heading"
+                })
+                props.hide()
+                break
         }
     }
 
@@ -450,6 +469,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                 <li className={getClass("DASHBOARD")}><a onClick={() => setWidget("DASHBOARD")}>Dashboard</a></li>
                 <li className={getClass("TIMERS")}><a onClick={() => setWidget("TIMERS")}>Timers</a></li>
                 <li className={getClass("GAUGE")}><a onClick={() => setWidget("GAUGE")}>Gauges</a></li>
+                <li className={getClass("HEADING")}><a onClick={() => setWidget("HEADING")}>Heading</a></li>
             </>
         )
     }
@@ -596,6 +616,8 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
                 return <ImageElement src="dashicons/link.svg" />
             case "gauge":
                 return <ImageElement src="dashicons/gauge.svg" />
+            case "heading":
+                return <ImageElement src="dashicons/heading.svg" />
 
         }
     }
