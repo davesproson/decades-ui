@@ -583,19 +583,19 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
                     </>
                 )
             case "plot":
-                return <ImageElement src="chart.svg" />
+                return <ImageElement src="dashicons/chart.svg" />
             case "tephi":
-                return <ImageElement src="tephi.svg" />
+                return <ImageElement src="dashicons/tephi.svg" />
             case "dashboard":
-                return <ImageElement src="dashboard.svg" />
+                return <ImageElement src="dashicons/dashboard.svg" />
             case "alarms":
-                return <ImageElement src="alarm.svg" />
+                return <ImageElement src="dashicons/alarm.svg" />
             case "timers":
-                return <ImageElement src="timer.svg" />
+                return <ImageElement src="dashicons/timer.svg" />
             case "url":
-                return <ImageElement src="link.svg" />
+                return <ImageElement src="dashicons/link.svg" />
             case "gauge":
-                return <ImageElement src="gauge.svg" />
+                return <ImageElement src="dashicons/gauge.svg" />
 
         }
     }
