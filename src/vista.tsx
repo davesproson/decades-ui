@@ -23,6 +23,7 @@ const Timers = lazy(() => import('./timers/timer'))
 const TimerConfig = lazy(() => import('./timers/config'))
 const GaugePanelDispatcher = lazy(() => import('./gauge/gauge'))
 const GaugeConfigurator = lazy(() => import('./gauge/gaugeConfig'))
+const HeadingIndicator = lazy(() => import('./heading/heading'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useEffect } from 'react';
@@ -74,6 +75,7 @@ const DecadesVista = () => {
         <Route path="/alarms" element={<Suspense><AlarmList /></Suspense>} />
         <Route path="/timers" element={<Suspense><Timers /></Suspense>} />
         <Route path="/gauge" element={<Suspense><GaugePanelDispatcher /></Suspense>} />
+        <Route path="/heading" element={<Suspense><HeadingIndicator /></Suspense>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Suspense>
