@@ -6,311 +6,17 @@
  * be improved in the future.
  */
 
-import React, { forwardRef } from 'react';
-import { useImperativeHandle, useState, useRef } from 'react';
+import React from 'react'
+import { useState } from 'react';
 import { useSelector, useDispatch } from '../redux/store';
 import { setAdvancedConfig } from '../redux/viewSlice';
-import { getAxesArray } from '../plot/plotUtils';
-import { Tag, BooleanTag } from '../components/tags';
-import { Input, FieldInput, GroupedField } from '../components/forms';
+import { FieldInput } from '../components/forms';
 import { Button } from '../components/buttons';
 import { useDarkMode } from '../hooks';
 import { AdvancedConfig } from '../redux/viewSlice';
-import { GaugePanelProps } from '../gauge/gauge.types';
 
-// A Generic interface for the config handle
-interface ConfigHandle<T> {
-    getData: () => T
-}
+import { useWidgets } from "./widgets/register"
 
-// The data types for the various config areas...
-//...for data returned from the plot config area
-type ConfigPlotData = {
-    params: string[],
-    axes: string[],
-    timeframe: string,
-    plotStyle: string,
-    scrolling: boolean,
-    header: boolean,
-    ordvar: string,
-    swapxy: boolean,
-    server?: string
-}
-
-//...for data returned from the view config area
-type ConfigViewData = {
-    rows: number,
-    cols: number,
-    rowPc: number[],
-    colPc: number[],
-    valid: boolean
-}
-
-//...for data returned from the dashboard config area
-type ConfigDashboardData = {
-    params: string[],
-    limits: string[]
-}
-
-/**
- * Provides a form for adding a view to the advanced view. It's a
- * forwardRef which uses an imperative handle to get the data back out
- * 
- * @param {*} props - the react props
- * @param {*} ref - the react ref
- * 
- * @component
- * 
- */
-const ConfigViewArea = React.forwardRef<ConfigHandle<ConfigViewData>, {}>((_props, ref) => {
-
-    const [rows, setRows] = useState("")
-    const [cols, setCols] = useState("")
-    const [rowPc, setRowPc] = useState("")
-    const [colPc, setColPc] = useState("")
-
-    // Return the data to the parent, with an indication of whether the data
-    // are valid
-    useImperativeHandle(ref, () => {
-        return {
-            getData: () => {
-                return {
-                    rows: parseInt(rows),
-                    cols: parseInt(cols),
-                    rowPc: rowPc.split(",").map(parseFloat),
-                    colPc: colPc.split(",").map(parseFloat),
-                    valid: validate()
-                }
-            }
-        }
-    }, [rows, cols, rowPc, colPc])
-
-    // Validate the form data
-    const validate = () => {
-        if (rowPc == "") {
-            let _rows = parseFloat(rows)
-            setRowPc(new Array(_rows).fill((100 / _rows).toString()).join(","))
-        }
-
-        if (colPc == "") {
-            let _cols = parseFloat(cols)
-            setColPc(new Array(_cols).fill((100 / _cols).toString()).join(","))
-        }
-
-        if (rows === "" || cols === "") {
-            return false
-        }
-        if (rowPc.split(",").map(x => parseFloat(x)).reduce((a, b) => a + b) !== 100) {
-            return false
-        }
-        if (rowPc.split(",").length !== parseFloat(rows)) {
-            return false
-        }
-        if (colPc.split(",").map(x => parseFloat(x)).reduce((a, b) => a + b) !== 100) {
-            return false
-        }
-        if (colPc.split(",").length !== parseFloat(cols)) {
-            return false
-        }
-        return true
-    }
-
-    // Validate the numver of row and columns - these must be positive integers
-    const valPosInt = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-        let val
-        val = parseFloat(e.target.value)
-        if (val < 1) {
-            val = 1
-        }
-        setter(val.toString())
-    }
-
-    // Validate the row and column percentages - these must be comma separated
-    // numbers which add up to 100
-    const setter = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-        let val = e.target.value
-        setter(val)
-        // validate()
-    }
-
-    return (
-        <>
-            <GroupedField>
-                <Input type="number" placeholder="Number of rows" value={rows} onChange={(e: React.ChangeEvent<HTMLInputElement>) => valPosInt(e, setRows)} />
-                <Input type="number" placeholder="Number of columns" value={cols} onChange={(e: React.ChangeEvent<HTMLInputElement>) => valPosInt(e, setCols)} />
-            </GroupedField>
-            <FieldInput type="text" placeholder="Row percentages (comma sep.)" value={rowPc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setter(e, setRowPc)} />
-            <FieldInput type="text" placeholder="Column percentages (comma sep.)" value={colPc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setter(e, setColPc)} />
-        </>
-    )
-})
-
-/**
- * Add a plot to the advanced view. It's a
- * forwardRef which uses an imperative handle to get the data back out.
- * The current plot configuration is used, and is simply displayed to
- * the user here.
- * 
- * @param {*} props - the react props
- * @param {*} ref - the react ref
- * 
- * @component
- * 
- */
-const ConfigPlotArea = React.forwardRef<ConfigHandle<ConfigPlotData>, {}>((_props, ref) => {
-
-    // Get the current plot configuration
-    const options = useSelector(state => state.options)
-    const paramOptions = useSelector(state => state.vars)
-
-    // Get the axes array representation
-    const axesStrings = getAxesArray(paramOptions)
-
-    // Return the data to the parent
-    useImperativeHandle(ref, () => {
-        return {
-            getData: () => {
-                return {
-                    params: paramOptions.params.filter(x => x.selected).map(x => x.raw),
-                    axes: axesStrings,
-                    // TODO: Implement custom timeframes? Is it worth it?
-                    timeframe: options.timeframes.filter(x => x.selected)[0]?.value || "30min",
-                    plotStyle: options.plotStyle.value,
-                    scrolling: options.scrollingWindow,
-                    header: options.dataHeader,
-                    ordvar: options.ordinateAxis,
-                    swapxy: options.swapOrientation,
-                    server: options.server
-                }
-            }
-        }
-    }, [options, paramOptions])
-
-    // Configure the timeframe string
-    let timeframe
-    try {
-        timeframe = options.timeframes.filter(x => x.selected)[0].label
-    } catch (e) {
-        if (options.useCustomTimeframe) {
-            timeframe = `Custom [NOT SUPPORTED]`
-        }
-    }
-
-    // Configure the parameter string
-    const paramList = paramOptions.params.filter(x => x.selected).map(x => {
-        return <Tag text={x.raw} is="info" extraClasses={"mr-1"} />
-    })
-
-    return (
-        <div className="mt-2">
-            Add a plot to the dashboard. The plot currently configured is
-            <ul className="mt-2">
-                <li><strong>Timeframe</strong>: <Tag text={timeframe} is="info" /></li>
-                <li><strong>Parameters</strong>:  {paramList}</li>
-                <li><strong>Style</strong>: <Tag text={options.plotStyle.value} is="info" /></li>
-                <li><strong>Ordinate var</strong>: <Tag text={options.ordinateAxis} is="info" /></li>
-                <li><strong>Swap x & y axes?</strong>: <BooleanTag value={options.swapOrientation} /></li>
-                <li><strong>Scrolling?</strong>: <BooleanTag value={options.scrollingWindow} /></li>
-            </ul>
-        </div>
-    )
-})
-
-/**
- * Add a tephigram to the advanced view. We currenly just use the 
- * default tephigram options.
- * 
- * 
- * @component
- * 
-*/
-const ConfigTephiArea = () => {
-    return (
-        <div className="mt-2">
-            Add a tephigram to the view. Currently this will only Use
-            the default tephigram options.
-        </div>
-    )
-}
-
-/**
- * Add some timers to the advanced view. We currenly just use a blank timer page.
- */
-const ConfigTimerArea = () => {
-    return (
-        <div className="mt-2">
-            Add a timer to the view. Currently this will give a blank area
-            to which you can add timers.
-        </div>
-    )
-}
-
-const ConfigHeadingArea = () => {
-    return (
-        <div className="mt-2">
-            Add a heading indicator to the view. There are no options
-            associtated with this widget.
-        </div>
-    )
-}
-
-const ConfigGaugeArea = forwardRef((_props, ref) => {
-
-    const gaugeOptions = useSelector(state => state.gauges)
-
-    useImperativeHandle(ref, () => {
-        return {
-            getData: () => {
-                return gaugeOptions
-            }
-        }
-    })
-
-    return (
-        <div className="mt-2">
-            Add one or more gauges to the view. See gauge configuration for more details.
-        </div>
-    )
-})
-
-/**
- * Add a dashboard to the advanced view. It's a forwardRef which uses an
- * imperative handle to get the data back out. The current dashboard
- * configuration is used, and is simply displayed to the user here.
- * 
- * @param {*} props - the react props
- * @param {*} ref - the react ref
- * 
- * @component
- */
-const ConfigDashboardArea = React.forwardRef<ConfigHandle<ConfigDashboardData>, {}>((_props, ref) => {
-    const paramOptions = useSelector(state => state.vars)
-
-    const paramList = paramOptions.params.filter(x => x.selected).map(x => {
-        return <Tag text={x.raw} is="info" extraClasses={"mr-1"} />
-    })
-
-    useImperativeHandle(ref, () => {
-        return {
-            getData: () => {
-                return {
-                    params: paramOptions.params.filter(x => x.selected).map(x => x.raw),
-                    limits: []
-                }
-            }
-        }
-    }, [paramOptions])
-
-    return (
-        <div className="mt-2">
-            <p>Add a dashboard to the to the view, with the currently selected set of
-                parameters.</p>
-            <p className="mt-2">
-                Currently selected parameters are: {paramList}
-            </p>
-        </div>
-    )
-})
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -332,42 +38,19 @@ interface ConfigWidgetProps {
  * @component
  * 
  */
+
 const ConfigWidget = (props: ConfigWidgetProps) => {
 
     const modalClass = props.visible ? "modal is-active" : "modal"
-    const [widget, setWidget] = useState("VIEW")
-    const viewRef = useRef<ConfigHandle<ConfigViewData>>(null)
-    const plotRef = useRef<ConfigHandle<ConfigPlotData>>(null)
-    const dashRef = useRef<ConfigHandle<ConfigDashboardData>>(null)
-    const gaugeRef = useRef<ConfigHandle<GaugePanelProps>>(null)
+    const [widget, setWidget] = useState("View")
 
-    let wjsx
+    const registry = useWidgets()
 
-    switch (widget) {
-        case "VIEW":
-            wjsx = <ConfigViewArea ref={viewRef} />
-            break
-        case "PLOT":
-            wjsx = <ConfigPlotArea ref={plotRef} />
-            break
-        case "TEPHI":
-            wjsx = <ConfigTephiArea />
-            break
-        case "DASHBOARD":
-            wjsx = <ConfigDashboardArea ref={dashRef} />
-            break
-        case "TIMERS":
-            wjsx = <ConfigTimerArea />
-            break
-        case "GAUGE":
-            wjsx = <ConfigGaugeArea ref={gaugeRef}/>
-            break
-        case "HEADING":
-            wjsx = <ConfigHeadingArea />
-            break
-        default:
-            wjsx = null
-    }
+    const selectedWidget = registry.registered.find(
+        x => x.type.toLowerCase() === widget.toLowerCase()
+    )
+
+    let wjsx = selectedWidget?.widget
 
     /**
      * Get the class for the modal 
@@ -380,76 +63,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
      * Save the configuration
      */
     const saveAction = () => {
-        let data, handle
-        switch (widget) {
-            case "VIEW":
-                // We're splitting the view
-                if ((handle = viewRef.current) == null) {
-                    throw new Error("View handle not found")
-                }
-                data = handle.getData()
-                if (!data.valid) {
-                    console.error("Invalid view configuration")
-                    return
-                }
-                props.hide()
-                props.split(data.rows, data.cols, data.rowPc, data.colPc)
-                break
-            case "PLOT":
-                // We're adding a plot
-                if ((handle = plotRef.current) == null) {
-                    throw new Error("Plot handle not found")
-                }
-                props.setData({
-                    type: "plot",
-                    ...handle.getData()
-                })
-                props.hide()
-                break
-            case "TEPHI":
-                // We're adding a tephigram
-                props.setData({
-                    type: "tephi"
-                })
-                props.hide()
-                break
-            case "TIMERS":
-                // We're adding a timer
-                props.setData({
-                    type: "timers"
-                })
-                props.hide()
-                break
-            case "GAUGE":
-                // We're adding a gauge
-                if((handle = gaugeRef.current) == null) {
-                    throw new Error("Gauge handle not found")
-                }
-                props.setData({
-                    type: "gauge",
-                    ...handle.getData()
-                })
-                props.hide()
-                break
-            case "DASHBOARD":
-                // We're adding a dashboard
-                if ((handle = dashRef.current) == null) {
-                    throw new Error("Dashboard handle not found")
-                }
-                props.setData({
-                    type: "dashboard",
-                    ...handle.getData()
-                })
-                props.hide()
-                break
-            case "HEADING":
-                // We're adding a heading indicator
-                props.setData({
-                    type: "heading"
-                })
-                props.hide()
-                break
-        }
+        selectedWidget?.save(props)
     }
 
     /**
@@ -459,18 +73,23 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
      * 
      * @returns the other tabs if we're not the top view
      */
-    const otherTabs = () => {
-        if (props.top) return null
+    const Tabs = () => {
+        if (props.top) return (
+            <ul>
+                <li className={getClass("View")}><a onClick={() => setWidget("View")}>View</a></li>
+            </ul>
+        )
 
         return (
-            <>
-                <li className={getClass("PLOT")}><a onClick={() => setWidget("PLOT")}>Plot</a></li>
-                <li className={getClass("TEPHI")}><a onClick={() => setWidget("TEPHI")}>Tephi</a></li>
-                <li className={getClass("DASHBOARD")}><a onClick={() => setWidget("DASHBOARD")}>Dashboard</a></li>
-                <li className={getClass("TIMERS")}><a onClick={() => setWidget("TIMERS")}>Timers</a></li>
-                <li className={getClass("GAUGE")}><a onClick={() => setWidget("GAUGE")}>Gauges</a></li>
-                <li className={getClass("HEADING")}><a onClick={() => setWidget("HEADING")}>Heading</a></li>
-            </>
+            <ul>
+                {registry.registered.map((x, i) => {
+                    return (
+                        <li key={i} className={getClass(x.type)}>
+                            <a onClick={() => setWidget(x.type)}>{x.name}</a>
+                        </li>
+                    )
+                })}
+            </ul>
         )
     }
 
@@ -485,10 +104,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                 </header>
                 <section className="modal-card-body">
                     <div className="tabs is-centered">
-                        <ul>
-                            <li className={getClass("VIEW")}><a onClick={() => setWidget("VIEW")}>View</a></li>
-                            {otherTabs()}
-                        </ul>
+                        <Tabs />
                     </div>
                     {wjsx}
                 </section>
@@ -525,6 +141,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
 
     const [showWidget, setShowWidget] = useState(false)
     const [darkMode, _setDarkMode] = useDarkMode()
+    const registry = useWidgets()
 
     const setConfig = (cfg: AdvancedConfig, i: number) => {
         let newConfig = { ...props.config }
@@ -548,10 +165,10 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
 
     }
 
-    const borderStyle = props.top 
+    const borderStyle = props.top
         ? darkMode
-            ? "3px solid lightgray"  
-            : "3px solid black" 
+            ? "3px solid lightgray"
+            : "3px solid black"
         : "1px solid gray"
 
     const style: React.CSSProperties = {
@@ -588,39 +205,29 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
 
     if (!elements?.length) {
 
-        switch (props.config.type) {
-            case ("view"):
-                return (
-                    <>
-                        {widget}
-                        <div style={style}>
-                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                <Button.Info onClick={() => {
-                                    setShowWidget(true)
-                                }} >Configure</Button.Info>
-                            </div>
+        if (props.config.type === "view") {
+            return (
+                <>
+                    {widget}
+                    <div style={style}>
+                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <Button.Info onClick={() => {
+                                setShowWidget(true)
+                            }} >Configure</Button.Info>
                         </div>
-                    </>
-                )
-            case "plot":
-                return <ImageElement src="dashicons/chart.svg" />
-            case "tephi":
-                return <ImageElement src="dashicons/tephi.svg" />
-            case "dashboard":
-                return <ImageElement src="dashicons/dashboard.svg" />
-            case "alarms":
-                return <ImageElement src="dashicons/alarm.svg" />
-            case "timers":
-                return <ImageElement src="dashicons/timer.svg" />
-            case "url":
-                return <ImageElement src="dashicons/link.svg" />
-            case "gauge":
-                return <ImageElement src="dashicons/gauge.svg" />
-            case "heading":
-                return <ImageElement src="dashicons/heading.svg" />
-
+                    </div>
+                </>
+            )
         }
+
+        const selectedWidget = registry.registered.find(
+            x => x.type.toLowerCase() === props.config.type.toLowerCase()
+        )
+
+        return <ImageElement src={selectedWidget?.icon || ""} /> //TODO fix this
+
     }
+
 
     return (
         <div style={style}>
@@ -666,15 +273,14 @@ const AdvancedViewConfig = () => {
 
     return (
         <>
-            <FieldInput placeholder="View Title" value={config.title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { dispatch(setAdvancedConfig({...config, title:e.target.value})) }} />
-
+            <FieldInput placeholder="View Title" value={config.title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { dispatch(setAdvancedConfig({ ...config, title: e.target.value })) }} />
 
             <_AdvancedViewConfig config={config} setConfig={(c: AdvancedConfig) => dispatch(setAdvancedConfig(c))} top={true} />
             <div className="is-flex is-justify-content-space-between mt-2">
                 <div>
                     {/* <Button.Success onClick={() => { }}>Save</Button.Success> */}
-                    <Button.Danger onClick={()=>{
-                        dispatch(setAdvancedConfig({...emptyConfig(), title: ""}))
+                    <Button.Danger onClick={() => {
+                        dispatch(setAdvancedConfig({ ...emptyConfig(), title: "" }))
                     }}>Reset</Button.Danger>
                 </div>
                 <div>
