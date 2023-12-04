@@ -359,9 +359,8 @@ const DashPanel = (props: {size: string} & DashPanelProps) => {
  * )
  */
 const Dashboard = (props: DashboardProps) => {
-
+    
     const availableParams = useGetParameters()
-    // const [data, setData] = useState({})
     const [maximized, setMaximized] = useState<string|null>(null)
 
     const [searchParams, _] = useSearchParams()
@@ -375,9 +374,9 @@ const Dashboard = (props: DashboardProps) => {
         limits = [...limits, ...props.limits]
     }
 
-    const parameters = props.parameters
+    const parameters = props.params
     const server = props.server
-    const size = props.size
+    const size = props.size || "large"
 
     const dataOptions: DashboardOptions = {
         params: parameters,
@@ -387,7 +386,7 @@ const Dashboard = (props: DashboardProps) => {
 
     const data = useDashboardData(dataOptions)
 
-    if (!availableParams) return null
+    if (!availableParams) return <></>
 
     let filteredParams = availableParams.filter(x => {
          return parameters.includes(x.ParameterName)
@@ -450,7 +449,7 @@ interface DashboardDispatcherProps {
  */
 const DashboardDispatcher = (props: DashboardDispatcherProps) => {
     const [searchParams, _] = useSearchParams();
-    const parameters = props.params || (() => {
+    const params = props.params || (() => {
         const params = (searchParams.get("params") || '').split(",")
         return params
     })()
@@ -460,7 +459,7 @@ const DashboardDispatcher = (props: DashboardDispatcherProps) => {
     const size = isCompact ? "small" : "large"
 
     return <Dashboard size={size} limits={limits} 
-                      parameters={parameters} server={server} 
+                      params={params} server={server} 
                       useURL={props.useURL || true} />
 }
 

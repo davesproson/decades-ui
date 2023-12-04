@@ -4,7 +4,7 @@ interface DashboardOptions {
 }
 
 interface DashboardProps {
-    parameters: Array<string>,
+    params: Array<string>,
     size: "large" | "small",
     useURL: boolean,
     limits?: {param: string, min: number, max: number}[],

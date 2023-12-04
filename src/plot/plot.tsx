@@ -18,7 +18,7 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
 
     const dash = props.parameters
         ? <Dashboard 
-            parameters={Array(...new Set([...props.parameters, ...plotHeaderDefaults]))}
+            params={Array(...new Set([...props.parameters, ...plotHeaderDefaults]))}
             useURL={false}
             size="small"
           />
