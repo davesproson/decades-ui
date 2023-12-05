@@ -9,6 +9,7 @@ import { TimerConfig } from '../../timers/timers.types';
 import { GaugePanel } from '../../gauge/gauge';
 import { HeadingIndicator } from '../../heading/heading';
 import { Dashboard } from '../../dashboard/dashboard';
+import { RollIndicator } from '../../roll/roll';
 
 import { useViewWidget } from './viewWidget';
 import { usePlotWidget } from './plotWidget';
@@ -19,6 +20,7 @@ import { useHeadingWidget } from './headingWidget';
 import { useMapWidget, MapView } from './mapWidget';
 import { useAlarmsWidget } from './alarmsWidget';
 import { useTimersWidget } from './timersWidget';
+import { useRollWidget } from './rollWidget';
 
 import { RegistryType, WidgetConfiguration, PluginType } from './widgets.types';
 
@@ -53,7 +55,8 @@ const Plugins: PluginType = {
     'alarms': AlarmList,
     'timers': (props: { initialTimers: Array<TimerConfig> }) => Timers(props),
     'gauge': (props: any) => GaugePanel({ ...props }),
-    'heading': HeadingIndicator
+    'heading': HeadingIndicator,
+    'roll': RollIndicator
 }
 
 
@@ -70,6 +73,7 @@ const useWidgets = () => {
     useMapWidget(registry)
     useAlarmsWidget(registry)
     useTimersWidget(registry)
+    useRollWidget(registry)
 
     return registry
 }
