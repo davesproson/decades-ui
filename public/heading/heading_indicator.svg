@@ -10,7 +10,7 @@
         }
 
         .darker {
-            fill: rgb(70, 70, 70);
+            /* fill: rgb(70, 70, 70); */
             stroke: rgb(70, 70, 70);
         }
 
@@ -37,8 +37,8 @@
             stroke-width: 3;
         }
     </style>
-    <ellipse class="thicker darker" style="fill: #0abbef;" cx="200" cy="200" rx="175" ry="175" />
-    <text x="200" y="105" text-anchor="middle" class="text darker" transform="rotate(0 200 200)">N</text>
+    <ellipse class="thicker darker" cx="200" cy="200" rx="175" ry="175" fill="none"/>
+    <text x="200" y="105" text-anchor="middle" class="text red" transform="rotate(0 200 200)">N</text>
     <text x="200" y="105" text-anchor="middle" class="text darker" transform="rotate(90 200 200)">E</text>
     <text x="200" y="105" text-anchor="middle" class="text darker" transform="rotate(180 200 200)">S</text>
     <text x="200" y="105" text-anchor="middle" class="text darker" transform="rotate(270 200 200)">W</text>
@@ -53,9 +53,9 @@
     <text x="200" y="85" text-anchor="middle" class="text smaller" transform="rotate(330 200 200)">33</text>
 
     <line x1="200" x2="200" y1="35" y2="70" class="tick red thicker" />
-    <line x1="200" x2="200" y1="35" y2="70" class="tick red thicker" transform="rotate(90 200 200)"/>
-    <line x1="200" x2="200" y1="35" y2="70" class="tick red thicker" transform="rotate(180 200 200)"/>
-    <line x1="200" x2="200" y1="35" y2="70" class="tick red thicker" transform="rotate(270 200 200)"/>
+    <line x1="200" x2="200" y1="35" y2="70" class="tick  thicker" transform="rotate(90 200 200)"/>
+    <line x1="200" x2="200" y1="35" y2="70" class="tick  thicker" transform="rotate(180 200 200)"/>
+    <line x1="200" x2="200" y1="35" y2="70" class="tick  thicker" transform="rotate(270 200 200)"/>
 
     <line x1="200" x2="200" y1="35" y2="60" class="tick" transform="rotate(30 200 200)"/>
     <line x1="200" x2="200" y1="35" y2="60" class="tick" transform="rotate(60 200 200)"/>

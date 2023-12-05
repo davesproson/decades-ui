@@ -13,8 +13,8 @@ const HeadingIndicatorGraphic = (props: HeadingIndicatorGraphicProps) => {
 
         return {
             position: "absolute",
-            top: 0,
-            left: Object.keys(props.widthOrHeight).includes("width") ? 0 : "25%",
+            // top: 0,
+            // left: Object.keys(props.widthOrHeight).includes("width") ? 0 : "25%",
             transform: `rotate(${rotation}deg)`,
             ...props.widthOrHeight
         }

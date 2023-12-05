@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
-    <polygon points="295,200 305,190 305,210" fill="gray" />
-    <polygon points="295,200 305,190 305,210" fill="gray" transform="rotate(180 200 200)"/>
+    <polygon points="340,200 350,190 350,210" fill="black" />
+    <polygon points="340,200 350,190 350,210" fill="black" transform="rotate(180 200 200)"/>
 </svg>

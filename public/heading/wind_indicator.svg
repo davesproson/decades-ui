@@ -2,8 +2,8 @@
     <style>
         .arrow {
             stroke-width: 3px;
-            stroke: #0F0;
-            fill: rgba(0, 255, 0, .5);
+            stroke: #0a0;
+            fill: rgba(0, 100, 0, .5);
         }
     </style>
     <path d="M190,5l20,0l0,20l10,0l-20,10l-20,-10l10,0l0,-20z" class="arrow"/>

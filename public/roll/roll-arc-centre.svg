@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
     <g>
-        <path d="M289.658,192.156A90,90,0,0,1,289.658,207.844" stroke="green" stroke-width="10" />
+        <path d="M329.505,188.670A130,130,0,0,1,329.505,211.330" stroke="#00aa00" stroke-width="20" />
     </g>
     <g transform="rotate(180 200 200)">
-        <path d="M289.658,192.156A90,90,0,0,1,289.658,207.844" stroke="green" stroke-width="10" />
+        <path d="M329.505,188.670A130,130,0,0,1,329.505,211.330" stroke="#00aa00" stroke-width="20" />
     </g>
 </svg>
