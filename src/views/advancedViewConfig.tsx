@@ -41,8 +41,11 @@ interface ConfigWidgetProps {
 
 const ConfigWidget = (props: ConfigWidgetProps) => {
 
+    const TABS_PER_PAGE = 4
+
     const modalClass = props.visible ? "modal is-active" : "modal"
     const [widget, setWidget] = useState("View")
+    const [tabPage, setTabPage] = useState(0)
 
     const registry = useWidgets()
 
@@ -56,7 +59,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
      * Get the class for the modal 
      */
     const getClass = (w: string): string => {
-        return widget === w ? "is-active" : ""
+        return widget === w ? "is-active strong" : ""
     }
 
     /**
@@ -76,19 +79,47 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
     const Tabs = () => {
         if (props.top) return (
             <ul>
-                <li className={getClass("View")}><a onClick={() => setWidget("View")}>View</a></li>
+                <li className={getClass("View")}>
+                    <a onClick={() => setWidget("View")}>View</a>
+                </li>
             </ul>
         )
 
+        const paginatedRegistry = registry.registered.slice(
+            tabPage * TABS_PER_PAGE, (tabPage + 1) * TABS_PER_PAGE
+        )
+
+        const MoreTab = () => {
+            const pageLimit = (TABS_PER_PAGE * (tabPage+1))
+
+            if (registry.registered.length <= pageLimit) return null
+            return (
+                <li>
+                    <a onClick={() => setTabPage(x=>x+1)}>More &gt;&gt;</a>
+                </li>
+            )
+        }
+
+        const BackTab = () => {
+            if (tabPage === 0) return null
+            return (
+                <li>
+                    <a onClick={() => setTabPage(x=>x-1)}>&lt;&lt;Back</a>
+                </li>
+            )
+        }
+
         return (
             <ul>
-                {registry.registered.map((x, i) => {
+                <BackTab />
+                {paginatedRegistry.map((x, i) => {
                     return (
                         <li key={i} className={getClass(x.type)}>
                             <a onClick={() => setWidget(x.type)}>{x.name}</a>
                         </li>
-                    )
-                })}
+                    )})
+                }
+                <MoreTab />
             </ul>
         )
     }
@@ -100,7 +131,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
             <div className="modal-card">
                 <header className="modal-card-head">
                     <p className="modal-card-title">Configure view area</p>
-                    <button className="delete" onClick={props.hide} aria-label="close"></button>
+                    <button className="delete" onClick={props.hide} aria-label="close" />
                 </header>
                 <section className="modal-card-body">
                     <div className="tabs is-centered">
