@@ -25,6 +25,7 @@ const GaugePanelDispatcher = lazy(() => import('./gauge/gauge'))
 const GaugeConfigurator = lazy(() => import('./gauge/gaugeConfig'))
 const HeadingIndicator = lazy(() => import('./heading/heading'))
 const RollIndicator = lazy(() => import('./roll/roll'))
+const PitchIndicator = lazy(() => import('./pitch/pitch'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useEffect } from 'react';
@@ -78,6 +79,7 @@ const DecadesVista = () => {
         <Route path="/gauge" element={<Suspense><GaugePanelDispatcher /></Suspense>} />
         <Route path="/heading" element={<Suspense><HeadingIndicator standalone={true}/></Suspense>} />
         <Route path="/roll" element={<Suspense><RollIndicator standalone={true}/></Suspense>} />
+        <Route path="/pitch" element={<Suspense><PitchIndicator standalone={true}/></Suspense>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Suspense>
