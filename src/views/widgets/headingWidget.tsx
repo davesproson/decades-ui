@@ -1,3 +1,4 @@
+import HeadingIndicator from "../../heading/heading"
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
 
 const ConfigHeadingArea = () => {
@@ -13,14 +14,15 @@ const useHeadingWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Heading",
         type: "heading",
-        widget: <ConfigHeadingArea />,
+        configComponent: <ConfigHeadingArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "heading",
             })
             props.hide()
         },
-        icon: 'dashicons/heading.svg'
+        icon: 'dashicons/heading.svg',
+        component: HeadingIndicator
     })
 }
 

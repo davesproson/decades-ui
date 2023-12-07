@@ -2,6 +2,8 @@ import React, { useImperativeHandle } from 'react'
 import { useSelector } from '../../redux/store'
 import { Tag } from '../../components/tags'
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './widgets.types'
+import { Dashboard } from '../../dashboard/dashboard'
+import { DashboardProps } from '../../dashboard/dashboard.types'
 
 
 type ConfigDashboardData = {
@@ -53,7 +55,7 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Dash",
         type: "dashboard",
-        widget: <ConfigDashboardArea ref={ref} />,
+        configComponent: <ConfigDashboardArea ref={ref} />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "dashboard",
@@ -62,7 +64,8 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             props.hide()
         },
-        icon: 'dashicons/dashboard.svg'
+        icon: 'dashicons/dashboard.svg',
+        component: (props: DashboardProps) => Dashboard({ ...props, useURL: false })
     })
 }
 

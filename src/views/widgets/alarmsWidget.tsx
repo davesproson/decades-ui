@@ -1,4 +1,5 @@
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
+import AlarmList from "../../alarms/alarm"
 
 const AlarmsConfigArea = () => {
     return (
@@ -12,14 +13,15 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Alarms",
         type: "alarms",
-        widget: <AlarmsConfigArea />,
+        configComponent: <AlarmsConfigArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "alarms",
             })
             props.hide()
         },
-        icon: 'dashicons/alarm.svg'
+        icon: 'dashicons/alarm.svg',
+        component: AlarmList 
     })
 }
 

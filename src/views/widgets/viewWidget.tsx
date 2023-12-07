@@ -1,7 +1,7 @@
 import { useState, useImperativeHandle, forwardRef, useRef, useEffect } from "react"
 import { GroupedField, FieldInput, Input } from "../../components/forms"
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
-import { Plugins } from "./register"
+import { useWidgets } from "./register"
 
 //...for data returned from the view config area
 type ConfigViewData = {
@@ -109,6 +109,8 @@ const _View = (props: ViewProps) => {
         document.title = props.title || 'DECADES View'
     }, [])
 
+    const register = useWidgets()
+
     const elements = props.elements
 
     const getRowColPercent = (i: 'rowPercent' | 'columnPercent'): string => {
@@ -131,11 +133,7 @@ const _View = (props: ViewProps) => {
         
         <div style={style}>
             {elements.map((element, i) => {
-                if(element.type == "view") {
-                    var Element:  React.JSXElementConstructor<any> = _View
-                } else {
-                    var Element = Plugins[element.type]
-                }
+                const Element = register.getWidget(element.type).component
                 return (
                     <div key={i} style={{display: "grid"}}>
                         <Element  {...element} />
@@ -153,7 +151,7 @@ const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "View",
         type: "view",
-        widget: <ConfigViewArea ref={ref} />,
+        configComponent: <ConfigViewArea ref={ref} />,
         save: (props: ConfigWidgetProps) => {
             const data = ref.current?.getData()
             if (data === undefined) { return }
@@ -164,7 +162,8 @@ const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.hide()
             props.split(data.rows, data.cols, data.rowPc, data.colPc)
         },
-        icon: ''
+        icon: '',
+        component: _View
     })
 }
 

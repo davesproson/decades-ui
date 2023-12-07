@@ -3,6 +3,9 @@ import { useImperativeHandle, forwardRef, useRef } from "react"
 import { useSelector } from "../../redux/store"
 import { getAxesArray } from "../../plot/plotUtils"
 import { Tag, BooleanTag } from "../../components/tags"
+import { PlotURLOptions } from "../../plot/plot.types"
+import { containerStyle } from "./utils"
+import PlotDispatcher from "../../plot/plot"
 
 type ConfigPlotData = {
     params: string[],
@@ -80,7 +83,7 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const plugin = {
         name: "Plot",
         type: "plot",
-        widget: <ConfigPlotArea ref={ref} />,
+        configComponent: <ConfigPlotArea ref={ref} />,
         save (props: ConfigWidgetProps) {
             props.setData({
                 type: "plot",
@@ -88,7 +91,8 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             props.hide()
         },
-        icon: 'dashicons/chart.svg'
+        icon: 'dashicons/chart.svg',
+        component: (props: PlotURLOptions) => PlotDispatcher({ ...props, containerStyle: containerStyle }),
     }
     registry.register(plugin)
 }

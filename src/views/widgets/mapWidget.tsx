@@ -21,7 +21,7 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Map",
         type: "map",
-        widget: <ConfigMapArea />,
+        configComponent: <ConfigMapArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "map",
@@ -31,7 +31,8 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             props.hide()
         },
-        icon: 'dashicons/globe.svg'
+        icon: 'dashicons/globe.svg',
+        component: MapView
     })
 }
 

@@ -1,3 +1,5 @@
+import Timers from "../../timers/timer"
+import { TimerConfig } from "../../timers/timers.types"
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
 
 const TimersConfigArea = () => {
@@ -12,14 +14,15 @@ const useTimersWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Timers",
         type: "timers",
-        widget: <TimersConfigArea />,
+        configComponent: <TimersConfigArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "timers",
             })
             props.hide()
         },
-        icon: 'dashicons/timer.svg'
+        icon: 'dashicons/timer.svg',
+        component: (props: { initialTimers: Array<TimerConfig> }) => Timers(props),
     })
 }
 

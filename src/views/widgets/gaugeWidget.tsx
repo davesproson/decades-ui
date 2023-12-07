@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle, useRef } from 'react'
 import { useSelector } from '../../redux/store'
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './widgets.types'
 import { GaugePanelProps } from '../../gauge/gauge.types'
+import { GaugePanel } from '../../gauge/gauge'
 
 const ConfigGaugeArea = forwardRef((_props, ref) => {
 
@@ -28,14 +29,15 @@ const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const widget = {
         name: "Gauge",
         type: "gauge",
-        widget: <ConfigGaugeArea ref={ref} />,
+        configComponent: <ConfigGaugeArea ref={ref} />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "gauge",
                 ...ref.current?.getData()
             })
         },
-        icon: 'dashicons/gauge.svg'
+        icon: 'dashicons/gauge.svg',
+        component: GaugePanel
     }
     registry.register(widget)
 }

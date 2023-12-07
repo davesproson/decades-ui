@@ -1,4 +1,8 @@
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
+import { containerStyle } from "./utils"
+import { TephigramOptions } from "../../tephigram/tephigram.types"
+import Tephigram from "../../tephigram/tephigram"
+
 
 /**
  * Add a tephigram to the advanced view. We currenly just use the 
@@ -18,14 +22,15 @@ const useTephiWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Tephigram",
         type: "tephi",
-        widget: <ConfigTephiArea />,
+        configComponent: <ConfigTephiArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "tephi",
             })
             props.hide()
         },
-        icon: 'dashicons/tephi.svg'
+        icon: 'dashicons/tephi.svg',
+        component: (props: TephigramOptions) => Tephigram({ ...props, containerStyle: containerStyle }),
     })
 }
 

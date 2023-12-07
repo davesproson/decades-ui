@@ -38,7 +38,6 @@ interface ConfigWidgetProps {
  * @component
  * 
  */
-
 const ConfigWidget = (props: ConfigWidgetProps) => {
 
     const TABS_PER_PAGE = 4
@@ -49,11 +48,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
 
     const registry = useWidgets()
 
-    const selectedWidget = registry.registered.find(
-        x => x.type.toLowerCase() === widget.toLowerCase()
-    )
-
-    let wjsx = selectedWidget?.widget
+    const selectedWidget = registry.getWidget(widget)
 
     /**
      * Get the class for the modal 
@@ -66,7 +61,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
      * Save the configuration
      */
     const saveAction = () => {
-        selectedWidget?.save(props)
+        selectedWidget.save(props)
     }
 
     /**
@@ -137,7 +132,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                     <div className="tabs is-centered">
                         <Tabs />
                     </div>
-                    {wjsx}
+                    {selectedWidget.configComponent}
                 </section>
                 <footer className="modal-card-foot">
 
@@ -251,11 +246,8 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
             )
         }
 
-        const selectedWidget = registry.registered.find(
-            x => x.type.toLowerCase() === props.config.type.toLowerCase()
-        )
-
-        return <ImageElement src={selectedWidget?.icon || ""} /> //TODO fix this
+        const selectedWidget = registry.getWidget(props.config.type)
+        return <ImageElement src={selectedWidget.icon} /> 
 
     }
 

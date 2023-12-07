@@ -14,14 +14,16 @@ export interface ConfigWidgetProps {
 export interface WidgetConfiguration {
     name: string,
     type: string,
-    widget: React.ReactElement,
+    configComponent: React.ReactElement,
     save: (props: ConfigWidgetProps) => void,
     icon: string,
+    component: React.JSXElementConstructor<any>
 }
 
-export type RegistryType<T extends {name: string}> = {
+export type RegistryType<T extends {type: string}> = {
     registered: T[],
     register: (widget: T) => void
+    getWidget: (type: string) => T
 }
 
 export interface PluginType  {

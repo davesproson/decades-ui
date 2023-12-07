@@ -1,3 +1,4 @@
+import PitchIndicator from "../../pitch/pitch"
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
 
 const ConfigArea = () => {
@@ -13,14 +14,15 @@ const usePitchWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Pitch",
         type: "pitch",
-        widget: <ConfigArea />,
+        configComponent: <ConfigArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "pitch",
             })
             props.hide()
         },
-        icon: 'dashicons/roll.svg'
+        icon: 'dashicons/roll.svg',
+        component: PitchIndicator
     })
 }
 

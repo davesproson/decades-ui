@@ -1,3 +1,4 @@
+import RollIndicator from "../../roll/roll"
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
 
 const ConfigRollArea = () => {
@@ -13,14 +14,15 @@ const useRollWidget = (registry: RegistryType<WidgetConfiguration>) => {
     registry.register({
         name: "Roll",
         type: "roll",
-        widget: <ConfigRollArea />,
+        configComponent: <ConfigRollArea />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "roll",
             })
             props.hide()
         },
-        icon: 'dashicons/roll.svg'
+        icon: 'dashicons/roll.svg',
+        component: RollIndicator
     })
 }
 
