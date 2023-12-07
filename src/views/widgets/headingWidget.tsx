@@ -19,7 +19,7 @@ const useHeadingWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.setData({
                 type: "heading",
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/heading.svg',
         component: HeadingIndicator

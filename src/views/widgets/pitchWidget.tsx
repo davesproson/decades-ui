@@ -19,7 +19,7 @@ const usePitchWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.setData({
                 type: "pitch",
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/roll.svg',
         component: PitchIndicator

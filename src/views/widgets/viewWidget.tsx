@@ -154,13 +154,13 @@ const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
         configComponent: <ConfigViewArea ref={ref} />,
         save: (props: ConfigWidgetProps) => {
             const data = ref.current?.getData()
-            if (data === undefined) { return }
+            if (data === undefined) { return false }
             if (!data.valid) {
                 console.error("Invalid view configuration")
-                return
+                return false
             }
-            props.hide()
             props.split(data.rows, data.cols, data.rowPc, data.colPc)
+            return true
         },
         icon: '',
         component: _View

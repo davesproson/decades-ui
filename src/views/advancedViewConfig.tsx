@@ -57,7 +57,7 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
      * Save the configuration
      */
     const saveAction = () => {
-        selectedWidget.save(props)
+        selectedWidget.save(props) && props.hide()
     }
 
     /**

@@ -62,7 +62,7 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
                 size: "large",
                 ...ref.current?.getData()
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/dashboard.svg',
         component: (props: DashboardProps) => Dashboard({ ...props, useURL: false })

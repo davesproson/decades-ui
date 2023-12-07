@@ -19,7 +19,7 @@ const useTimersWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.setData({
                 type: "timers",
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/timer.svg',
         component: (props: { initialTimers: Array<TimerConfig> }) => Timers(props),

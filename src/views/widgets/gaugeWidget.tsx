@@ -35,6 +35,7 @@ const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
                 type: "gauge",
                 ...ref.current?.getData()
             })
+            return true
         },
         icon: 'dashicons/gauge.svg',
         component: GaugePanel

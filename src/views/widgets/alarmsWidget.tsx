@@ -18,7 +18,7 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.setData({
                 type: "alarms",
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/alarm.svg',
         component: AlarmList 

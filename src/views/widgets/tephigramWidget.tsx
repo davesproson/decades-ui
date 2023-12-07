@@ -27,7 +27,7 @@ const useTephiWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.setData({
                 type: "tephi",
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/tephi.svg',
         component: (props: TephigramOptions) => Tephigram({ ...props, containerStyle: containerStyle }),

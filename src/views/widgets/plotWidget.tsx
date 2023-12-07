@@ -89,7 +89,7 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
                 type: "plot",
                 ...ref.current?.getData()
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/chart.svg',
         component: (props: PlotURLOptions) => PlotDispatcher({ ...props, containerStyle: containerStyle }),

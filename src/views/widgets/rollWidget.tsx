@@ -19,7 +19,7 @@ const useRollWidget = (registry: RegistryType<WidgetConfiguration>) => {
             props.setData({
                 type: "roll",
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/roll.svg',
         component: RollIndicator

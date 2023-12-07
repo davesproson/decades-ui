@@ -29,7 +29,7 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
                     ? "http://192.168.101.105/gluxe/position"
                     : "https://www.faam.ac.uk/gluxe/position"
             })
-            props.hide()
+            return true
         },
         icon: 'dashicons/globe.svg',
         component: MapView
