@@ -4,7 +4,7 @@ import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.
 const ConfigArea = () => {
     return (
         <div className="mt-2">
-            Add a heading indicator to the view. There are no options
+            Add a pitch indicator to the view. There are no options
             associtated with this widget.
         </div>
     )

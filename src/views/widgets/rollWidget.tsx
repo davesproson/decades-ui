@@ -4,7 +4,7 @@ import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.
 const ConfigRollArea = () => {
     return (
         <div className="mt-2">
-            Add a heading indicator to the view. There are no options
+            Add a roll indicator to the view. There are no options
             associtated with this widget.
         </div>
     )
