@@ -29,12 +29,12 @@ const ClockWidget = () => {
     }
 
     return (
-        <div style={{ position: "relative", top: 0, left: 0, right: 0, bottom: 0, fontSize: "10cqw" }}>
+        <div style={{ position: "relative", top: 0, left: 0, right: 0, bottom: 0, fontSize: "2vw" }}>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
                 <div>
                     {formatUTC(time)}
                 </div>
-                <div style={{ fontSize: "14px" }}>
+                <div style={{ fontSize: "1.2vw" }}>
                     {formatUTCDate(time)}
                 </div>
             </div>
