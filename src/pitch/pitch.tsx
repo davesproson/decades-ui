@@ -16,7 +16,7 @@ const PitchIndicatorSvgText = ({ pitch }: { pitch: number }) => {
     return (
         <div style={containerStyle}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%">
-                <text x="200" y="70" fill={color} textAnchor="middle" fontSize={"1.8em"}>{`${sign}${Math.abs(pitch).toFixed(1)}°`}</text>
+                <text x="200" y="70" fill={color} textAnchor="middle" fontSize={"1.8em"}>{`${sign}${pitch.toFixed(1)}°`}</text>
             </svg>
         </div>
     )
