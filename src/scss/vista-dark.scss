@@ -47,8 +47,28 @@ $grey-light: $grey-dark-temp;
 $grey-lightest: $grey-darker;
 
 
-
-
-
-
 @import "../../node_modules/bulma/bulma.sass";
+
+.is-dark > .panel-heading  {
+    background-color: $grey-lighter !important;
+    color: $grey-darker !important;
+}
+
+.is-dark > .message-body {
+    background-color: $grey-lighter !important;
+    color: $grey-darker !important;
+}
+
+.modal-background {
+    background-color: #333333cc !important;
+}
+
+button > div > a {
+    color: $black !important;
+    background-color: $grey-lighter !important;
+}
+
+button > div > a:hover {
+    color: $black !important;
+    background-color: $grey-light !important;
+}
