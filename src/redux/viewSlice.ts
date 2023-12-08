@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type ViewType = (
     "view" | "plot" | "tephi" | "dashboard" | "url" | "timers"
-    | "alarms" | "gauge" | "heading" 
+    | "alarms" | "gauge" | "heading" | "pitch" | "roll" | "map" | "clock"
 )
 type ViewConfigTabType = "BASIC" | "ADVANCED" | "JSON"
 

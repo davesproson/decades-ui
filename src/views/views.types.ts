@@ -55,6 +55,27 @@ interface URLViewConfig {
     url: string
 }
 
+interface MapViewConfig  {
+    type: "map",
+    url: string
+}
+
+interface ClockViewConfig {
+    type: "clock"
+}
+
+interface HeadingViewConfig {
+    type: "heading"
+}
+
+interface RollViewConfig {
+    type: "roll"
+}
+
+interface PitchViewConfig {
+    type: "pitch"
+}
+
 interface TephigramViewConfig {
     type: "tephi"
 }
@@ -87,6 +108,11 @@ type ViewConfig = (
     | PlotViewConfig
     | TimerViewConfig
     | TephigramViewConfig
+    | PitchViewConfig
+    | RollViewConfig
+    | HeadingViewConfig
+    | ClockViewConfig
+    | MapViewConfig
     | Version3ViewElement
 )
 
