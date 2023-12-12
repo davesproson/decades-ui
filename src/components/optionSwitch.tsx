@@ -8,6 +8,7 @@ interface OptionSwitchProps {
     value: string
     options: string[]
     toggle: () => { type: string }
+    useStore?: boolean
 }
 /**
  * A component that allows the user to select between two options.
@@ -16,7 +17,8 @@ interface OptionSwitchProps {
  * @param {Object} props - The props for the component
  * @param {string} props.value - The current value of the option
  * @param {Array} props.options - The options to choose between
- * @param {Function} props.toggle - The action to dispatch
+ * @param {Function} props.toggle - The action to dispatch or the function to call when the option is toggled
+ * @param {boolean} [props.useStore] - Whether to use the redux store
  * 
  * @component
  * @example
@@ -36,7 +38,9 @@ const OptionSwitch = (props: OptionSwitchProps) => {
     const LeftButton = props.value === props.options[0] ? OnButton : OffButton
     const RightButton = props.value === props.options[1] ? OnButton : OffButton
 
-    const toggle = () => dispatch(props.toggle())
+    const toggle = props?.useStore === false
+        ? props.toggle
+        : () => dispatch(props.toggle())
 
     return (
         <Field addons>

@@ -48,6 +48,7 @@ $grey-lightest: $grey-darker;
 
 
 @import "../../node_modules/bulma/bulma.sass";
+@import "vista-common.scss";
 
 .is-dark > .panel-heading  {
     background-color: $grey-lighter !important;

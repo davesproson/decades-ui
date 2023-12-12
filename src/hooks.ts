@@ -37,7 +37,7 @@ const useDispatchParameters = () => {
             .catch((e) => {
                 console.log("Error fetching parameter availability:", e)
             })
-    }, [])
+    }, [paramSet, setParams, setParamsDispatched, dispatchDone])
 }
 
 const useGetParameters = () => {
@@ -59,7 +59,7 @@ const useGetParameters = () => {
             .catch((e) => {
                 console.log("Error fetching parameters:", e)
             })
-    }, [setParams])
+    }, [setParams, paramSet])
 
     return params
 }
@@ -93,7 +93,7 @@ const useServers = () => {
 
 }
 
-const useDarkMode = () => {
+const useDarkMode = (): [boolean, (dm: boolean)=>void] => {
     const darkModeStorageName = "vistaDarkMode"
 
     const getDarkMode = () => {
