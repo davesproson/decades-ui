@@ -6,6 +6,7 @@ import { Loader } from "../components/loader"
 import { VistaError } from "../components/error"
 
 import { Parameter } from "../redux/parametersSlice"
+import { ParameterSearchInput } from "./filterBar"
 type ParameterLineProps =  Omit<Parameter, "axisId"|"raw"> 
 
 const ParameterLine = (props: ParameterLineProps) => {
@@ -80,6 +81,7 @@ const ParameterTable = () => {
 
     return (
         <div ref={ref} className="container mt-4 has-navbar-fixed-top">
+            <ParameterSearchInput filterText={filterText.filterText} />
             <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{"margin": "auto"}}>
                 <thead>
                     <tr>
