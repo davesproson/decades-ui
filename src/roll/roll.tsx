@@ -56,7 +56,6 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
     return (
         <>
             <img src="roll/roll-arc.svg" style={{...getStyle(0), filter: filter}}></img>
-            {/* <img src="roll/roll-arc-centre.svg" style={{...getStyle(0)}}></img> */}
             <CenterIndicator />
             <img src="roll/roll-indicator.svg" style={{...getStyle(props.roll), filter: indicatorFilter}}></img>
             <img src="gluxe-front.svg" style={{...getStyle(props.roll), filter: filter}}></img>
@@ -73,15 +72,17 @@ const RollIndicator = (props: RollIndicatorProps) => {
     const [ref, widthOrHeight] = useRollResizer()
 
     const containerStyle: React.CSSProperties = props.standalone
-        ? { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }
-        : { position: "relative" }
+        ? { position: "absolute", top: "50%", left: 0, width: "100%", height: "100%" }
+        : { position: "relative", top: "50%" }
 
 
     return (
         <div ref={ref} style={containerStyle}>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
             <RollIndicatorGraphic
                 roll={-data.roll}
                 widthOrHeight={widthOrHeight} />
+                </div>
         </div>
     )
 }

@@ -75,15 +75,17 @@ const PitchIndicator = (props: PitchIndicatorProps) => {
     const ref = useRef<HTMLDivElement>(null)
 
     const containerStyle: React.CSSProperties = props.standalone
-        ? { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }
-        : { position: "relative" }
+        ? { position: "absolute", top: "50%", width: "100%", height: "100%" }
+        : { position: "relative", top: "50%" }
 
 
     return (
         <div ref={ref} style={containerStyle}>
-            <PitchIndicatorGraphic
-                pitch={data.pitch}
-            />
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <PitchIndicatorGraphic
+                    pitch={data.pitch}
+                />
+            </div>
         </div>
     )
 }

@@ -13,8 +13,6 @@ const HeadingIndicatorGraphic = (props: HeadingIndicatorGraphicProps) => {
 
         return {
             position: "absolute",
-            // top: 0,
-            // left: Object.keys(props.widthOrHeight).includes("width") ? 0 : "25%",
             transform: `rotate(${rotation}deg)`,
             ...props.widthOrHeight
         }
@@ -38,17 +36,19 @@ const HeadingIndicator = (props: HeadingIndicatorProps) => {
     const [ref, widthOrHeight] = useHeadingResizer()
 
     const containerStyle: React.CSSProperties = props.standalone
-        ? { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }
-        : { position: "relative" }
+        ? { position: "absolute", top: "50%", width: "100%", height: "100%" }
+        : { position: "relative", top: "50%" }
 
 
     return (
         <div ref={ref} style={containerStyle}>
-            <HeadingIndicatorGraphic
-                wind={data.windAngle}
-                track={data.trackAngle}
-                heading={data.heading}
-                widthOrHeight={widthOrHeight} />
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <HeadingIndicatorGraphic
+                    wind={data.windAngle}
+                    track={data.trackAngle}
+                    heading={data.heading}
+                    widthOrHeight={widthOrHeight} />
+            </div>
         </div>
     )
 }
