@@ -2,8 +2,9 @@ import React, { useImperativeHandle } from 'react'
 import { useSelector } from '../../redux/store'
 import { Tag } from '../../components/tags'
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './widgets.types'
-import { Dashboard } from '../../dashboard/dashboard'
+// import { Dashboard } from '../../dashboard/dashboard'
 import { DashboardProps } from '../../dashboard/dashboard.types'
+import { Redash } from '../../redash/redash'
 
 
 type ConfigDashboardData = {
@@ -65,7 +66,8 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/dashboard.svg',
-        component: (props: DashboardProps) => Dashboard({ ...props, useURL: false })
+        // component: (props: DashboardProps) => Dashboard({ ...props, useURL: false })
+        component: (props: DashboardProps) => <Redash {...props} useURL={false} />
     })
 }
 
