@@ -1,0 +1,4 @@
+cd /opt/vista
+npm i
+npm run sass-watch &
+npm run dev -- --port 5173
