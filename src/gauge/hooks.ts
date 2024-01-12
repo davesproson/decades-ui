@@ -36,6 +36,7 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
         if(!configs) return
         const params = configs.map(config => config.parameter)
         const interval = setInterval(() => {
+            if(!(document.visibilityState === "visible")) return
             getData({params: params}).then(data => {
                 const _cf = configs.map(config => {
                     const value = data[config.parameter]

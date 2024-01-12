@@ -8,6 +8,7 @@ const useRollIndicator = () => {
     useEffect(() => {
         const params = ["gin_roll"]
         const interval = setInterval(() => {
+            if(!(document.visibilityState === "visible")) return
             getData({ params: params }).then(data => {
                 const r = data["gin_roll"].filter(x => x !== badData).reverse()[0]
                 if (r === undefined) return

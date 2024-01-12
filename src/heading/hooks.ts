@@ -10,6 +10,7 @@ const useHeadingIndicator = () => {
     useEffect(() => {
         const params = ["gin_heading", "gin_track_angle", "adc_wind_angle"]
         const interval = setInterval(() => {
+            if(!(document.visibilityState === "visible")) return
             getData({ params: params }).then(data => {
                 const h = data["gin_heading"].filter(x => x !== badData).reverse()[0]
                 const t = data["gin_track_angle"].filter(x => x !== badData).reverse()[0]

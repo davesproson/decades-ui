@@ -359,6 +359,14 @@ const startData = ({options, start, end, callback, ref, signal}: StartDataExtend
     }
 
     const callOpts = {options: options, callback: callback, ref: ref, signal: signal}
+    let newStart = start;
+
+    if(!(document.visibilityState === 'visible')) {
+        setTimeout(() => {
+            startData({...callOpts, start: newStart})
+        }, 1000) 
+        return
+    }
 
 
     /**
@@ -376,7 +384,6 @@ const startData = ({options, start, end, callback, ref, signal}: StartDataExtend
         return true
     }
 
-    let newStart = start;
 
     try {
         fetch(url)

@@ -154,6 +154,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
             
         if(plotIsOngoing(options)) {
             const interval = setInterval(() => {
+                if(!(document.visibilityState === "visible")) return
                 getData(options).then(data=>{
                     populateTephigram(n, data as TephigramData, ref)
                 })

@@ -8,6 +8,7 @@ const usePitchIndicator = () => {
     useEffect(() => {
         const params = ["gin_pitch"]
         const interval = setInterval(() => {
+            if(!(document.visibilityState === "visible")) return
             getData({ params: params }).then(data => {
                 const r = data["gin_pitch"].filter(x => x !== badData).reverse()[0]
                 if (r === undefined) return
