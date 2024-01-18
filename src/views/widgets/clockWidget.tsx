@@ -54,6 +54,7 @@ const useClockWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/clock.svg',
+        tooltip: 'Display the current (UTC) time',
         component: ClockWidget
     })
 }

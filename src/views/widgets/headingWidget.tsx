@@ -22,6 +22,7 @@ const useHeadingWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/heading.svg',
+        tooltip: 'Display an aircraft heading indicator',
         component: HeadingIndicator
     })
 }

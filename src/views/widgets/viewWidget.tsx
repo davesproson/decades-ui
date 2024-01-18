@@ -163,6 +163,7 @@ const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: '',
+        tooltip: 'Configure the view layout for this area',
         component: _View
     })
 }

@@ -38,6 +38,7 @@ const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/gauge.svg',
+        tooltip: 'Display one or more gauges - realtime parameter values',
         component: GaugePanel
     }
     registry.register(widget)

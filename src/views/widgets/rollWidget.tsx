@@ -22,6 +22,7 @@ const useRollWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/roll.svg',
+        tooltip: 'Display an aircraft roll indicator',
         component: RollIndicator
     })
 }
