@@ -3,9 +3,9 @@ import { getData } from "../plot/plotUtils"
 import { badData } from "../settings"
 
 const useHeadingIndicator = () => {
-    const [heading, setHeading] = useState(90)
-    const [trackAngle, setTrackAngle] = useState(95)
-    const [windAngle, setWindAngle] = useState(30)
+    const [heading, setHeading] = useState<number|undefined>(90)
+    const [trackAngle, setTrackAngle] = useState<number|undefined>(95)
+    const [windAngle, setWindAngle] = useState<number|undefined>(30)
 
     useEffect(() => {
         const params = ["gin_heading", "gin_track_angle", "adc_wind_angle"]
@@ -15,7 +15,6 @@ const useHeadingIndicator = () => {
                 const h = data["gin_heading"].filter(x => x !== badData).reverse()[0]
                 const t = data["gin_track_angle"].filter(x => x !== badData).reverse()[0]
                 const w = data["adc_wind_angle"].filter(x => x !== badData).reverse()[0]
-                if (h === undefined || t === undefined || w === undefined) return
                 setHeading(h)
                 setTrackAngle(t)
                 setWindAngle(w)
