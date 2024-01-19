@@ -3,7 +3,7 @@ import { getData } from "../plot/plotUtils"
 import { badData } from "../settings"
 
 const usePitchIndicator = () => {
-    const [pitch, setPitch] = useState(0)
+    const [pitch, setPitch] = useState<number|undefined>(0)
 
     useEffect(() => {
         const params = ["gin_pitch"]
@@ -11,7 +11,6 @@ const usePitchIndicator = () => {
             if(!(document.visibilityState === "visible")) return
             getData({ params: params }).then(data => {
                 const r = data["gin_pitch"].filter(x => x !== badData).reverse()[0]
-                if (r === undefined) return
                 setPitch(r)
             })
         }, 1000)

@@ -4,19 +4,27 @@ import { useDarkMode } from "../hooks"
 
 import { usePitchIndicator } from "./hooks"
 
-const PitchIndicatorSvgText = ({ pitch }: { pitch: number }) => {
+const PitchIndicatorSvgText = ({ pitch }: { pitch: number | undefined }) => {
     const [darkMode, _setDarkMode] = useDarkMode()
 
     const containerStyle: React.CSSProperties = {
         position: "absolute",
         width: "100%"
     }
-    const color = darkMode ? "white" : "black"
-    const sign = pitch < 0 ? "" : "+"
+    const color = pitch === undefined
+        ? "red"
+        : darkMode ? "white" : "black"
+
+    const pitchText = pitch === undefined
+        ? "No Data"
+        : `${pitch < 0 ? "" : "+"}${pitch.toFixed(1)}°`
+
     return (
         <div style={containerStyle}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%">
-                <text x="200" y="70" fill={color} textAnchor="middle" fontSize={"1.8em"}>{`${sign}${pitch.toFixed(1)}°`}</text>
+                <text x="200" y="70" fill={color} textAnchor="middle" fontSize={"1.8em"}>
+                    {pitchText}
+                </text>
             </svg>
         </div>
     )
@@ -39,7 +47,7 @@ const ReferenceLine = () => {
 }
 
 interface PitchIndicatorGraphicProps {
-    pitch: number,
+    pitch: number | undefined,
 }
 const PitchIndicatorGraphic = (props: PitchIndicatorGraphicProps) => {
 
@@ -58,11 +66,18 @@ const PitchIndicatorGraphic = (props: PitchIndicatorGraphicProps) => {
 
     const filter = darkMode ? dmFilter : ""
 
+    const ProfileImage = () => {
+        const castPitch = props.pitch === undefined ? 0 : props.pitch
+        return (
+            <img src="gluxe-side.svg" style={{ ...getStyle(castPitch), filter: filter }}></img>
+        )
+    }
+
     return (
         <>
             <PitchIndicatorSvgText pitch={props.pitch} />
             <ReferenceLine />
-            <img src="gluxe-side.svg" style={{ ...getStyle(props.pitch), filter: filter }}></img>
+            <ProfileImage />
         </>
     )
 }

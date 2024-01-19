@@ -3,25 +3,30 @@ import { useDarkMode } from "../hooks"
 
 import { useRollIndicator, useRollResizer } from "./hooks"
 
-const RollIndicatorSvgText = ({roll, widthOrHeight}: {roll: number, widthOrHeight: {[key: string]: number}}) => {
+const RollIndicatorSvgText = ({ roll, widthOrHeight }: { roll: number | undefined, widthOrHeight: { [key: string]: number } }) => {
     const [darkMode, _setDarkMode] = useDarkMode()
 
     const containerStyle: React.CSSProperties = {
         position: "absolute",
         ...widthOrHeight
     }
-    const color = darkMode ? "white" : "black"
+    const color = roll === undefined
+        ? "red"
+        : darkMode ? "white" : "black"
+
+    const rollText = roll === undefined ? "No Data" : Math.abs(Math.floor(roll)).toString()
+
     return (
         <div style={containerStyle}>
-            <svg  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 400 400"  {...widthOrHeight}>
-                <text x="200" y="320" fill={color} textAnchor="middle" fontSize={"3em"}>{Math.abs(Math.floor(roll))}</text>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"  {...widthOrHeight}>
+                <text x="200" y="320" fill={color} textAnchor="middle" fontSize={"3em"}>{rollText}</text>
             </svg>
         </div>
     )
 }
 
 interface RollIndicatorGraphicProps {
-    roll: number,
+    roll: number | undefined,
     widthOrHeight: { [key: string]: number }
 }
 const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
@@ -39,26 +44,52 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
 
     const dmFilter = "invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%)"
     const greenFilter = "invert(36%) sepia(96%) saturate(2933%) hue-rotate(101deg) brightness(104%) contrast(102%)"
-    
-    const filter = darkMode ? dmFilter : ""
-    const indicatorFilter = darkMode
-        ? Math.abs(props.roll) < 5
-            ? greenFilter
-            : dmFilter
-        : Math.abs(props.roll) < 5
-            ? greenFilter
-            : "none"
 
-    const CenterIndicator = () => Math.abs(props.roll) < 5
-        ? <img src="roll/roll-arc-centre.svg" style={{...getStyle(0)}}></img>
-        : <></>
+    const filter = darkMode ? dmFilter : ""
+
+    const indicatorFilter = () => {
+        if (props.roll === undefined) return "none"
+
+        return darkMode
+            ? Math.abs(props.roll) < 5
+                ? greenFilter
+                : dmFilter
+            : Math.abs(props.roll) < 5
+                ? greenFilter
+                : "none"
+    }
+
+    const CenterIndicator = () => {
+        if (props.roll === undefined) return <></>
+        return Math.abs(props.roll) < 5
+            ? <img src="roll/roll-arc-centre.svg" style={{ ...getStyle(0) }}></img>
+            : <></>
+    }
+
+    const RollArc = () => {
+        if (props.roll === undefined) return <></>
+        return <img src="roll/roll-arc.svg" style={{ ...getStyle(0), filter: filter }}></img>
+    }
+
+    const RollIndicator = () => {
+        if (props.roll === undefined) return <></>
+        return <img src="roll/roll-indicator.svg" style={{ ...getStyle(props.roll), filter: indicatorFilter() }}></img>
+    }
+
+    const GluxeImage = () => {
+        let r = 0
+        if (props.roll !== undefined) {
+            r = props.roll
+        }
+        return <img src="gluxe-front.svg" style={{ ...getStyle(r), filter: filter }}></img>
+    }
 
     return (
         <>
-            <img src="roll/roll-arc.svg" style={{...getStyle(0), filter: filter}}></img>
+            <RollArc />
             <CenterIndicator />
-            <img src="roll/roll-indicator.svg" style={{...getStyle(props.roll), filter: indicatorFilter}}></img>
-            <img src="gluxe-front.svg" style={{...getStyle(props.roll), filter: filter}}></img>
+            <RollIndicator />
+            <GluxeImage />
             <RollIndicatorSvgText roll={props.roll} widthOrHeight={props.widthOrHeight} />
         </>
     )
@@ -76,13 +107,18 @@ const RollIndicator = (props: RollIndicatorProps) => {
         : { position: "relative", top: "50%" }
 
 
+    const castRoll = (roll: number | undefined): number | undefined => {
+        if (roll === undefined) return undefined
+        return -roll
+    }
+
     return (
         <div ref={ref} style={containerStyle}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
-            <RollIndicatorGraphic
-                roll={-data.roll}
-                widthOrHeight={widthOrHeight} />
-                </div>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <RollIndicatorGraphic
+                    roll={castRoll(data.roll)}
+                    widthOrHeight={widthOrHeight} />
+            </div>
         </div>
     )
 }

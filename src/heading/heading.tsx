@@ -34,7 +34,7 @@ const HeadingIndicatorGraphic = (props: HeadingIndicatorGraphicProps) => {
         ? <span style={
             {
                 position: "absolute",
-                fontSize: "5vmin",
+                fontSize: "2vmin",
                 fontWeight: "bold",
                 transform: `translate(0, -50%)`,
                 color: "red"
