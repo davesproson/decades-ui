@@ -66,7 +66,7 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/dashboard.svg',
-        // component: (props: DashboardProps) => Dashboard({ ...props, useURL: false })
+        tooltip: 'Display a dashboard - realtime parameter values',
         component: (props: DashboardProps) => <Redash {...props} useURL={false} />
     })
 }

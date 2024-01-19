@@ -21,6 +21,7 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/alarm.svg',
+        tooltip: 'Be alerted when data are out of spec',
         component: AlarmList 
     })
 }

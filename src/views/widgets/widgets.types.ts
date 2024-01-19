@@ -17,6 +17,7 @@ export interface WidgetConfiguration {
     configComponent: React.ReactElement,
     save: (props: ConfigWidgetProps) => boolean,
     icon: string,
+    tooltip: string,
     component: React.JSXElementConstructor<any>
 }
 

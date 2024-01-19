@@ -32,6 +32,7 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/globe.svg',
+        tooltip: 'Display a map of the aircraft position',
         component: MapView
     })
 }

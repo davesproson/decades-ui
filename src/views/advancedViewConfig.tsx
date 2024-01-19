@@ -10,8 +10,10 @@ import { FieldInput } from '../components/forms';
 import { Button } from '../components/buttons';
 import { useDarkMode } from '../hooks';
 import { AdvancedConfig } from '../redux/viewSlice';
+import { VistaTooltip as Tooltip } from '../components/tooltip';
 
 import { useWidgets } from "./widgets/register"
+import { FlexCenter } from '../components/layout';
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -92,7 +94,13 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
             if (registry.registered.length <= pageLimit) return null
             return (
                 <li>
-                    <a onClick={() => setTabPage(x => x + 1)}>More &gt;&gt;</a>
+                    <Tooltip id="more-tooltip" />
+                    <a data-tooltip-id="more-tooltip"
+                        data-tooltip-content="More widgets"
+                        onClick={() => setTabPage(x => x + 1)}
+                        style={{textDecoration: "underline"}}>
+                        More &gt;&gt;
+                    </a>
                 </li>
             )
         }
@@ -103,7 +111,13 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
             if (tabPage === 0) return null
             return (
                 <li>
-                    <a onClick={() => setTabPage(x => x - 1)}>&lt;&lt;Back</a>
+                    <Tooltip id="back-tooltip" />
+                    <a data-tooltip-id="back-tooltip"
+                        data-tooltip-content="More widgets"
+                        onClick={() => setTabPage(x => x - 1)}
+                        style={{textDecoration: "underline"}}>
+                        &lt;&lt;More
+                    </a>
                 </li>
             )
         }
@@ -115,7 +129,12 @@ const ConfigWidget = (props: ConfigWidgetProps) => {
                 {paginatedRegistry.map((view, i) => {
                     return (
                         <li key={i} className={getClass(view.type)}>
-                            <a onClick={() => setWidget(view.type)}>{view.name}</a>
+                            <Tooltip id={`${view.type}-${view.name}-tooltip`} />
+                            <a onClick={() => setWidget(view.type)}
+                                data-tooltip-id={`${view.type}-${view.name}-tooltip`}
+                                data-tooltip-content={view.tooltip}>
+                                {view.name}
+                            </a>
                         </li>
                     )
                 })
@@ -167,11 +186,11 @@ interface ViewContentProps {
 const ViewContent = (props: ViewContentProps) => {
     return (
         <div style={props.style}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter>
                 <Button.Info onClick={props.showWidget}>
                     Configure
                 </Button.Info>
-            </div>
+            </FlexCenter>
         </div>
     )
 }
@@ -286,9 +305,9 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
      */
     const ImageElement = (props: { src: string }) => {
         return (
-            <div style={{ outline: borderStyle, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter extraStyle={{outline: borderStyle}}>
                 <img onClick={resetToView} src={props.src} alt="component" style={{ height: "64px", width: "64px", filter: dmFilter }} />
-            </div>
+            </FlexCenter>
         )
     }
 
@@ -373,14 +392,14 @@ const AdvancedViewConfig = () => {
 
     return (
         <>
-            <FieldInput 
+            <FieldInput
                 placeholder="View Title"
                 value={config.title}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     dispatch(setAdvancedConfig({ ...config, title: e.target.value }))
-                     }} />
+                }} />
 
-            <_AdvancedViewConfig 
+            <_AdvancedViewConfig
                 config={config}
                 setConfig={(c: AdvancedConfig) => dispatch(setAdvancedConfig(c))}
                 top={true} />

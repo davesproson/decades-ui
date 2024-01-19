@@ -92,6 +92,7 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/chart.svg',
+        tooltip: 'Display a timeseries plot',
         component: (props: PlotURLOptions) => PlotDispatcher({ ...props, containerStyle: containerStyle }),
     }
     registry.register(plugin)

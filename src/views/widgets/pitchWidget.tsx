@@ -22,6 +22,7 @@ const usePitchWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/roll.svg',
+        tooltip: 'Display an aircraft pitch indicator',
         component: PitchIndicator
     })
 }

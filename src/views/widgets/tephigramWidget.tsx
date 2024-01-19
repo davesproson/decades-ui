@@ -30,6 +30,7 @@ const useTephiWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/tephi.svg',
+        tooltip: 'Display a tephigram',
         component: (props: TephigramOptions) => Tephigram({ ...props, containerStyle: containerStyle }),
     })
 }

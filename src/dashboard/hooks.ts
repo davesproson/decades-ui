@@ -23,6 +23,7 @@ const useDashboardData = (dataOptions: DashboardOptions) => {
                             .catch(() => setData({'utc_time': []}))
                             
         const interval = setInterval(() => {
+            if(!(document.visibilityState === "visible")) return
             getData(dataOptions).then(data => setData(data))
                                 .catch(() => setData({'utc_time': []}))
         }, 1000)

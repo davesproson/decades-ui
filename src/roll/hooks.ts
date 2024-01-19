@@ -3,14 +3,14 @@ import { getData } from "../plot/plotUtils"
 import { badData } from "../settings"
 
 const useRollIndicator = () => {
-    const [roll, setRoll] = useState(0)
+    const [roll, setRoll] = useState<number|undefined>(0)
 
     useEffect(() => {
         const params = ["gin_roll"]
         const interval = setInterval(() => {
+            if(!(document.visibilityState === "visible")) return
             getData({ params: params }).then(data => {
                 const r = data["gin_roll"].filter(x => x !== badData).reverse()[0]
-                if (r === undefined) return
                 setRoll(r)
             })
         }, 1000)

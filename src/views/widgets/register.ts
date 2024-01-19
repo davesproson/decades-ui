@@ -9,9 +9,9 @@ import { useAlarmsWidget } from './alarmsWidget';
 import { useTimersWidget } from './timersWidget';
 import { useRollWidget } from './rollWidget';
 import { usePitchWidget } from './pitchWidget';
+import { useClockWidget } from './clockWidget';
 
 import { RegistryType, WidgetConfiguration } from './widgets.types';
-import { useClockWidget } from './clockWidget';
 
 /**
  * A utility class for registering widgets

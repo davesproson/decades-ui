@@ -22,6 +22,7 @@ const useTimersWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return true
         },
         icon: 'dashicons/timer.svg',
+        tooltip: 'Display a countdown timer or stopwatch',
         component: (props: { initialTimers: Array<TimerConfig> }) => Timers(props),
     })
 }

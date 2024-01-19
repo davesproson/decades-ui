@@ -5,7 +5,7 @@ import { useDashboardData } from "../dashboard/hooks";
 import { DashboardOptions } from "../dashboard/dashboard.types";
 import { DecadesParameter } from "../redux/parametersSlice";
 import { badData } from "../settings";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface DashHeaderProps {
     title: string,
@@ -16,7 +16,7 @@ const DashHeader = (props: DashHeaderProps) => {
     if(props.inAlarm) alarmClass = "has-background-danger-dark"
 
     const headerStyle: React.CSSProperties = {
-        fontSize: "1.8vh",
+        fontSize: "1.5vmin",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -45,7 +45,7 @@ const DashDisplay = (props: DashDisplayProps) => {
         : `${props.value?.toFixed(2)} ${props.units}`
 
     return (
-        <div className={alarmClass} style={{ fontSize: "4vh", display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1 }}>
+        <div className={alarmClass} style={{ padding: "5px", fontSize: "3vmin", display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1 }}>
             {text}
         </div>
     )
@@ -97,9 +97,9 @@ const Redash = (props: RedashProps) => {
     const [searchParams, _] = useSearchParams()
     const [singleColumn, setSingleColumn] = useState(false)
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if(ref.current) {
-            if(ref.current.clientWidth < ref.current.clientHeight) {
+            if(ref.current.clientWidth * 1.8 < ref.current.clientHeight) {
                 setSingleColumn(true)
             }
         }
@@ -154,10 +154,12 @@ const Redash = (props: RedashProps) => {
 
     const style = {
         display: "grid",
+        // gridAutoFlow: "column"
         gridTemplateColumns: `repeat(${nCols}, 1fr)`,
         gridTemplateRows: `repeat(${nRows}, 1fr)`,
         width: "100%",
         height: "100%",
+        overflow: "hidden"
     }
 
     

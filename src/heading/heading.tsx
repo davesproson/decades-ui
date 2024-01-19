@@ -1,11 +1,12 @@
 import "../../assets/css/no-scroll.css"
+import { FlexCenter } from "../components/layout"
 
 import { useHeadingIndicator, useHeadingResizer } from "./hooks"
 
 interface HeadingIndicatorGraphicProps {
-    heading: number,
-    track: number,
-    wind: number,
+    heading: number | undefined,
+    track: number | undefined,
+    wind: number | undefined,
     widthOrHeight: { [key: string]: number }
 }
 const HeadingIndicatorGraphic = (props: HeadingIndicatorGraphicProps) => {
@@ -18,12 +19,37 @@ const HeadingIndicatorGraphic = (props: HeadingIndicatorGraphicProps) => {
         }
     }
 
+    const headingIndicator = props.heading === undefined 
+        ? null
+        : <img src="heading/heading_indicator.svg" style={getStyle(-props.heading)}></img>
+
+    const trackIndicator = (props.track === undefined || props.heading === undefined)
+        ? null
+        : <img src="heading/track_indicator.svg" style={getStyle(props.track - props.heading)}></img>
+
+    const windIndicator = (props.wind === undefined || props.heading === undefined)
+        ? null
+        : <img src="heading/wind_indicator.svg" style={getStyle(props.wind - props.heading)}></img>
+
+    const noDataIndicator = (props.heading === undefined && props.track === undefined && props.wind === undefined)
+        ? <span style={
+            {
+                position: "absolute",
+                fontSize: "2vmin",
+                fontWeight: "bold",
+                transform: `translate(0, -50%)`,
+                color: "red"
+            }
+        }>No Data</span>
+        : null
+
     return (
         <>
-            <img src="heading/heading_indicator.svg" style={getStyle(-props.heading)}></img>
+            {headingIndicator}
             <img src="heading/aircraft.svg" style={getStyle(0)}></img>
-            <img src="heading/track_indicator.svg" style={getStyle(props.track - props.heading)}></img>
-            <img src="heading/wind_indicator.svg" style={getStyle(props.wind - props.heading)}></img>
+            {noDataIndicator}
+            {trackIndicator}
+            {windIndicator}
         </>
     )
 }
@@ -42,13 +68,13 @@ const HeadingIndicator = (props: HeadingIndicatorProps) => {
 
     return (
         <div ref={ref} style={containerStyle}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter>
                 <HeadingIndicatorGraphic
                     wind={data.windAngle}
                     track={data.trackAngle}
                     heading={data.heading}
                     widthOrHeight={widthOrHeight} />
-            </div>
+            </FlexCenter>
         </div>
     )
 }
