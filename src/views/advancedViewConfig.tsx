@@ -13,6 +13,7 @@ import { AdvancedConfig } from '../redux/viewSlice';
 import { VistaTooltip as Tooltip } from '../components/tooltip';
 
 import { useWidgets } from "./widgets/register"
+import { FlexCenter } from '../components/layout';
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -185,11 +186,11 @@ interface ViewContentProps {
 const ViewContent = (props: ViewContentProps) => {
     return (
         <div style={props.style}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter>
                 <Button.Info onClick={props.showWidget}>
                     Configure
                 </Button.Info>
-            </div>
+            </FlexCenter>
         </div>
     )
 }
@@ -304,9 +305,9 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
      */
     const ImageElement = (props: { src: string }) => {
         return (
-            <div style={{ outline: borderStyle, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter extraStyle={{outline: borderStyle}}>
                 <img onClick={resetToView} src={props.src} alt="component" style={{ height: "64px", width: "64px", filter: dmFilter }} />
-            </div>
+            </FlexCenter>
         )
     }
 

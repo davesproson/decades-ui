@@ -1,4 +1,5 @@
 import "../../assets/css/no-scroll.css"
+import { FlexCenter } from "../components/layout"
 
 import { useHeadingIndicator, useHeadingResizer } from "./hooks"
 
@@ -67,13 +68,13 @@ const HeadingIndicator = (props: HeadingIndicatorProps) => {
 
     return (
         <div ref={ref} style={containerStyle}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter>
                 <HeadingIndicatorGraphic
                     wind={data.windAngle}
                     track={data.trackAngle}
                     heading={data.heading}
                     widthOrHeight={widthOrHeight} />
-            </div>
+            </FlexCenter>
         </div>
     )
 }

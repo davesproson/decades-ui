@@ -1,4 +1,5 @@
 import "../../assets/css/no-scroll.css"
+import { FlexCenter } from "../components/layout"
 import { useDarkMode } from "../hooks"
 
 import { useRollIndicator, useRollResizer } from "./hooks"
@@ -114,11 +115,11 @@ const RollIndicator = (props: RollIndicatorProps) => {
 
     return (
         <div ref={ref} style={containerStyle}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <FlexCenter>
                 <RollIndicatorGraphic
                     roll={castRoll(data.roll)}
                     widthOrHeight={widthOrHeight} />
-            </div>
+            </FlexCenter>
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import { FlexCenter } from "../../components/layout"
 import { RegistryType, WidgetConfiguration, ConfigWidgetProps } from "./widgets.types"
 import { useEffect, useState } from "react"
 
@@ -30,14 +31,14 @@ const ClockWidget = () => {
 
     return (
         <div style={{ position: "relative", top: 0, left: 0, right: 0, bottom: 0, fontSize: "2vw" }}>
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
+            <FlexCenter extraStyle={{ flexDirection: "column", height: "100%"}}>
                 <div>
                     {formatUTC(time)}
                 </div>
                 <div style={{ fontSize: "1.2vw" }}>
                     {formatUTCDate(time)}
                 </div>
-            </div>
+            </FlexCenter>
         </div>
     )
 }

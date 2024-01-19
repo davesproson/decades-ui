@@ -1,7 +1,7 @@
 import { useRef } from "react"
 import "../../assets/css/no-scroll.css"
 import { useDarkMode } from "../hooks"
-
+import { FlexCenter } from "../components/layout"
 import { usePitchIndicator } from "./hooks"
 
 const PitchIndicatorSvgText = ({ pitch }: { pitch: number | undefined }) => {
@@ -96,11 +96,9 @@ const PitchIndicator = (props: PitchIndicatorProps) => {
 
     return (
         <div ref={ref} style={containerStyle}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <PitchIndicatorGraphic
-                    pitch={data.pitch}
-                />
-            </div>
+            <FlexCenter>
+                <PitchIndicatorGraphic pitch={data.pitch} />
+            </FlexCenter>
         </div>
     )
 }
