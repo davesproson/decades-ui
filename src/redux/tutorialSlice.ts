@@ -22,9 +22,12 @@ export const tutorialSlice = createSlice({
             }
         },
         setShowTutorial: (state, action: PayloadAction<boolean>) => {
+            const storageKey = 'vistaTutorialSeen'
             state.show = action.payload;
             if(!action.payload) {
-                window.sessionStorage.setItem('showTutorial', 'false');
+                window.sessionStorage.setItem(storageKey, 'true');
+            } else {
+                window.sessionStorage.removeItem(storageKey);
             }
         }
 	},
