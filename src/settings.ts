@@ -1,4 +1,23 @@
-export const deployment = 'dev'
+const booleanEnv = (key: string, defaultValue: boolean) => {
+    if (import.meta.env[key] === undefined) {
+        return defaultValue
+    }
+    return import.meta.env[key] === "true"
+}
+
+const numberEnv = (key: string, defaultValue: number) => {
+    if (import.meta.env[key] === undefined) {
+        return defaultValue
+    }
+
+    try {
+        return parseInt(import.meta.env[key])
+    } catch {
+        return defaultValue
+    }
+}
+
+export const deployment = import.meta.env.VITE_DEPLOYMENT_MODE || "dev"
 
 export const serverPrefix = ""
 export const serverProtocol = {
@@ -8,15 +27,11 @@ export const serverProtocol = {
 }[deployment]
 
 export const wsProtocol = serverProtocol === "https" ? "wss" : "ws"
-export const useWebSocketData = false
+export const useWebSocketData = booleanEnv("VITE_USE_WEBSOCKET_DATA", false)
 
-export const base = {
-    "demo": "/decades-demo/",
-    "dev": "/decades-vista/",
-    "prod": "/decades-vista/"
-}[deployment]
+export const base = import.meta.env.VITE_BASE_URL || "/decades-vista/"
 
-export const badData = -999.99
+export const badData = numberEnv("VITE_BAD_DATA", -999.99)
 
 export const apiBase = {
     "demo": "/live",
@@ -33,7 +48,7 @@ export const apiEndpoints = {
     'flightsummary': `${apiBase}/flightsummary/get`,
 }
 
-export const enableTutorial = true
+export const enableTutorial = booleanEnv("VITE_ENABLE_TUTORIAL", true)
 
 type TransformType<T> = {
     [key: string]: (data: T) => T
