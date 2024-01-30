@@ -11,7 +11,7 @@ const numberEnv = (key: string, defaultValue: number) => {
     }
 
     try {
-        return parseInt(import.meta.env[key])
+        return parseFloat(import.meta.env[key])
     } catch {
         return defaultValue
     }
