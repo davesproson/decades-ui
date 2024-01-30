@@ -9,7 +9,7 @@ const AddressBar = () => {
     return (
         <div className="field has-addons">
             <div className='control is-flex-grow-1'>
-                <input className="input" type="text" value={address?.toString()} readOnly />
+                <input className="input" type="text" value={address?.toString() || ""} readOnly />
             </div>
             <div className='control'>
                 <Button.Info onClick={() => {
