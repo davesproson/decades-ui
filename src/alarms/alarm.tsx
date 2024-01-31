@@ -232,14 +232,7 @@ const AlarmList = (props: AlarmListProps) => {
 
     const [alarms, setAlarms] = useState(props.alarms)
     const [removeAlarm, alarmParams] = useAlarmUrl(setAlarms, props)
-    const [flashActive, setFlashActive] = useState<boolean>(false)
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setFlashActive(x => !x)
-        }, 600)
-        return () => clearInterval(interval)
-    }, [])
+    
     
     if (!alarms?.length) {
         if (props.alarms) {
@@ -258,7 +251,7 @@ const AlarmList = (props: AlarmListProps) => {
 
     return (
         <div className="container mt-2">
-            {alarms.map(a => <Alarm key={a.id} {...a} {...alarmParams} flashActive={flashActive}
+            {alarms.map(a => <Alarm key={a.id} {...a} {...alarmParams}
                                             remove={()=>tryToRemove(a.id)} />)}
         </div>
     )
@@ -270,12 +263,20 @@ const Alarm = (props: AlarmProps) => {
 
     const passing = useAlarm(props)
     const [showRule, setShowRule] = useState<boolean>(false)
+    const [flashActive, setFlashActive] = useState<boolean>(false)
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFlashActive(x => !x)
+        }, 600)
+        return () => clearInterval(interval)
+    }, [])
 
     const messageClass = passing
         ? "is-success"
         : passing === undefined
             ? "is-secondary"
-            : props.flashActive
+            : flashActive
                 ? props.disableFlash
                     ? "is-danger"
                     : "has-background-danger"

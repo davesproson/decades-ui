@@ -9,7 +9,6 @@ interface AlarmProps {
     display?: string,
     disableFlash?: boolean,
     remove?: () => void,
-    flashActive?: boolean,
     interval?: number,
     failOnNoData?: boolean,
 }

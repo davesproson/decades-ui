@@ -12,6 +12,19 @@ const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListPr
 
     const [searchParams, setSearchParams] = useSearchParams()
 
+    useEffect(() => {
+        try {
+            const urlAlarms = searchParams.getAll("alarm").map(x=>JSON.parse(decode(x)))
+            setAlarms(urlAlarms.map((a, _i) => ({...a, id: a.name})))
+        } catch (e) {
+            alert("Error parsing alarms specified in URL")
+            setSearchParams(new URLSearchParams())
+            console.log("Error parsing URL alarms")
+            console.error(e)
+        }
+    }, [searchParams, setSearchParams])
+
+
     const removeAlarm = (id: any/*TODO ?*/) => {
         const alarms = searchParams.getAll("alarm").map(x=>JSON.parse(decode(x)))
                                                    .filter(x=>x.name !== id)
@@ -30,19 +43,6 @@ const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListPr
             if(alarmParams[k].length === 1) alarmParams[k] = alarmParams[k][0]
         }
     }
-
-    useEffect(() => {
-        try {
-            const urlAlarms = searchParams.getAll("alarm").map(x=>JSON.parse(decode(x)))
-            setAlarms(urlAlarms.map((a, _i) => ({...a, id: a.name})))
-        } catch (e) {
-            alert("Error parsing alarms specified in URL")
-            setSearchParams(new URLSearchParams())
-            console.log("Error parsing URL alarms")
-            console.error(e)
-        }
-    }, [searchParams, setSearchParams])
-
     
     if(props.alarms) {
         return [null, {}]
