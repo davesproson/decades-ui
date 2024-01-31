@@ -115,4 +115,15 @@ const useAlarm = (props: AlarmProps) => {
     return passing
 }
 
-export { useAlarm, useAlarmUrl }
+const useFlash = (delay: number) => {
+    const [flash, setFlash] = useState(false)
+
+    useEffect(() => {
+        const interval = setInterval(() => setFlash(x=>!x), delay)
+        return () => clearInterval(interval)
+    }, [delay, setFlash])
+
+    return flash
+}
+
+export { useAlarm, useAlarmUrl, useFlash }

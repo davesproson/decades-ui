@@ -1,8 +1,7 @@
 import { useState, useRef } from 'react'
-import { useAlarm, useAlarmUrl } from './hooks'
+import { useAlarm, useAlarmUrl, useFlash } from './hooks'
 import { encode } from 'base-64'
 import { base as siteBase } from '../settings'
-import { useEffect } from 'react'
 import { Button } from '../components/buttons'
 import { JsonEditor } from '../components/jsonEditor'
 import { AlarmListProps, AlarmProps } from './alarm.types'
@@ -263,14 +262,7 @@ const Alarm = (props: AlarmProps) => {
 
     const passing = useAlarm(props)
     const [showRule, setShowRule] = useState<boolean>(false)
-    const [flashActive, setFlashActive] = useState<boolean>(false)
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setFlashActive(x => !x)
-        }, 600)
-        return () => clearInterval(interval)
-    }, [])
+    const flashActive = useFlash(600)
 
     const messageClass = passing
         ? "is-success"
