@@ -9,7 +9,6 @@ import { Button } from "../components/buttons"
 import { useSelector, useDispatch } from "../redux/store"
 
 const TutorialPanelPropTypes = {
-    key: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
     continueText: PropTypes.string,
@@ -144,14 +143,17 @@ const Tutorial = () => {
 
     if(!enableTutorial) return null
     if(!show) return null
+    
+    const tutorialSeen = window.sessionStorage.getItem("vistaTutorialSeen") === "true"
+    console.log(
+        "tutorialSeen", tutorialSeen,
+        window.sessionStorage.getItem("vistaTutorialSeen")
+    )
 
-    const tutorialSeen = JSON.parse(
-        window.sessionStorage.getItem("showTutorial") || "false"
-    ) as boolean
-    if(tutorialSeen === false) {
-       return null
+    if(tutorialSeen) {
+        return null
     } 
-
+        
     return (
         <TutorialDispatcher position={position}>
             {panels.map((panel, i) => {

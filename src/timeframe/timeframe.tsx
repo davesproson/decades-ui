@@ -273,7 +273,7 @@ const FlightSummarySelector = () => {
                 </p>
                 <div className="panel-block">
                     <ul>
-                        {filtered.map((x, i) => <li><FlightSummaryEntrySelector id={i} entry={x}/></li>)}
+                        {filtered.map((x, i) => <li><FlightSummaryEntrySelector key={i} id={i} entry={x}/></li>)}
                     </ul>
                 </div>
             </nav>
