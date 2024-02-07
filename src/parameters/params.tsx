@@ -8,6 +8,7 @@ import { VistaError } from "../components/error"
 
 import { Parameter } from "../redux/parametersSlice"
 import { ParameterSearchInput } from "./filterBar"
+import { Container } from "../components/container"
 
 type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
 
@@ -82,7 +83,7 @@ const ParameterTable = () => {
 
     return (
         <FadeOut>
-            <div className="container mt-4 has-navbar-fixed-top">
+            <Container fixedNav>
                 <ParameterSearchInput filterText={filterText.filterText} />
                 <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{ "margin": "auto" }}>
                     <thead>
@@ -95,7 +96,7 @@ const ParameterTable = () => {
                     </thead>
                     <tbody>{rows}</tbody>
                 </table>
-            </div>
+            </Container>
         </FadeOut>
     )
 }

@@ -15,6 +15,7 @@ import { Control, GroupedField, Field, Label, Input } from '../components/forms'
 import { Button } from '../components/buttons';
 import { FadeOut } from '../components/fadeout';
 import { Version1View, Version2View } from './views.types';
+import { Container } from '../components/container';
 
 const ViewConfigButtons = () => {
     const dispatch = useDispatch()
@@ -469,7 +470,7 @@ const ViewConfig = () => {
     // Return the view configuration panel.
     return (
         <FadeOut>
-            <div className="container has-navbar-fixed-top">
+            <Container fixedNav>
                 <div className="tabs is-centered">
                     <ul>
                         <li className={getClass("BASIC")}><a onClick={() => setUiType("BASIC")}>Basic</a></li>
@@ -478,7 +479,7 @@ const ViewConfig = () => {
                     </ul>
                 </div>
                 {getUi(uiType)}
-            </div>
+            </Container>
         </FadeOut>
     )
 }

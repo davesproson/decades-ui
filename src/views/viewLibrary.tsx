@@ -5,6 +5,7 @@ import { libraryViews } from "./libraryEntries"
 import { Button } from "../components/buttons"
 import { FadeOut } from "../components/fadeout"
 import { v4 as uuidv4 } from 'uuid'
+import { Container } from "../components/container"
 
 interface LoadedInfoProps {
     loaded: boolean,
@@ -127,10 +128,10 @@ const ViewLibrary = () => {
     })
 
     return (
-        <div className="container has-navbar-fixed-top">
+        <Container fixedNav>
             <h3 className="title is-3 mt-4">View Library</h3>
             {cards}
-        </div>
+        </Container>
     )
 }
 

@@ -7,6 +7,7 @@ import { useFlightSummary } from './hooks'
 import { Button } from '../components/buttons'
 import { FadeOut } from '../components/fadeout'
 import { FlightSummaryEntry, FlightSummaryEntryProps } from './timeframe.types'
+import { Container } from '../components/container'
 
 
 const TimeframeTextBox = () => {
@@ -305,11 +306,11 @@ const TimeframeSelector = () => {
 
     return (
         <FadeOut>
-            <div className="container has-navbar-fixed-top">
+            <Container fixedNav>
                 <TimeframeTextBox />
                 <TimeFrameSelectorBox startTime={startTime} endOnGoing={endOnGoing}/>
                 <FlightSummarySelector />
-            </div>
+            </Container>
         </FadeOut>
     )
 

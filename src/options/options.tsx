@@ -4,6 +4,7 @@ import { AxisSelectionCard, AxisScalingCard } from './axisOptions';
 import { Button } from '../components/buttons';
 import { Section } from '../components/layout';
 import { Control, Field, Input } from '../components/forms';
+import { Container } from '../components/container';
 import { FadeOut } from '../components/fadeout';
 
 /**
@@ -42,14 +43,14 @@ const Options = () => {
 
     return (
         <FadeOut>
-            <div className="container has-navbar-fixed-top">
+            <Container fixedNav>
                 <Section>
                     <AddressBar />
                     <PlotOptionCard />
                     <AxisSelectionCard />
                     <AxisScalingCard />
                 </Section>
-            </div>
+            </Container>
         </FadeOut>
     )
 }
