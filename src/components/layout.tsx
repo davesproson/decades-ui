@@ -17,4 +17,12 @@ const FlexCenter = (props: FlexCenterProps) => {
     )
 }
 
-export { FlexCenter }
+const Section = (props: { children: React.ReactNode }) => {
+    return (
+        <section className="section">
+            {props.children}
+        </section>
+    )
+}
+
+export { FlexCenter, Section }

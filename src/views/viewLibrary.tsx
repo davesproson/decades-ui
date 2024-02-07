@@ -3,8 +3,8 @@ import PropTypes from "prop-types"
 import { saveView } from "../redux/viewSlice"
 import { libraryViews } from "./libraryEntries"
 import { Button } from "../components/buttons"
+import { FadeOut } from "../components/fadeout"
 import { v4 as uuidv4 } from 'uuid'
-import { useBrainFade } from "../hooks"
 
 interface LoadedInfoProps {
     loaded: boolean,
@@ -68,7 +68,6 @@ interface LibraryCardProps {
 const LibraryCard = (props: LibraryCardProps) => {
     const dispatch = useDispatch()
     const savedViews = useSelector(s => s.view.savedViews)
-    const ref = useBrainFade<HTMLDivElement>()
 
     const viewIsLoaded = savedViews.some(v => v.name === props.title)
 
@@ -85,18 +84,20 @@ const LibraryCard = (props: LibraryCardProps) => {
     )
 
     return (
-        <div ref={ref} className="card mt-2">
-            <div className="card-content">
-                <div className="content">
-                            
-                    <h4 className="title is-4">{props.title}</h4>
-                    <LoadedInfo loaded={viewIsLoaded} title={props.title} />
-                    {viewIsLoaded ? null : props.description}
-                    {viewIsLoaded ? null : <p style={{ marginTop: "1rem" }} />}
-                    {viewIsLoaded ? null : button}
+        <FadeOut>
+            <div className="card mt-2">
+                <div className="card-content">
+                    <div className="content">
+                                
+                        <h4 className="title is-4">{props.title}</h4>
+                        <LoadedInfo loaded={viewIsLoaded} title={props.title} />
+                        {viewIsLoaded ? null : props.description}
+                        {viewIsLoaded ? null : <p style={{ marginTop: "1rem" }} />}
+                        {viewIsLoaded ? null : button}
+                    </div>
                 </div>
             </div>
-        </div>
+        </FadeOut>
 
     )
 }

@@ -36,14 +36,16 @@ export const FieldInput = (props: any) => {
     )
 }
 
-interface ControlProps {
+interface ControlProps extends React.HTMLAttributes<HTMLDivElement> {
     children: any,
     expanded?: boolean,
+    extraClasses?: string
 }
 export const Control = (props: ControlProps) => {
     const { children, expanded } = props
     let controlClass = "control"
     if(expanded) controlClass += " is-expanded"
+    if(props.extraClasses) controlClass += ` ${props.extraClasses}`
 
     return (
         <div className={controlClass}>

@@ -7,9 +7,9 @@ import { useSelector, useDispatch } from "../redux/store"
 import { GaugeConfig, GaugePanelProps } from "./gauge.types"
 import { addGauges } from "../redux/gaugeSlice"
 import { Input } from "../components/forms"
-import { useBrainFade } from "../hooks"
 import { useGaugeWidget } from "./hooks"
 import { Parameter } from "../redux/parametersSlice"
+import { FadeOut } from "../components/fadeout"
 
 const createGaugeConfig = (param: Parameter) => {
     return {
@@ -83,24 +83,25 @@ const GaugeConfigurator = () => {
 
     const gaugeConfig = useSelector(state => state.gauges)
     const params = useSelector(state => state.vars.params)
-    const ref = useBrainFade<HTMLDivElement>()
 
     return (
-        <div ref={ref} className="container has-navbar-fixed-top disappear">
-            <Panel.Dark title="Gauge Options">
-                <GaugeGlobalOptions {...gaugeConfig} />
-            </Panel.Dark>
+        <FadeOut>
+            <div className="container has-navbar-fixed-top">
+                <Panel.Dark title="Gauge Options">
+                    <GaugeGlobalOptions {...gaugeConfig} />
+                </Panel.Dark>
 
-            {gaugeConfig.configs.map((config, i) => {
-                const param = params.find(param => param.raw === config.parameter)
-                return (
-                    <Panel.Dark title={param?.name || config.parameter} key={i}>
-                        <GaugeConfigWidget key={i} position={i} {...config} />
-                    </Panel.Dark>
-                )
-            })}
+                {gaugeConfig.configs.map((config, i) => {
+                    const param = params.find(param => param.raw === config.parameter)
+                    return (
+                        <Panel.Dark title={param?.name || config.parameter} key={i}>
+                            <GaugeConfigWidget key={i} position={i} {...config} />
+                        </Panel.Dark>
+                    )
+                })}
 
-        </div>
+            </div>
+        </FadeOut>
     )
 }
 

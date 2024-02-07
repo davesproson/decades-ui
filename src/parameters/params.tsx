@@ -1,13 +1,15 @@
 
 import { useDispatch, useSelector } from "../redux/store"
-import { useDispatchParameters, useBrainFade } from "../hooks"
+import { useDispatchParameters } from "../hooks"
 import { toggleParamSelected } from "../redux/parametersSlice"
 import { Loader } from "../components/loader"
+import { FadeOut } from "../components/fadeout"
 import { VistaError } from "../components/error"
 
 import { Parameter } from "../redux/parametersSlice"
 import { ParameterSearchInput } from "./filterBar"
-type ParameterLineProps =  Omit<Parameter, "axisId"|"raw"> 
+
+type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
 
 const ParameterLine = (props: ParameterLineProps) => {
     const dispatch = useDispatch()
@@ -25,13 +27,13 @@ const ParameterLine = (props: ParameterLineProps) => {
         }
     }
 
-    const statusClass = props.status === true 
+    const statusClass = props.status === true
         ? "has-background-success-light has-text-success "
         : props.status === false
             ? "has-background-danger-light has-text-danger"
-            : "has-text-grey-lighter	"
+            : "has-text-grey-lighter"
 
-    const statusText = props.status === true 
+    const statusText = props.status === true
         ? "Available"
         : props.status === false
             ? "Unavailable"
@@ -40,10 +42,10 @@ const ParameterLine = (props: ParameterLineProps) => {
     const selectedClass = props.selected ? "has-background-dark has-text-light" : ""
 
     return (
-        <tr className={selectedClass} onClick={(e)=>toggleSelected(e)} style={{"cursor": "pointer"}}>
+        <tr className={selectedClass} onClick={(e) => toggleSelected(e)} style={{ "cursor": "pointer" }}>
             {/* @ts-ignore TODO */}
-            <td style={{width: "0"}} className={statusClass} data="is-status">{statusText}</td>
-            <td style={{width: "0"}}>{props.id}</td>
+            <td style={{ width: "0" }} className={statusClass} data="is-status">{statusText}</td>
+            <td style={{ width: "0" }}>{props.id}</td>
             <td>{props.name}</td>
             <td>{props.units}</td>
         </tr>
@@ -56,44 +58,45 @@ const ParameterTable = () => {
     const filterText = useSelector(state => state.paramfilter)
     const server = useSelector(state => state.options.server)
     useDispatchParameters()
-    const ref = useBrainFade<HTMLDivElement>()
 
     const paramsChecked = vars.params.length && vars.params.every(x => x.status !== null)
 
-    if(server===undefined) return <Loader text="Waiting for server availability..." />
-    if(!paramsChecked) return <Loader text="Checking Parameter Availability..." />
-    if(!vars.params) return <Loader text="Getting parameters..." />;
-    if(server===null) return <VistaError message="Server is not available." error={null} />
+    if (server === undefined) return <Loader text="Waiting for server availability..." />
+    if (!paramsChecked) return <Loader text="Checking Parameter Availability..." />
+    if (!vars.params) return <Loader text="Getting parameters..." />;
+    if (server === null) return <VistaError message="Server is not available." error={null} />
 
     const params = [...vars.params];
 
     const rows = params
         .filter(
             x => (x.name.toLowerCase().includes(filterText.filterText.toLowerCase())
-               || x.id.toString().toLowerCase().includes(filterText.filterText.toLowerCase())))
-        .sort((a, b)=>parseFloat(a.id.toString())-parseFloat(b.id.toString()))
-        .map(param => <ParameterLine key={param.id} 
-                                     id={param.id} 
-                                     name={param.name} 
-                                     selected={param.selected} 
-                                     units={param.units} 
-                                     status={param.status} />)
+                || x.id.toString().toLowerCase().includes(filterText.filterText.toLowerCase())))
+        .sort((a, b) => parseFloat(a.id.toString()) - parseFloat(b.id.toString()))
+        .map(param => <ParameterLine key={param.id}
+            id={param.id}
+            name={param.name}
+            selected={param.selected}
+            units={param.units}
+            status={param.status} />)
 
     return (
-        <div ref={ref} className="container mt-4 has-navbar-fixed-top">
-            <ParameterSearchInput filterText={filterText.filterText} />
-            <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{"margin": "auto"}}>
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Param #</th>
-                        <th>Parameter</th>
-                        <th>Units</th>
-                    </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-            </table>
-        </div>
+        <FadeOut>
+            <div className="container mt-4 has-navbar-fixed-top">
+                <ParameterSearchInput filterText={filterText.filterText} />
+                <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{ "margin": "auto" }}>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Param #</th>
+                            <th>Parameter</th>
+                            <th>Units</th>
+                        </tr>
+                    </thead>
+                    <tbody>{rows}</tbody>
+                </table>
+            </div>
+        </FadeOut>
     )
 }
 

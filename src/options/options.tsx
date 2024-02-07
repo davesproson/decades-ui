@@ -2,38 +2,55 @@ import { usePlotUrl } from '../plot/hooks';
 import { PlotOptionCard } from './plotOptions';
 import { AxisSelectionCard, AxisScalingCard } from './axisOptions';
 import { Button } from '../components/buttons';
-import { useBrainFade } from "../hooks";
+import { Section } from '../components/layout';
+import { Control, Field, Input } from '../components/forms';
+import { FadeOut } from '../components/fadeout';
 
+/**
+ * Provides a (disabled) input field for the user to copy the current plot URL
+ * and a button to copy the URL to the clipboard.
+ * 
+ */
 const AddressBar = () => {
     const address = usePlotUrl()
     return (
-        <div className="field has-addons">
-            <div className='control is-flex-grow-1'>
-                <input className="input" type="text" value={address?.toString() || ""} readOnly />
-            </div>
-            <div className='control'>
+        <Field addons>
+            <Control extraClasses="is-flex-grow-1">
+                <Input type="text" value={address?.toString() || ""} readOnly />
+            </Control>
+            <Control>
                 <Button.Info onClick={() => {
                     if (address)
-                        navigator.clipboard.writeText(address.toString())}
+                        navigator.clipboard.writeText(address.toString())
+                }
                 }>Copy</Button.Info>
-            </div>
-        </div>
+            </Control>
+        </Field>
     )
 }
 
+/**
+ * A component that provides the user with options to customize the plot.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Options />
+ * )
+ */
 const Options = () => {
 
-    const ref = useBrainFade<HTMLDivElement>()
-
     return (
-        <div ref={ref} className="container has-navbar-fixed-top disappear">
-            <div className="section">
-                <AddressBar />
-                <PlotOptionCard />
-                <AxisSelectionCard />
-                <AxisScalingCard />
+        <FadeOut>
+            <div className="container has-navbar-fixed-top">
+                <Section>
+                    <AddressBar />
+                    <PlotOptionCard />
+                    <AxisSelectionCard />
+                    <AxisScalingCard />
+                </Section>
             </div>
-        </div>
+        </FadeOut>
     )
 }
 
