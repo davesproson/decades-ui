@@ -5,7 +5,7 @@ import { OptionBlock } from "../options/plotOptions"
 import { toggleDirection } from "../redux/gaugeSlice"
 import { useSelector, useDispatch } from "../redux/store"
 import { GaugeConfig, GaugePanelProps } from "./gauge.types"
-import { addGauges } from "../redux/gaugeSlice"
+import { addGauges, clearGauges } from "../redux/gaugeSlice"
 import { Input } from "../components/forms"
 import { useGaugeWidget } from "./hooks"
 import { Parameter } from "../redux/parametersSlice"
@@ -27,6 +27,7 @@ const GaugeGlobalOptions = (props: GaugePanelProps) => {
 
     const params = useSelector(state => state.vars.params)
     const selectedParams = params.filter(param => param.selected)
+    const gaugeConfig = useSelector(state => state.gauges)
     const dispatch = useDispatch()
 
     let buttonText = selectedParams.length > 1 ? "Add Gauges" : "Add Gauge"
@@ -46,12 +47,19 @@ const GaugeGlobalOptions = (props: GaugePanelProps) => {
             toggle={toggleDirection} />
     )
 
+    const ClearButton = () => gaugeConfig.configs.length
+        ? <Button.Danger fullWidth onClick={() => dispatch(clearGauges())}>Clear All</Button.Danger>
+        : null
+
     return (
         <>
             <OptionBlock title="Alignment"
                 optionComponent={alignmentSwitch} />
             <div className="mt-2">
                 <Button.Info fullWidth outlined onClick={handleAddGauge} disabled={disableButton}>{buttonText}</Button.Info>
+            </div>
+            <div className="mt-2">
+                <ClearButton />
             </div>
         </>
     )
@@ -93,8 +101,15 @@ const GaugeConfigurator = () => {
 
                 {gaugeConfig.configs.map((config, i) => {
                     const param = params.find(param => param.raw === config.parameter)
+
+                    const title = (()=>{
+                        let name = param?.name || config.parameter
+                        if(param?.units) name += ` (${param.units})`
+                        return name
+                    })()
+
                     return (
-                        <Panel.Dark title={param?.name || config.parameter} key={i}>
+                        <Panel.Dark title={title} key={i}>
                             <GaugeConfigWidget key={i} position={i} {...config} />
                         </Panel.Dark>
                     )

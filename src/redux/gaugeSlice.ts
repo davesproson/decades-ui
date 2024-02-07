@@ -30,12 +30,16 @@ export const gaugeSlice = createSlice({
         },
         updateNthGauge: (state, action: PayloadAction<{position: number, config: GaugeConfig}>) => {
             state.configs[action.payload.position] = action.payload.config;
+        },
+        clearGauges: (state) => {
+            state.configs = [];
         }
 	},
 });   
 
 export const { 
-    setDirection, addGauge, toggleDirection, addGauges, updateNthGauge
+    setDirection, addGauge, toggleDirection, addGauges, updateNthGauge,
+    clearGauges
 } = gaugeSlice.actions;
 
 export default gaugeSlice.reducer;
