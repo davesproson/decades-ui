@@ -30,6 +30,19 @@ const PitchIndicator = lazy(() => import('./pitch/pitch'))
 import { VistaErrorBoundary } from './components/error';
 import { useEffect } from 'react';
 
+interface SuspenseLoaderProps {
+  text?: string,
+  children: React.ReactNode
+}
+const SuspenseLoader = (props: SuspenseLoaderProps) => {
+
+  return (
+    <Suspense fallback={<Loader text={props.text || "Loading..."} />}>
+      {props.children}
+    </Suspense>
+  )
+}
+
 /**
  * The main app component. This is the entry point for the application, which
  * provides the routing for the application.
@@ -56,33 +69,33 @@ const DecadesVista = () => {
 
   return (
     <VistaErrorBoundary>
-    <Suspense fallback={<Loader text="Initializing..."/>}>
+    <SuspenseLoader text="Initializing..." >
       <Routes>
         <Route path="/" element={<><Navbar /><Tutorial /></>} >
-          <Route path="/" element={<Suspense><ParameterTable /></Suspense>} />
-          <Route path="/options" element={<Suspense><Options /></Suspense>} />
-          <Route path="/timeframe" element={<Suspense><TimeframeSelector /></Suspense>} />
-          <Route path="/config-view" element={<Suspense><ViewConfig /></Suspense>} />
-          <Route path="/view-library" element={<Suspense><ViewLibrary /></Suspense>} />
-          <Route path="/alarm-config" element={<Suspense><AlarmList /></Suspense>} />
-          <Route path="/timer-config" element={<Suspense><TimerConfig /></Suspense>} />
-          <Route path="/gauge-config" element={<Suspense><GaugeConfigurator /></Suspense>} />
+          <Route path="/" element={<SuspenseLoader><ParameterTable /></SuspenseLoader>} />
+          <Route path="/options" element={<SuspenseLoader><Options /></SuspenseLoader>} />
+          <Route path="/timeframe" element={<SuspenseLoader><TimeframeSelector /></SuspenseLoader>} />
+          <Route path="/config-view" element={<SuspenseLoader><ViewConfig /></SuspenseLoader>} />
+          <Route path="/view-library" element={<SuspenseLoader><ViewLibrary /></SuspenseLoader>} />
+          <Route path="/alarm-config" element={<SuspenseLoader><AlarmList /></SuspenseLoader>} />
+          <Route path="/timer-config" element={<SuspenseLoader><TimerConfig /></SuspenseLoader>} />
+          <Route path="/gauge-config" element={<SuspenseLoader><GaugeConfigurator /></SuspenseLoader>} />
         </Route>
-        <Route path="/view" element={<Suspense><View /></Suspense>} />
-        <Route path="/jsonview" element={<Suspense><JsonView /></Suspense>} />
+        <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
+        <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
         {/* @ts-ignore TODO - why the whining here? */}
-        <Route path="/plot" element={<Suspense><PlotDispatcher /></Suspense>} />
-        <Route path="/dashboard" element={<Suspense><DashboardDispatcher /></Suspense>} />
-        <Route path="/tephigram" element={<Suspense><Tephigram /></Suspense>} />
-        <Route path="/alarms" element={<Suspense><AlarmList /></Suspense>} />
-        <Route path="/timers" element={<Suspense><Timers /></Suspense>} />
-        <Route path="/gauge" element={<Suspense><GaugePanelDispatcher /></Suspense>} />
-        <Route path="/heading" element={<Suspense><HeadingIndicator standalone={true}/></Suspense>} />
-        <Route path="/roll" element={<Suspense><RollIndicator standalone={true}/></Suspense>} />
-        <Route path="/pitch" element={<Suspense><PitchIndicator standalone={true}/></Suspense>} />
+        <Route path="/plot" element={<SuspenseLoader><PlotDispatcher /></SuspenseLoader>} />
+        <Route path="/dashboard" element={<SuspenseLoader><DashboardDispatcher /></SuspenseLoader>} />
+        <Route path="/tephigram" element={<SuspenseLoader><Tephigram /></SuspenseLoader>} />
+        <Route path="/alarms" element={<SuspenseLoader><AlarmList /></SuspenseLoader>} />
+        <Route path="/timers" element={<SuspenseLoader><Timers /></SuspenseLoader>} />
+        <Route path="/gauge" element={<SuspenseLoader><GaugePanelDispatcher /></SuspenseLoader>} />
+        <Route path="/heading" element={<SuspenseLoader><HeadingIndicator standalone={true}/></SuspenseLoader>} />
+        <Route path="/roll" element={<SuspenseLoader><RollIndicator standalone={true}/></SuspenseLoader>} />
+        <Route path="/pitch" element={<SuspenseLoader><PitchIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
-    </Suspense>
+    </SuspenseLoader>
     </VistaErrorBoundary>
   )
 }
