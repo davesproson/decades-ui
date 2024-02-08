@@ -294,8 +294,6 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
     // Get the elements for the view
     const elements = props.config.elements
 
-    const dmFilter = darkMode ? "invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%)" : ""
-
     /**
      * Display an icon for the widget. TODO - this could be factored out
      * @param props
@@ -306,7 +304,7 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
     const ImageElement = (props: { src: string }) => {
         return (
             <FlexCenter extraStyle={{outline: borderStyle}}>
-                <img onClick={resetToView} src={props.src} alt="component" style={{ height: "64px", width: "64px", filter: dmFilter }} />
+                <img className="dm-filter" onClick={resetToView} src={props.src} alt="component" style={{ height: "64px", width: "64px" }} />
             </FlexCenter>
         )
     }

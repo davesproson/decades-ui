@@ -13,8 +13,9 @@ import { JsonViewConfig } from './jsonViewConfg';
 import { Modal } from '../components/modal';
 import { Control, GroupedField, Field, Label, Input } from '../components/forms';
 import { Button } from '../components/buttons';
+import { FadeOut } from '../components/fadeout';
 import { Version1View, Version2View } from './views.types';
-import { useBrainFade } from '../hooks';
+import { Container } from '../components/container';
 
 const ViewConfigButtons = () => {
     const dispatch = useDispatch()
@@ -84,20 +85,20 @@ const ViewConfigButtons = () => {
 
     const importView = (e: React.ChangeEvent<HTMLInputElement>) => {
         interface ParseMap {
-            1: ((a: Version1View)=>void),
-            2: ((a: Version2View)=>void),
+            1: ((a: Version1View) => void),
+            2: ((a: Version2View) => void),
         }
         const parseMap: ParseMap = {
             1: parseV1,
             2: parseV2
         }
 
-        if(!e.target) {
+        if (!e.target) {
             console.warn("No target")
             return
         }
 
-        const selectedFile = (a=>a.target.files ? a.target.files[0] : null)(e)
+        const selectedFile = (a => a.target.files ? a.target.files[0] : null)(e)
         if (!selectedFile) {
             return
         }
@@ -105,12 +106,12 @@ const ViewConfigButtons = () => {
         const reader = new FileReader()
         reader.onload = (e: ProgressEvent<FileReader>) => {
             try {
-                if(!e.target) {
+                if (!e.target) {
                     throw new Error("No target")
                 }
-                const text = (()=>{
-                    if(!e.target || !e.target.result) throw new Error("No target")
-                    if(typeof e.target.result === "string") return e.target.result
+                const text = (() => {
+                    if (!e.target || !e.target.result) throw new Error("No target")
+                    if (typeof e.target.result === "string") return e.target.result
                     return e.target.result.toString()
                 })()
 
@@ -118,10 +119,10 @@ const ViewConfigButtons = () => {
                 const json = JSON.parse(text)
 
                 const version = json.version || 1
-                if(![1,2].includes(version)) {
+                if (![1, 2].includes(version)) {
                     throw new Error(`Invalid version ${version}`)
                 }
-                parseMap[(version as 1|2)](json)
+                parseMap[(version as 1 | 2)](json)
             } catch (e) {
                 alert("Error parsing file - please check it is a valid view config file")
                 console.log(e)
@@ -252,7 +253,7 @@ const BasicViewConfigPlotSelector = () => {
 
 interface SaveModalProps {
     active: boolean,
-    close: ()=>void
+    close: () => void
 }
 /**
  * Renders a modal for saving the current view configuration.
@@ -333,8 +334,8 @@ const SaveModal = (props: SaveModalProps) => {
 
 interface BasicViewConfigNumSelectorProps {
     dim: string,
-    selector: (s: any)=>number, //TODO: Type this properly
-    reducers: [()=>any, ()=>any]
+    selector: (s: any) => number, //TODO: Type this properly
+    reducers: [() => any, () => any]
 }
 /**
  * A component that allows the user to select the number of rows or columns
@@ -423,7 +424,6 @@ const BasicViewConfig = () => {
 const ViewConfig = () => {
     const uiType = useSelector(state => state.view.viewConfigTab)
     const dispatch = useDispatch()
-    const ref = useBrainFade<HTMLDivElement>()
 
     type UiType = "BASIC" | "ADVANCED" | "JSON"
 
@@ -469,16 +469,18 @@ const ViewConfig = () => {
 
     // Return the view configuration panel.
     return (
-        <div ref={ref} className="container has-navbar-fixed-top">
-            <div className="tabs is-centered">
-                <ul>
-                    <li className={getClass("BASIC")}><a onClick={() => setUiType("BASIC")}>Basic</a></li>
-                    <li className={getClass("ADVANCED")}><a onClick={() => setUiType("ADVANCED")}>Advanced</a></li>
-                    <li className={getClass("JSON")}><a onClick={() => setUiType("JSON")}>JSON</a></li>
-                </ul>
-            </div>
-            {getUi(uiType)}
-        </div>
+        <FadeOut>
+            <Container fixedNav>
+                <div className="tabs is-centered">
+                    <ul>
+                        <li className={getClass("BASIC")}><a onClick={() => setUiType("BASIC")}>Basic</a></li>
+                        <li className={getClass("ADVANCED")}><a onClick={() => setUiType("ADVANCED")}>Advanced</a></li>
+                        <li className={getClass("JSON")}><a onClick={() => setUiType("JSON")}>JSON</a></li>
+                    </ul>
+                </div>
+                {getUi(uiType)}
+            </Container>
+        </FadeOut>
     )
 }
 
