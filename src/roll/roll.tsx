@@ -1,3 +1,4 @@
+import { useState } from "react"
 import "../../assets/css/no-scroll.css"
 import { FlexCenter } from "../components/layout"
 import { useDarkMode } from "../hooks"
@@ -28,6 +29,7 @@ const RollIndicatorSvgText = ({ roll, widthOrHeight }: { roll: number | undefine
 
 interface RollIndicatorGraphicProps {
     roll: number | undefined,
+    fwdAspect: boolean,
     widthOrHeight: { [key: string]: number }
 }
 const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
@@ -74,7 +76,11 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
 
     const RollIndicator = () => {
         if (props.roll === undefined) return <></>
-        return <img src="roll/roll-indicator.svg" style={{ ...getStyle(props.roll), filter: indicatorFilter() }}></img>
+        let r = props.roll
+        if (!props.fwdAspect) {
+            r = -r
+        }
+        return <img src="roll/roll-indicator.svg" style={{ ...getStyle(r), filter: indicatorFilter() }}></img>
     }
 
     const GluxeImage = () => {
@@ -82,7 +88,13 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
         if (props.roll !== undefined) {
             r = props.roll
         }
-        return <img src="gluxe-front.svg" style={{ ...getStyle(r), filter: filter }}></img>
+        
+        if (!props.fwdAspect) {
+            r = -r
+        }
+
+        const image = props.fwdAspect ? "gluxe-front.svg" : "gluxe-rear.svg"
+        return <img src={image} style={{ ...getStyle(r), filter: filter }}></img>
     }
 
     return (
@@ -102,6 +114,7 @@ interface RollIndicatorProps {
 const RollIndicator = (props: RollIndicatorProps) => {
     const data = useRollIndicator()
     const [ref, widthOrHeight] = useRollResizer()
+    const [fwdAspect, setFwdAspect] = useState(true)
 
     const containerStyle: React.CSSProperties = props.standalone
         ? { position: "absolute", top: "50%", left: 0, width: "100%", height: "100%" }
@@ -114,10 +127,11 @@ const RollIndicator = (props: RollIndicatorProps) => {
     }
 
     return (
-        <div ref={ref} style={containerStyle}>
+        <div ref={ref} style={containerStyle} onClick={()=>setFwdAspect(x=>!x)}>
             <FlexCenter>
                 <RollIndicatorGraphic
                     roll={castRoll(data.roll)}
+                    fwdAspect={fwdAspect}
                     widthOrHeight={widthOrHeight} />
             </FlexCenter>
         </div>
