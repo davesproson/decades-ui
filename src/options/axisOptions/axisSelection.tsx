@@ -121,12 +121,17 @@ AxisSelectorItem.propTypes = {
  */
 const AxisSelectorGroup = () => {
     const vars = useSelector(state => state.vars)
-    return vars.params.filter(x => x.selected).map(
-        x => <OptionBlock key={x.id} 
-                          title={`${x.name} (${x.units})`} 
-                          optionComponent={<AxisSelectorItem key={x.id} param={x} />}
-                          flexDirection="column" />
-    )
+    return vars.params.filter(x => x.selected).map(x => {
+        return (
+            <OptionBlock key={x.id} 
+                         title={`${x.name} (${x.units})`} 
+                         flexDirection="column" >
+
+                <AxisSelectorItem key={x.id} param={x} />
+                
+            </OptionBlock>
+        )
+    })
 }
 
 /**

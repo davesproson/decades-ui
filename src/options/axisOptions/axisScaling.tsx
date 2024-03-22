@@ -5,6 +5,7 @@ import { OptionBlock } from "../plotOptions"
 import { Button } from "../../components/buttons"
 import { Input } from "../../components/forms"
 import { Axis } from "../../redux/parametersSlice"
+import { Panel } from "../../components/panel"
 
 const AxisScalingWidget = ({axis}: {axis: Axis}) => {
     const dispatch = useDispatch()
@@ -66,12 +67,13 @@ const AxisScalingWidget = ({axis}: {axis: Axis}) => {
 
 const AxisScalingGroup = ({axes}: {axes: Array<Axis>}) => {
     return axes.map(axis => {
+
+        const optionTitle = `Axis ${axis.id} (${axis.units})`
+
         return (
-            <OptionBlock 
-                key={axis.id}
-                title={`Axis ${axis.id} (${axis.units})`} 
-                optionComponent={<AxisScalingWidget axis={axis} />}
-            />
+            <OptionBlock key={axis.id} title={optionTitle}>
+                <AxisScalingWidget axis={axis} />
+            </OptionBlock>
         )
     })
 }
@@ -79,17 +81,11 @@ const AxisScalingGroup = ({axes}: {axes: Array<Axis>}) => {
 const AxisScalingCard = () => {
 
     const axes = useSelector(state => state.vars.axes)
-    console.log(axes)
 
     return (
-        <nav className="panel mt-4 is-dark">
-            <p className="panel-heading">
-                Axis scaling
-            </p>
-            <div className="p-4">
-                <AxisScalingGroup axes={axes} />
-            </div>
-        </nav>
+        <Panel.Dark title="Axis Scaling">
+            <AxisScalingGroup axes={axes} />
+        </Panel.Dark>
     )
 }
 

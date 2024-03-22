@@ -56,14 +56,7 @@ const GaugeGlobalOptions = (props: GaugePanelProps) => {
     }
     
     let buttonText = selectedParams.length > 1 ? "Add Gauges" : "Add Gauge"
-    const disableButton = !!selectedParams.length
-
-    const alignmentSwitch = (
-        <OptionSwitch options={["row", "column"]}
-            value={props.direction}
-            toggle={toggleDirection} />
-            )
-            
+    const disableButton = !selectedParams.length
 
     const ClearButton = () => gaugeConfig.configs.length
         ? <Button.Danger fullWidth onClick={() => dispatch(clearGauges())}>Clear All</Button.Danger>
@@ -71,8 +64,14 @@ const GaugeGlobalOptions = (props: GaugePanelProps) => {
 
     return (
         <>
-            <OptionBlock title="Alignment"
-                optionComponent={alignmentSwitch} />
+            <OptionBlock title="Alignment">
+                <OptionSwitch 
+                    options={["row", "column"]}
+                    value={props.direction}
+                    toggle={toggleDirection}
+                />
+            </OptionBlock>
+
             <div className="mt-2">
                 <Button.Info fullWidth outlined onClick={handleAddGauge} disabled={disableButton}>{buttonText}</Button.Info>
             </div>
