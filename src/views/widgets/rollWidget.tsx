@@ -5,7 +5,7 @@ const ConfigRollArea = () => {
     return (
         <div className="mt-2">
             Add a roll indicator to the view. There are no options
-            associtated with this widget.
+            associated with this widget.
         </div>
     )
 }

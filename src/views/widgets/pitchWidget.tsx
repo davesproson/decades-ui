@@ -5,7 +5,7 @@ const ConfigArea = () => {
     return (
         <div className="mt-2">
             Add a pitch indicator to the view. There are no options
-            associtated with this widget.
+            associated with this widget.
         </div>
     )
 }
