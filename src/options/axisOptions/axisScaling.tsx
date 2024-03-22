@@ -1,5 +1,4 @@
 import { useSelector, useDispatch } from "../../redux/store"
-// import { useState } from "react"
 
 import { setAxisScaling } from "../../redux/parametersSlice"
 import { OptionBlock } from "../plotOptions"
@@ -9,8 +8,6 @@ import { Axis } from "../../redux/parametersSlice"
 
 const AxisScalingWidget = ({axis}: {axis: Axis}) => {
     const dispatch = useDispatch()
-    // const [upperBound, setUpperBound] = useState(axis.scaling?.max)
-    // const [lowerBound, setLowerBound] = useState(axis.scaling?.min)
 
     const toggleAutoScaling = () => {
         dispatch(setAxisScaling({
