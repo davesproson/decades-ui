@@ -74,3 +74,6 @@ export const plotHeaderDefaults = [
     'gin_latitude', 'gin_longitude', 'pressure_height_kft', 'deiced_true_air_temp_c',
     'dew_point'
 ]
+
+// Experimental features
+export const enableQuicklook = booleanEnv("VITE_ENABLE_QUICKLOOK", false)
