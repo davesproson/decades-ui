@@ -5,15 +5,18 @@ import { useDashboardData } from "../dashboard/hooks";
 import { DashboardOptions } from "../dashboard/dashboard.types";
 import { DecadesParameter } from "../redux/parametersSlice";
 import { badData } from "../settings";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { Button } from "../components/buttons";
+import { SimplePlot } from "../plot/plot";
 
 interface DashHeaderProps {
     title: string,
-    inAlarm?: boolean
+    inAlarm?: boolean,
+    maximize: () => void
 }
 const DashHeader = (props: DashHeaderProps) => {
-    let alarmClass = ""
-    if(props.inAlarm) alarmClass = "has-background-danger-dark"
+    let alarmClass = "has-background-light"
+    if (props.inAlarm) alarmClass = "has-background-danger-dark"
 
     const headerStyle: React.CSSProperties = {
         fontSize: "1.5vmin",
@@ -26,7 +29,7 @@ const DashHeader = (props: DashHeaderProps) => {
 
     return (
         <div className={alarmClass} style={headerStyle}>
-            {props.title}
+            <Button style={{ background: "none", border: "none" }} onClick={props.maximize}>{props.title}</Button>
         </div>
     )
 }
@@ -38,7 +41,7 @@ interface DashDisplayProps {
 }
 const DashDisplay = (props: DashDisplayProps) => {
     let alarmClass = ""
-    if(props.inAlarm) alarmClass = "has-background-danger-light"
+    if (props.inAlarm) alarmClass = "has-background-danger-light"
 
     const text = (props.value == null || props.value === badData)
         ? "No Data"
@@ -54,9 +57,19 @@ const DashDisplay = (props: DashDisplayProps) => {
 interface DashProps {
     value: number[] | null,
     param: DecadesParameter,
-    limits: { param: string, min: number, max: number }[]
+    limits: { param: string, min: number, max: number }[],
+    maximized: boolean,
+    setMaximized: (param: string | null) => void
 }
 const Dash = (props: DashProps) => {
+
+    const maximize = () => {
+        if (props.maximized) {
+            props.setMaximized(null)
+            return
+        }
+        props.setMaximized(props.param.ParameterName)
+    }
 
     const value = props.value
         ? props.value[props.value.length - 1]
@@ -65,17 +78,29 @@ const Dash = (props: DashProps) => {
     let inAlarm = false
 
     const limit = props.limits.filter(x => x.param === props.param.ParameterName)[0]
-    if(limit) {
+    if (limit) {
         if ((value != null) && (limit.min > value || limit.max < value)) {
             inAlarm = true
         }
     }
 
+    const outerStyle: React.CSSProperties = props.maximized
+        ? { position: "fixed", top: 5, left: 5, right: 5, bottom: 5, zIndex: 1000 }
+        : { display: "flex", flexDirection: "column", height: "100%", width: "100%", padding: "5px", borderRadius: "5px" }
+
+    const innerStyle: React.CSSProperties = props.maximized
+        ? { position: "relative", inset: 0, height: "100%", borderRadius: "5px", border: "2px solid gray"}
+        : { border: "2px solid gray", flexGrow: 1, borderRadius: "5px", display: "flex", flexDirection: "column" }
+
+    const contents = props.maximized
+        ? <SimplePlot params={[props.param.ParameterName]} style={{height: "97%"}} />
+        : <DashDisplay value={value} units={props.param.DisplayUnits} inAlarm={inAlarm} />
+
     return (
-        <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", padding: "5px", borderRadius: "5px" }}>
-            <div style={{ border: "2px solid gray", flexGrow: 1, borderRadius: "5px", display: "flex", flexDirection: "column" }}>
-                <DashHeader title={props.param.DisplayText} inAlarm={inAlarm}/>
-                <DashDisplay value={value} units={props.param.DisplayUnits} inAlarm={inAlarm}/>
+        <div style={{ ...outerStyle }}>
+            <div style={innerStyle}>
+                <DashHeader title={props.param.DisplayText} inAlarm={inAlarm} maximize={maximize} />
+                {contents}
             </div>
         </div>
     )
@@ -96,10 +121,11 @@ const Redash = (props: RedashProps) => {
     const availableParams = useGetParameters()
     const [searchParams, _] = useSearchParams()
     const [singleColumn, setSingleColumn] = useState(false)
+    const [maximized, setMaximized] = useState<string | null>(null)
 
-    useEffect(() => {
-        if(ref.current) {
-            if(ref.current.clientWidth * 1.8 < ref.current.clientHeight) {
+    useLayoutEffect(() => {
+        if (ref.current) {
+            if (ref.current.clientWidth * 1.8 < ref.current.clientHeight) {
                 setSingleColumn(true)
             }
         }
@@ -143,43 +169,46 @@ const Redash = (props: RedashProps) => {
         }
     }
 
+    // if(maximized) {
+    //     filteredParams = filteredParams.filter(x => x.ParameterName === maximized)
+    // }
 
     const nRows = singleColumn
-        ?   props.params.length
-        :   Math.sqrt(props.params.length * ratio)
+        ? props.params.length
+        : Math.sqrt(props.params.length * ratio)
 
     const nCols = singleColumn
-        ? 1  
+        ? 1
         : Math.ceil(props.params.length / nRows)
 
     const style = {
-        display: "grid",
-        // gridAutoFlow: "column"
-        gridTemplateColumns: `repeat(${nCols}, 1fr)`,
-        gridTemplateRows: `repeat(${nRows}, 1fr)`,
-        width: "100%",
-        height: "100%",
-        overflow: "hidden"
-    }
+            display: "grid",
+            gridTemplateColumns: `repeat(${nCols}, 1fr)`,
+            gridTemplateRows: `repeat(${nRows}, 1fr)`,
+            width: "100%",
+            height: "100%",
+            overflow: "hidden"
+        }
 
-    
+
+
     return (
         <div ref={ref} style={style}>
             {filteredParams.map((param, _i) => {
                 const paramName = param.ParameterName
                 return (
-                    <div key={paramName} style={{ padding: "5px" }}>
-                        <Dash
-                            key={paramName}
-                            value={data ? data[paramName] : null}
-                            param={param}
-                            limits={limits.filter(y => y.param === param.ParameterName) || [{
-                                param: 'undefined',
-                                min: 0,
-                                max: 0
-                            }]}
-                        />
-                    </div>
+                    <Dash
+                        key={paramName}
+                        maximized={maximized === paramName}
+                        setMaximized={setMaximized}
+                        value={data ? data[paramName] : null}
+                        param={param}
+                        limits={limits.filter(y => y.param === param.ParameterName) || [{
+                            param: 'undefined',
+                            min: 0,
+                            max: 0
+                        }]}
+                    />
                 )
             })
             }
@@ -200,10 +229,8 @@ const RedashboardDispatcher = (props: DashboardDispatcherProps) => {
         const params = (searchParams.get("params") || '').split(",")
         return params
     })()
-    // const isCompact = props.compact || searchParams.get("compact") == "true"
     const server = props.server || searchParams.get("server") || location.host
     const limits = props.limits
-    // const size = isCompact ? "small" : "large"
 
     return <Redash limits={limits}
         params={params} server={server}
