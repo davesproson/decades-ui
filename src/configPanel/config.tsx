@@ -11,6 +11,7 @@ import {
 
 import { Button } from "../components/buttons";
 import { Tag } from "../components/tags";
+import { LiveDataOnly } from "../quicklook";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -133,9 +134,11 @@ const ConfigPanel = () => {
                             <DarkModeSwitch />
                         </Option>
 
-                        <Option title="Parameter Set">
-                            <ParamSetSelector />
-                        </Option>
+                        <LiveDataOnly>
+                            <Option title="Parameter Set">
+                                <ParamSetSelector />
+                            </Option>
+                        </LiveDataOnly>
                     </OptionList>
                 </div>
             </div>

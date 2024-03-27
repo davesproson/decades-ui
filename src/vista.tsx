@@ -1,10 +1,7 @@
-import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom'
-import { useServers, useDarkMode } from './hooks';
-import { Loader } from './components/loader';
-import { useSearchParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setParamSet } from './redux/parametersSlice';
+import { lazy, useEffect } from 'react';
+import { Routes, Route, useSearchParams } from 'react-router-dom'
+import { useServers, useDarkMode, useQuickLookTimeframe } from './hooks';
+import { SuspenseLoader } from './components/loader';
 
 const Navbar = lazy(() => import('./navbar/navbar'))
 const TimeframeSelector = lazy(() => import('./timeframe/timeframe'))
@@ -28,20 +25,12 @@ const RollIndicator = lazy(() => import('./roll/roll'))
 const PitchIndicator = lazy(() => import('./pitch/pitch'))
 
 import { VistaErrorBoundary } from './components/error';
-import { useEffect } from 'react';
+import { useDispatch } from './redux/store';
+import { setParamSet } from './redux/parametersSlice';
+import { setQuickLookMode } from './redux/configSlice';
+import { setQcJob } from './redux/quicklookSlice';
 
-interface SuspenseLoaderProps {
-  text?: string,
-  children: React.ReactNode
-}
-const SuspenseLoader = (props: SuspenseLoaderProps) => {
 
-  return (
-    <Suspense fallback={<Loader text={props.text || "Loading..."} />}>
-      {props.children}
-    </Suspense>
-  )
-}
 
 /**
  * The main app component. This is the entry point for the application, which
@@ -56,10 +45,10 @@ const SuspenseLoader = (props: SuspenseLoaderProps) => {
 const DecadesVista = () => {
   
   useServers()
-  const [searchParams, _] = useSearchParams()
   const dispatch = useDispatch()
+  const [searchParams, _] = useSearchParams()
   const [_darkMode, _setDarkMode] = useDarkMode()
-
+  
   useEffect(() => {
     const paramSet = searchParams.get('paramset')
     if (paramSet) {
@@ -67,6 +56,19 @@ const DecadesVista = () => {
     }
   }, [searchParams, dispatch])
 
+  // If a job is passed in the URL, set the quicklook mode to true
+  // and set the job in the quicklook slice
+  useEffect(() => {
+    if(searchParams.has('job')) {
+      const job = searchParams.get('job')
+      dispatch(setQcJob(job))
+      dispatch(setQuickLookMode(true))
+    }
+  }, [searchParams])
+  
+  useQuickLookTimeframe()
+
+    
   return (
     <VistaErrorBoundary>
     <SuspenseLoader text="Initializing..." >

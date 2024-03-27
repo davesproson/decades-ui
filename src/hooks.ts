@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { setParams, setParamsDispatched } from "./redux/parametersSlice";
-import { setServer } from "./redux/optionsSlice";
+import { setCustomTimeframe, setServer } from "./redux/optionsSlice";
 import { apiEndpoints, apiTransforms } from "./settings";
 import { useSelector, useDispatch } from "./redux/store";
 import { DecadesParameter } from "./redux/parametersSlice";
@@ -26,10 +26,12 @@ const useTransform = (name: string) => {
 const useParameterEndpoint = (withAvailability: boolean) => {
     const paramSet = useSelector(state => state.vars.paramSet);
     const quickLookMode = useSelector(state => state.config.quickLookMode);
+    const quickLookJob = useSelector(state => state.quicklook.qcJob);
 
     if (quickLookMode) {
-        // TODO: Add quicklook endpoint
-        throw new Error("Quicklook mode not yet implemented.")
+        if(!quickLookJob)
+            throw new Error("No quicklook job selected")
+        return `${apiEndpoints.quicklook_jobs}/${quickLookJob}/`
     }
     let endPoint = withAvailability
         ? `${apiEndpoints.parameter_availability}`
@@ -60,7 +62,7 @@ const quickLookCompatability = (quickLookMode: boolean): (a: QCCArg) => Array<De
             if (!isQCResponse(data)) {
                 throw new Error("Quicklook data is not in the expected format.")
             };
-            return data.vars.map((v: QcParameter) => {
+            return data.variables.map((v: QcParameter) => {
                 // TODO: Add units to the quicklook data
                 // TODO: Should probably use a builder pattern here
                 return {
@@ -98,7 +100,6 @@ const useDispatchParameters = () => {
     const dispatchDone = useSelector(state => state.vars.paramsDispatched);
     const paramSet = useSelector(state => state.vars.paramSet);
     const quickLookMode = useSelector(state => state.config.quickLookMode);
-
     const endPoint = useParameterEndpoint(true)
 
     useEffect(() => {
@@ -135,7 +136,6 @@ const useGetParameters = () => {
     const [params, setParams] = useState<Array<DecadesParameter> | null>(null);
     const paramSet = useSelector(state => state.vars.paramSet);
     const quickLookMode = useSelector(state => state.config.quickLookMode);
-
     const endPoint = useParameterEndpoint(false)
 
     useEffect(() => {
@@ -224,7 +224,7 @@ const useBrainFade = <T extends HTMLElement>() => {
     return ref;
 }
 
-const useNoScroll = (stopScroll: boolean) => {
+const useScrollInhibitor = (stopScroll: boolean) => {
     useEffect(() => {
         if (stopScroll) {
             document.body.classList.add('no-scroll')
@@ -237,7 +237,28 @@ const useNoScroll = (stopScroll: boolean) => {
     }, [stopScroll])
 }
 
+const useQuickLookTimeframe = () => {
+    const qcJob = useSelector(state => state.quicklook.qcJob)
+    const dispatch = useDispatch()
+
+    if(!qcJob) return
+    const dataURL = new URL(apiEndpoints.quicklook_data)
+    dataURL.searchParams.set('job', qcJob)
+    dataURL.searchParams.set('para', 'utc_time')
+    fetch(dataURL)
+      .then(response => response.json())
+      .then(data => {
+        const time = data.utc_time
+        const startTime = time[0] * 1000
+        const endTime = time[time.length - 1] * 1000
+        dispatch(setCustomTimeframe({start: startTime, end: endTime}))
+      })
+      .catch(e => {
+        console.error("Error fetching quicklook timeframe:", e)
+      })
+}
+
 export {
     useDispatchParameters, useServers, useGetParameters, useDarkMode, useBrainFade,
-    useNoScroll
+    useScrollInhibitor, useQuickLookTimeframe
 }

@@ -46,6 +46,8 @@ export const apiEndpoints = {
     'data_ws': `${apiBase}/livedata_ws`,
     'tank_status': `${apiBase}/tank_status`,
     'flightsummary': `${apiBase}/flightsummary/get`,
+    'quicklook_jobs': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-jobs`,
+    'quicklook_data': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-data`,
 }
 
 export const enableTutorial = booleanEnv("VITE_ENABLE_TUTORIAL", true)

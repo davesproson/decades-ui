@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+    <style>
+        .text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 50px;
+            fill: white;
+            stroke: white;
+            stroke-width: 2;
+            text-anchor: middle;
+        }
+
+        .faam-lightblue {
+            fill: #0ABBEF;
+            stroke: #0ABEEF;
+        }
+
+        .faam-darkblue {
+            fill: #252243;
+            stroke: #252243;
+        }
+
+    </style>
+    <ellipse class="faam-lightblue" cx="200" cy="200" rx="180" ry="180" fill="none"/>
+    <ellipse class="faam-darkblue" cx="200" cy="200" rx="150" ry="150" fill="none"/>
+    <text x="100" y="215" class="text">F</text>
+    <text x="100" y="215" dx="65" class="text">A</text>
+    <text x="100" y="215" dx="130" class="text">A</text>
+    <text x="100" y="215" dx="195" class="text">M</text>
+    <!-- <line x1="0" x2="400" y1="200" y2="200" stroke="2" class="text"/> -->
+
+</svg>

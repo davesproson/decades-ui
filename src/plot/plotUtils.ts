@@ -7,11 +7,13 @@ import { DecadesParameter, ParamsState } from '../redux/parametersSlice'
 import { TephigramOptions } from '../tephigram/tephigram.types'
 import { DashboardOptions } from '../dashboard/dashboard.types'
 import { AlarmOptions } from '../alarms/alarm.types'
+import store from '../redux/store'
 
+type DummyExtras = {ordvar?: string, job?: string}
 type GetDataOptions =  PlotURLOptions 
                         | TephigramOptions
-                        | (AlarmOptions & {ordvar?: string})
-                        | (DashboardOptions & {ordvar?: string})
+                        | (AlarmOptions & DummyExtras)
+                        | (DashboardOptions & DummyExtras)
 type GetDataPlotOptions = PlotURLOptions | TephigramOptions
 
 /**
@@ -231,29 +233,29 @@ function getXAxis(options: PlotURLOptions, param: string) {
  */
 const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
     const server = options.server ? options.server : location.host
-    let url = `${serverProtocol}://${server}${apiEndpoints.data}`
+    const job = store.getState().quicklook.qcJob
+
+    let url = job
+        ? new URL(`${apiEndpoints.quicklook_data}`)
+        : new URL(`${serverProtocol}://${server}${apiEndpoints.data}`)
+
+    if(job) 
+        url.searchParams.set('job', job)
 
     // Allow the endpoint to include a query string
-    if(url.includes('?')) {
-        url += `&frm=${start}`
-    } else {
-        url += `?frm=${start}`
-    }
+    url.searchParams.set('frm', start.toString())
 
     // If the end time is defined, add it to the url
-    if(end) {
-        url += `&to=${end}`
-    }
+    if(end) url.searchParams.set('to', end.toString())
 
     for (const para of options.params) {
-        url += `&para=${para}`
+        url.searchParams.append('para', para)
     }
 
-    if(options.ordvar) {
-        url += `&para=${options.ordvar}`
-    }
-
-    return url
+    if(options.ordvar)
+        url.searchParams.append('para' ,options.ordvar)
+    
+    return url.toString()
 }
 
 /**

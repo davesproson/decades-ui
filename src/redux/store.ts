@@ -12,6 +12,7 @@ import viewReducer from './viewSlice'
 import tutorialReducer from './tutorialSlice'
 import configReducer from './configSlice'
 import gaugeReducer from './gaugeSlice'
+import quicklookReducer from './quicklookSlice'
 
 const store = configureStore({
   reducer: {
@@ -21,7 +22,8 @@ const store = configureStore({
     gauges: gaugeReducer,
     view: viewReducer,
     tutorial: tutorialReducer,
-    config: configReducer
+    config: configReducer,
+    quicklook: quicklookReducer
   }
 })
 

@@ -9,6 +9,7 @@ import { useServers } from '../hooks'
 import OptionSwitch from '../components/optionSwitch';
 import ToggleSwitch from '../components/toggleSwitch';
 import { Panel } from '../components/panel';
+import { LiveDataOnly } from '../quicklook';
 
 interface OptionBlockProps {
     flexDirection?: 'row' | 'column'
@@ -122,21 +123,27 @@ const PlotOptionCard = () => {
                 <OptionSwitch options={plotStyle.options} value={plotStyle.value} toggle={togglePlotStyle} />
             </OptionBlock>
 
-            <OptionBlock title="Scrolling Window">
-                <ToggleSwitch on={scrollingOn} toggle={toggleScrollingWindow} />
-            </OptionBlock>
+            <LiveDataOnly >
+                <OptionBlock title="Scrolling Window">
+                    <ToggleSwitch on={scrollingOn} toggle={toggleScrollingWindow} />
+                </OptionBlock>
+            </LiveDataOnly>
 
-            <OptionBlock title="Data Header">
-                <ToggleSwitch on={dataHeaderOn} toggle={toggleDataHeader} />
-            </OptionBlock>
+            <LiveDataOnly>
+                <OptionBlock title="Data Header">
+                    <ToggleSwitch on={dataHeaderOn} toggle={toggleDataHeader} />
+                </OptionBlock>
+            </LiveDataOnly>
 
             <OptionBlock title="Ordinate Axis">
                 <ParameterSelectorDropdown />
             </OptionBlock>
 
-            <OptionBlock title="Server">
-                <ServerSelectorDropDown />
-            </OptionBlock>
+            <LiveDataOnly>
+                <OptionBlock title="Server">
+                    <ServerSelectorDropDown />
+                </OptionBlock>
+            </LiveDataOnly>
         </Panel.Dark>
     )
 }

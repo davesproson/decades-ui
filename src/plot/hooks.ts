@@ -22,7 +22,8 @@ interface OptionsState {
     plotStyle: string,
     ordinateAxis: string,
     server: string | undefined,
-    axes: string[]
+    axes: string[],
+    job?: string | null
 }
 
 /**
@@ -59,6 +60,7 @@ const getUrl = (options: OptionsState) => {
     url.searchParams.set("style", options.plotStyle)
     url.searchParams.set("ordvar", options.ordinateAxis)
     if(options.server) url.searchParams.set("server", options.server)
+    if(options.job) url.searchParams.set("job", options.job)
     // url.searchParams.set("server", options.server)
     for(const axStr of axisStrings) {
         url.searchParams.append("axis", axStr)
@@ -88,6 +90,7 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
     const axisOptions = useSelector(state => state.vars.axes);
     const vars = useSelector(state => state.vars);
     const server = useSelector(state => state.options.server);
+    const qcJob = useSelector(state => state.quicklook.qcJob);
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe);
     
     // Get the parameters
@@ -125,8 +128,6 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
         // Build the axes array
         let axes = getAxesArray(vars)
         
-        
-        
         // Update the plot URL whenever the plot options change
         const optionSet = {
             timeframe: overridden("timeframe", timeframe),
@@ -137,7 +138,8 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
             plotStyle: overridden("style", plotOptions.plotStyle.value),
             ordinateAxis: overridden("ordvar", plotOptions.ordinateAxis),
             server: overridden("server", server),
-            axes: overridden("axes", axes)
+            axes: overridden("axes", axes),
+            job: overridden("job", qcJob)
         }
 
         setPlotUrl(getUrl(optionSet))

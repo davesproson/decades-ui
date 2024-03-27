@@ -6,6 +6,7 @@ interface TephigramOptions {
     params: Array<string>,
     ordvar: 'static_pressure',
     server: string | undefined,
+    job?: string | null
 };
 
 /**
