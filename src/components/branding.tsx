@@ -10,9 +10,9 @@ type BrandLogoProps = {
  * 
  * @returns a brand logo
  */
-const BrandLogo = (props: BrandLogoProps) => {
-    const TextElement = () => props.text 
-        ? <div className="is-size-4">{props.text}</div> 
+const BrandLogo = ({text}: BrandLogoProps) => {
+    const TextElement = () => text 
+        ? <div className="is-size-4">{text}</div> 
         : null
 
     return (

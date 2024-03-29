@@ -17,7 +17,7 @@ const numberEnv = (key: string, defaultValue: number) => {
     }
 }
 
-export const deployment = import.meta.env.VITE_DEPLOYMENT_MODE || "dev"
+export const deployment = import.meta.env.VITE_VISTA_DEPLOYMENT_MODE || "dev"
 
 export const serverPrefix = ""
 export const serverProtocol = {
@@ -27,11 +27,11 @@ export const serverProtocol = {
 }[deployment]
 
 export const wsProtocol = serverProtocol === "https" ? "wss" : "ws"
-export const useWebSocketData = booleanEnv("VITE_USE_WEBSOCKET_DATA", false)
+export const useWebSocketData = booleanEnv("VITE_VISTA_USE_WEBSOCKET_DATA", false)
 
-export const base = import.meta.env.VITE_BASE_URL || "/decades-vista/"
+export const base = import.meta.env.VITE_VISTA_BASE_URL || "/decades-vista/"
 
-export const badData = numberEnv("VITE_BAD_DATA", -999.99)
+export const badData = numberEnv("VITE_VISTA_BAD_DATA", -999.99)
 
 export const apiBase = {
     "demo": "/live",
@@ -50,7 +50,7 @@ export const apiEndpoints = {
     'quicklook_data': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-data`,
 }
 
-export const enableTutorial = booleanEnv("VITE_ENABLE_TUTORIAL", true)
+export const enableTutorial = booleanEnv("VITE_VISTA_ENABLE_TUTORIAL", true)
 
 type TransformType<T> = {
     [key: string]: (data: T) => T
@@ -78,4 +78,4 @@ export const plotHeaderDefaults = [
 ]
 
 // Experimental features
-export const enableQuicklook = booleanEnv("VITE_ENABLE_QUICKLOOK", false)
+export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
