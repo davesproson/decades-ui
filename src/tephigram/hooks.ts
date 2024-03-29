@@ -67,7 +67,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
     const params = searchParams.get('params') || 'deiced_true_air_temp_c,dew_point'
     const paramsArray = params.split(',')
     const servers = useServers()
-    const [server, setServer] = useState(null)
+    const [server, setServer] = useState<string|null>(null)
     const [darkMode, _setDarkMode] = useDarkMode()
 
     useEffect(() => {

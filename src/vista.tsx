@@ -85,7 +85,7 @@ const DecadesVista = () => {
         </Route>
         <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
         <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
-        {/* @ts-ignore TODO - why the whining here? */}
+        {/* @ts-ignore TODO: TS complaining here as PlotDispatcher expects PlotURLOptions & PlotDispatcherProps */}
         <Route path="/plot" element={<SuspenseLoader><PlotDispatcher /></SuspenseLoader>} />
         <Route path="/dashboard" element={<SuspenseLoader><DashboardDispatcher /></SuspenseLoader>} />
         <Route path="/tephigram" element={<SuspenseLoader><Tephigram /></SuspenseLoader>} />
