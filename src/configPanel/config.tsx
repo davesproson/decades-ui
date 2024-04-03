@@ -10,8 +10,9 @@ import {
 } from "../redux/parametersSlice";
 
 import { Button } from "../components/buttons";
-import { Tag } from "../components/tags";
 import { LiveDataOnly } from "../quicklook";
+import { Option, OptionList } from "./components";
+import { ChatConfigSwitch } from "../chat/chat";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -22,35 +23,7 @@ const PARAMETER_SETS = [{
     paramset: "corechem"
 }]
 
-interface OptionProps {
-    title: string,
-    tag?: {
-        text: string,
-        is: string,
-    }
-    children?: any
-}
-const Option = (props: OptionProps) => {
-    return (
-        <li className="mt-2 mb-4">
-            <div className="mb-2">
-                {props.title} {props.tag ? <Tag {...props.tag} /> : null}
-            </div>
-            {props.children}
-        </li>
-    )
-}
 
-interface OptionListProps {
-    children: any
-}
-const OptionList = (props: OptionListProps) => {
-    return (
-        <ul className="">
-            {props.children}
-        </ul>
-    )
-}
 
 const DarkModeSwitch = () => {
     const [darkMode, setDarkMode] = useDarkMode();
@@ -130,13 +103,19 @@ const ConfigPanel = () => {
                         <a className="has-text-black" href="#" onClick={toggleSlide}>Options</a>
                     </h1>
                     <OptionList>
-                        <Option title="Dark Mode" tag={{ text: "Beta", is: "success" }}>
+                        <Option title="Dark Mode">
                             <DarkModeSwitch />
                         </Option>
 
                         <LiveDataOnly>
                             <Option title="Parameter Set">
                                 <ParamSetSelector />
+                            </Option>
+                        </LiveDataOnly>
+
+                        <LiveDataOnly>
+                            <Option title="Chat">
+                                <ChatConfigSwitch />
                             </Option>
                         </LiveDataOnly>
                     </OptionList>

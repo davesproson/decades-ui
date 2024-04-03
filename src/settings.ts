@@ -37,6 +37,7 @@ export const apiEndpoints = {
     'data_ws': `${apiBase}/livedata_ws`,
     'tank_status': `${apiBase}/tank_status`,
     'flightsummary': `${apiBase}/flightsummary/get`,
+    'chat': `${apiBase}/chat`,
     'quicklook_jobs': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-jobs`,
     'quicklook_data': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-data`,
 }
@@ -72,3 +73,4 @@ export const plotHeaderDefaults = [
 
 // Experimental features
 export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
+export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)

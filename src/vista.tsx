@@ -1,3 +1,5 @@
+import 'react-toastify/dist/ReactToastify.css';
+
 import { lazy, useEffect } from 'react';
 import { Routes, Route, useSearchParams } from 'react-router-dom'
 import { useServers, useDarkMode, useQuickLookTimeframe } from './hooks';
@@ -23,12 +25,15 @@ const GaugeConfigurator = lazy(() => import('./gauge/gaugeConfig'))
 const HeadingIndicator = lazy(() => import('./heading/heading'))
 const RollIndicator = lazy(() => import('./roll/roll'))
 const PitchIndicator = lazy(() => import('./pitch/pitch'))
+const ChatProvider = lazy(() => import('./chat/provider'))
+const Chat = lazy(() => import('./chat/chat'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useDispatch } from './redux/store';
 import { setParamSet } from './redux/parametersSlice';
 import { setQuickLookMode } from './redux/configSlice';
 import { setQcJob } from './redux/quicklookSlice';
+import { ToastContainer } from 'react-toastify';
 
 
 
@@ -68,9 +73,10 @@ const DecadesVista = () => {
   
   useQuickLookTimeframe()
 
-    
   return (
     <VistaErrorBoundary>
+      <ChatProvider>
+      <ToastContainer />
     <SuspenseLoader text="Initializing..." >
       <Routes>
         <Route path="/" element={<><Navbar /><Tutorial /></>} >
@@ -83,6 +89,7 @@ const DecadesVista = () => {
           <Route path="/timer-config" element={<SuspenseLoader><TimerConfig /></SuspenseLoader>} />
           <Route path="/gauge-config" element={<SuspenseLoader><GaugeConfigurator /></SuspenseLoader>} />
         </Route>
+        <Route path="/chat" element={<SuspenseLoader><Chat /></SuspenseLoader>} />
         <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
         <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
         {/* @ts-ignore TODO: TS complaining here as PlotDispatcher expects PlotURLOptions & PlotDispatcherProps */}
@@ -98,6 +105,7 @@ const DecadesVista = () => {
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </SuspenseLoader>
+    </ChatProvider>
     </VistaErrorBoundary>
   )
 }
