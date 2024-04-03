@@ -1,6 +1,7 @@
 import { useDispatch } from "../redux/store"
 import { setFilterText } from "../redux/filterSlice"
 import { Input } from "../components/forms"
+import { memo, useCallback } from "react"
 
 
 interface ParameterSearchInputProps {
@@ -17,12 +18,12 @@ interface ParameterSearchInputProps {
  *  <ParameterSearchInput filterText={paramName} />
  * )
  */
-const ParameterSearchInput = (props: ParameterSearchInputProps) => {
+const ParameterSearchInput = memo((props: ParameterSearchInputProps) => {
     const dispatch = useDispatch()
 
-    const setFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const setFilter = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setFilterText({filterText: e.target.value}))
-    }
+    }, [dispatch, setFilterText, props.filterText])
 
     return (
         <div style={{marginBottom: ".5em"}}>
@@ -34,6 +35,6 @@ const ParameterSearchInput = (props: ParameterSearchInputProps) => {
             />
         </div>
     )
-}
+})
 
 export { ParameterSearchInput }

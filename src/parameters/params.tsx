@@ -9,10 +9,11 @@ import { VistaError } from "../components/error"
 import { Parameter } from "../redux/parametersSlice"
 import { ParameterSearchInput } from "./filterBar"
 import { Container } from "../components/container"
+import { memo } from "react"
 
 type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
 
-const ParameterLine = (props: ParameterLineProps) => {
+const ParameterLine = memo((props: ParameterLineProps) => {
     const dispatch = useDispatch()
 
     const toggleSelected = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => {
@@ -51,9 +52,9 @@ const ParameterLine = (props: ParameterLineProps) => {
             <td>{props.units}</td>
         </tr>
     )
-}
+})
 
-const ParameterTable = () => {
+const ParameterTable = memo(() => {
 
     const vars = useSelector(state => state.vars)
     const filterText = useSelector(state => state.paramfilter)
@@ -67,9 +68,7 @@ const ParameterTable = () => {
     if (!vars.params) return <Loader text="Getting parameters..." />;
     if (server === null) return <VistaError message="Server is not available." error={null} />
 
-    const params = [...vars.params];
-
-    const rows = params
+    const rows = vars.params
         .filter(
             x => (x.name.toLowerCase().includes(filterText.filterText.toLowerCase())
                 || x.id.toString().toLowerCase().includes(filterText.filterText.toLowerCase())))
@@ -99,6 +98,6 @@ const ParameterTable = () => {
             </Container>
         </FadeOut>
     )
-}
+})
 
 export default ParameterTable
