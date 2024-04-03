@@ -24,7 +24,10 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.4",
+    "react-toastify": "^10.0.5",
     "react-tooltip": "^5.25.2",
+    "react-use-websocket": "^4.8.1",
+    "usehooks-ts": "^3.0.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
