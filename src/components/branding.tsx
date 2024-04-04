@@ -17,7 +17,7 @@ const BrandLogo = (props: BrandLogoProps) => {
 
     return (
         <>
-            <img src={"faam-logo.svg"} alt="Logo" />
+            <img src={"faam-logo.svg"} alt="Logo" style={{maxHeight: "50%", maxWidth: "50%"}}/>
             <TextElement />    
         </>
     )
