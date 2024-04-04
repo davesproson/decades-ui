@@ -22,6 +22,12 @@ const ChatNotOn = () => {
     )
 }
 
+const ChatTime = (props: {time: number}) => {
+    const date = new Date(props.time)
+    return <span>{date.toLocaleTimeString()}</span>
+}
+
+
 const Chat = () => {
 
     const { state, actions } = useContext(ChatContext);
@@ -57,7 +63,13 @@ const Chat = () => {
                         ? 'success'
                         : 'info'
 
-                    return <div key={message.id}><Tag is={tagType} text={tagText} extraClasses='mr-2 mb-1' />{message.message}</div>
+                    return (
+                        <div key={message.id}>
+                            <span className="mr-2"><ChatTime time={message.time} /></span>
+                            <Tag is={tagType} text={tagText} extraClasses='mr-2 mb-1' />
+                            {message.message}
+                        </div>
+                    )
                 })}
                 <div ref={ref} />
             </div>
