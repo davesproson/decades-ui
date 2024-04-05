@@ -11,7 +11,7 @@ export type ChatConfig = {
 
 export type ChatContextType = {
     state: {
-        messages: Array<ChatMessageResponse>,
+        messages: Array<IncomingChatMessage>,
         connectionStatus: string,
         user: ChatUser,
         config: ChatConfig
@@ -25,12 +25,12 @@ export type ChatContextType = {
     }
 }
 
-export type ChatMessage = {
+export type OutgoingChatMessage = {
     type: "message",
     username: string,
-    id: string,
+    userid: string,
     message: string,
-    time: number
+    time: number,
 }
 
 export type HistoryMessage = {
@@ -47,13 +47,14 @@ export type RegisterMessage = {
     id?: string
 }
 
-export type Message = ChatMessage | HistoryMessage | HeartbeatMessage | RegisterMessage
+export type Message = OutgoingChatMessage | HistoryMessage | HeartbeatMessage | RegisterMessage
 
-export type ChatMessageResponse = {
+export type IncomingChatMessage = {
     type: "message",
     username: string,
     message: string,
-    id: string,
+    userid: string,
+    messageid: string,
     time: number
 }
 
@@ -65,14 +66,14 @@ export type RegisterMessageResponse = {
 
 export type HistoryMessageResponse = {
     type: "history"
-    messages: Array<ChatMessageResponse>
+    messages: Array<IncomingChatMessage>
 }
 
 export type HeartbeatMessageResponse = {
     type: "heartbeat"
 }
 
-export type MessageResponse = ChatMessageResponse
+export type MessageResponse = IncomingChatMessage
     | HistoryMessageResponse
     | HeartbeatMessageResponse
     | RegisterMessageResponse

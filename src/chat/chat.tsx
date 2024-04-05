@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ChatContext } from './provider';
 import { FlexCenter, Spacer, Splash } from '../components/layout';
 import { DecadesBanner } from '../components/decades';
@@ -35,6 +35,10 @@ const Chat = () => {
     const ref = useScrollIntoView([state.messages])
     useScrollInhibitor(true)
 
+    useEffect(() => {
+        actions.register(state.user.username, state.user.id)
+    }, [])
+
     const sendMessage = () => {
         if (!messageText) return
         actions.sendChat(messageText)
@@ -64,7 +68,7 @@ const Chat = () => {
                         : 'info'
 
                     return (
-                        <div key={message.id}>
+                        <div key={message.messageid}>
                             <span className="mr-2"><ChatTime time={message.time} /></span>
                             <Tag is={tagType} text={tagText} extraClasses='mr-2 mb-1' />
                             {message.message}

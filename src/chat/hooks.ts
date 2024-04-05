@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { ChatConfig, ChatMessage, ChatMessageResponse, ChatUser, HistoryMessageResponse, MessageResponse, RegisterMessageResponse } from "./types"
+import { ChatConfig, IncomingChatMessage, ChatUser,  MessageResponse } from "./types"
 import { useLocalStorage } from "usehooks-ts"
 import { useDarkMode } from "../hooks"
 import { base } from "../settings"
@@ -31,12 +31,12 @@ export const useChatConfig = () => {
     return [config, setConfig] as const
 }
 
-const buildMessage = (message: ChatMessage) => {
+const buildMessage = (message: IncomingChatMessage) => {
     return `${message.username}: ${message.message}`
 }
 
 export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
-    const [messages, setMessages] = useState<Array<ChatMessageResponse>>([])
+    const [messages, setMessages] = useState<Array<IncomingChatMessage>>([])
     const [toastMessage, setToastMessage] = useState<string | null>(null)
     const [darkMode, _setDarkMode] = useDarkMode()
     const [_user, setUser] = useChatUser(null)
@@ -52,16 +52,14 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
             }
 
             if (parsedMessage.type === "history") {
-                const history = JSON.parse(lastMessage.data) as HistoryMessageResponse
-                setMessages(history.messages)
+                setMessages(parsedMessage.messages)
             }
 
             if (parsedMessage.type === "register") {
-                const registeredInfo = JSON.parse(lastMessage.data) as RegisterMessageResponse
-                const userId = registeredInfo.id || ''
-                const regState = registeredInfo.id ? true : null
+                const userId = parsedMessage.id || ''
+                const regState = parsedMessage.id ? true : null
                 setUser({
-                    username: registeredInfo.username,
+                    username: parsedMessage.username,
                     id:  userId,
                     regState: regState
                 })
