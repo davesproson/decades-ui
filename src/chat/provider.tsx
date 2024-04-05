@@ -2,7 +2,7 @@ import React, { createContext } from "react"
 import useWebSocket, { ReadyState } from "react-use-websocket"
 import { apiEndpoints } from "../settings";
 import { useChatConfig, useChatUser, useMessageHandler } from "./hooks";
-import { ChatContextType, RegisterMessage } from "./types";
+import { ChatContextType, ChatMessage, RegisterMessage } from "./types";
 import { ChatDispatch } from "./chat";
 
 
@@ -78,12 +78,15 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
     const sendChat = (message: string) => {
         if (!message || !config.chatActive) return
 
-        sendMessage(JSON.stringify({
+        const messageObject: ChatMessage = {
             type: 'message',
             username: user.username,
+            id: user.id,
             message: message,
             time: Date.now()
-        }))
+        }
+
+        sendMessage(JSON.stringify(messageObject))
     }
 
     const connectionStatus = {

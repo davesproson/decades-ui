@@ -28,6 +28,7 @@ export type ChatContextType = {
 export type ChatMessage = {
     type: "message",
     username: string,
+    id: string,
     message: string,
     time: number
 }
