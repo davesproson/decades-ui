@@ -4,6 +4,7 @@ import { apiEndpoints } from "../settings";
 import { useChatConfig, useChatUser, useMessageHandler } from "./hooks";
 import { ChatContextType, OutgoingChatMessage, RegisterMessage } from "./types";
 import { ChatDispatch } from "./chat";
+import { base } from "../settings";
 
 
 export const ChatContext = createContext<ChatContextType>({
@@ -49,8 +50,15 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
             sendMessage(JSON.stringify({ type: "history" }))
             console.log('Connected to chat server')
         },
-        onClose: () => {
+        onClose: (e) => {
             console.log('Disconnected from chat server')
+            const code = e.code
+            if (code === 4001) {
+                if(state.config.chatActive) {
+                    actions.toggleChatEnabled()
+                }
+                window.location.href = `/decades/auth?next=${base}`
+            }
         }
     }, config.chatActive
     );
