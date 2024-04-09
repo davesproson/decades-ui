@@ -13,6 +13,9 @@ import { Button } from "../components/buttons";
 import { LiveDataOnly } from "../quicklook";
 import { Option, OptionList } from "./components";
 import { ChatConfigSwitch } from "../chat/chat";
+import { BleedingEdge } from "../components/bleeding";
+
+import { enableChat } from "../settings";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -114,9 +117,11 @@ const ConfigPanel = () => {
                         </LiveDataOnly>
 
                         <LiveDataOnly>
-                            <Option title="Chat">
-                                <ChatConfigSwitch />
-                            </Option>
+                            <BleedingEdge show={enableChat}>
+                                <Option title="Chat">
+                                    <ChatConfigSwitch />
+                                </Option>
+                            </BleedingEdge>
                         </LiveDataOnly>
                     </OptionList>
                 </div>
