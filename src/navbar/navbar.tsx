@@ -10,12 +10,13 @@ import { useTephiAvailable, useTephiUrl } from "../tephigram/hooks"
 import { Outlet } from "react-router-dom"
 import { loadSavedView, setViewConfigTab } from "../redux/viewSlice"
 import { useNavigate } from "react-router-dom"
-import { presets, geoCoords, enableQuicklook } from "../settings"
+import { presets, geoCoords, enableQuicklook, enableChat } from "../settings"
 import { Button } from "../components/buttons"
 import PropTypes from "prop-types"
 import { ConfigPanel } from "../configPanel/config"
 import { SuspenseLoader } from "../components/loader"
 import { LiveDataOnly } from "../quicklook"
+import { BleedingEdge } from "../components/bleeding"
 
 const VistaModeSelector = lazy(() => import('../modeSelect'))
 const QuicklookSelector = lazy(() => import('../quicklook'))
@@ -242,6 +243,12 @@ const MoreSelector = () => {
                 More
             </a>
             <div className="navbar-dropdown" onClick={() => setVisible(false)} onMouseLeave={() => setVisible(false)}>
+                <BleedingEdge show={enableChat}>
+                    <Link to="/chat" className="navbar-item">
+                        Chat...
+                    </Link>
+                    <hr className="navbar-divider" />
+                </BleedingEdge>
                 <Link to="/alarm-config" className="navbar-item">
                     Alarms...
                 </Link>
