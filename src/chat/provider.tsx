@@ -57,7 +57,7 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
                 if(state.config.chatActive) {
                     actions.toggleChatEnabled()
                 }
-                window.location.href = `/decades/auth?next=${base}`
+                window.location.href = `${apiEndpoints.login}?next=${base}`
             }
         }
     }, config.chatActive

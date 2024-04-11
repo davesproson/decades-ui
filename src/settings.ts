@@ -38,6 +38,8 @@ export const apiEndpoints = {
     'tank_status': `${apiBase}/tank_status`,
     'flightsummary': `${apiBase}/flightsummary/get`,
     'chat': `${apiBase}/chat`,
+    'login': `${apiBase}/login`,
+    'logout': `${apiBase}/logout`,
     'quicklook_jobs': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-jobs`,
     'quicklook_data': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-data`,
 }

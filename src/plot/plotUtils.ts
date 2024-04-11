@@ -7,6 +7,7 @@ import { DecadesParameter, ParamsState } from '../redux/parametersSlice'
 import { TephigramOptions } from '../tephigram/tephigram.types'
 import { DashboardOptions } from '../dashboard/dashboard.types'
 import { AlarmOptions } from '../alarms/alarm.types'
+import { authFetch as fetch } from '../utils'
 import store from '../redux/store'
 
 type DummyExtras = {ordvar?: string, job?: string}
@@ -439,7 +440,8 @@ const getData = async (
 
     const url = getDataUrl(options, start, end)
 
-    return fetch(url).then(response => response.json())
+    const response = await fetch(url)
+    return await response.json()
 
 }
 

@@ -1,3 +1,5 @@
+import { apiEndpoints } from "./settings"
+
 export const onLuxe = () => {
     return window.location.hostname.startsWith('192.168')
 }
@@ -85,4 +87,37 @@ export const numberEnv = (key: string, defaultValue: number) => {
     }
     return value
  
+}
+
+/**
+ * A wrapper around fetch which shows an error page on 403 and a redirect on 401.
+ * 
+ * @param url - the URL to fetch
+ * @param options - the fetch options
+ * @returns the fetch response
+ */
+export const authFetch = async (url: string, options?: RequestInit): Promise<Response> => {
+    const modOptions: RequestInit = {
+        ...options,
+        credentials: "include",
+        headers: {
+            ...options?.headers,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    }
+    const response = await fetch(url, modOptions)
+
+    if (response.status === 403) {
+        // Show error page
+    }
+    
+    if (response.status === 401) {
+        // Redirect to login page
+        const redirectUrl = encodeURIComponent(window.location.href)
+        const authUrl = `${apiEndpoints.login}?next=${redirectUrl}`
+        location.replace(authUrl)
+    }
+
+    return response
 }
