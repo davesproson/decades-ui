@@ -59,7 +59,7 @@ const Chat = (props: ChatProps) => {
     const top = props.embedded ? "0" : "40px"
 
     return (
-        <FlexCenter direction="column" extraStyle={{ inset: 0, position: "absolute", top: top }}>
+        <FlexCenter direction="column" extraStyle={{ inset: 0, position: "relative", top: top }}>
             <div className="is-flex is-flex-grow-1 is-flex-direction-column" style={{ justifyContent: "left", width: "100%", padding: "20px", overflow: "auto" }}>
                 {state.messages.map(message => {
 
@@ -169,6 +169,10 @@ export const ChatConfigSwitch = () => {
                 <Button small kind={buttonType} onClick={toggleNotify}>Notify</Button>
         </>
     )
+}
+
+export const ChatWidget = () => {
+    return <Chat embedded />
 }
 
 export default Chat;

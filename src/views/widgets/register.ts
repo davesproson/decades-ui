@@ -12,6 +12,7 @@ import { usePitchWidget } from './pitchWidget';
 import { useClockWidget } from './clockWidget';
 
 import { RegistryType, WidgetConfiguration } from './widgets.types';
+import { useChatWidget } from './chatWidget';
 
 /**
  * A utility class for registering widgets
@@ -47,7 +48,9 @@ const useWidgets = () => {
     useTimersWidget(registry)
     useRollWidget(registry)
     usePitchWidget(registry)
+    useChatWidget(registry)
     useClockWidget(registry)
+
 
     return registry
 }
