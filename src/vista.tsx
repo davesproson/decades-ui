@@ -88,8 +88,8 @@ const DecadesVista = () => {
           <Route path="/alarm-config" element={<SuspenseLoader><AlarmList /></SuspenseLoader>} />
           <Route path="/timer-config" element={<SuspenseLoader><TimerConfig /></SuspenseLoader>} />
           <Route path="/gauge-config" element={<SuspenseLoader><GaugeConfigurator /></SuspenseLoader>} />
+          <Route path="/chat" element={<SuspenseLoader><Chat /></SuspenseLoader>} />
         </Route>
-        <Route path="/chat" element={<SuspenseLoader><Chat /></SuspenseLoader>} />
         <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
         <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
         {/* @ts-ignore TODO: TS complaining here as PlotDispatcher expects PlotURLOptions & PlotDispatcherProps */}

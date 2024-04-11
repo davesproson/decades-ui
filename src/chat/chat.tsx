@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { ChatContext } from './provider';
 import { FlexCenter, Spacer, Splash } from '../components/layout';
-import { DecadesBanner } from '../components/decades';
 import { Button } from '../components/buttons';
 import { Tag } from '../components/tags';
 import { useScrollIntoView } from './hooks';
@@ -28,7 +27,11 @@ const ChatTime = (props: {time: number}) => {
 }
 
 
-const Chat = () => {
+type ChatProps = {
+    embedded?: boolean
+}
+
+const Chat = (props: ChatProps) => {
 
     const { state, actions } = useContext(ChatContext);
     const [messageText, setMessageText] = useState('')
@@ -53,9 +56,10 @@ const Chat = () => {
 
     if (!state.config.chatActive) return <ChatNotOn />
 
+    const top = props.embedded ? "0" : "40px"
+
     return (
-        <FlexCenter direction="column" extraStyle={{ inset: 0, position: "absolute" }}>
-            <DecadesBanner />
+        <FlexCenter direction="column" extraStyle={{ inset: 0, position: "absolute", top: top }}>
             <div className="is-flex is-flex-grow-1 is-flex-direction-column" style={{ justifyContent: "left", width: "100%", padding: "20px", overflow: "auto" }}>
                 {state.messages.map(message => {
 
