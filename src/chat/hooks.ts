@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { ChatConfig, IncomingChatMessage, ChatUser,  MessageResponse } from "./types"
 import { useLocalStorage } from "usehooks-ts"
 import { useDarkMode } from "../hooks"
 import { base } from "../settings"
 import { toast } from "react-toastify"
+import { ChatContext } from "./provider"
 
 export const useScrollIntoView = (deps: any[]) => {
     const ref = useRef<HTMLDivElement>(null)
@@ -96,4 +97,35 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
 
 
     return messages
+}
+
+export const useChatResizer = (embedded: boolean) => {
+    const [rect, setRect] = useState<DOMRect | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if(!embedded || rect) return
+
+        const containerSize = containerRef.current?.getBoundingClientRect()
+
+        if (!containerSize) return
+
+        setRect(containerSize)
+    }, [containerRef.current, rect])
+
+    useEffect(() => {
+        if(!embedded) return
+        const listener = () => setRect(null)
+        window.addEventListener('resize', listener)
+        return () => window.removeEventListener('resize', listener)
+    }, [])
+
+    return { rect, containerRef }
+}
+
+export const useRegisterChatUser = () => {
+    const { state, actions } = useContext(ChatContext);
+    useEffect(() => {
+        actions.register(state.user.username, state.user.id)
+    }, [])
 }

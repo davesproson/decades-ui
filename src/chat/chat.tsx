@@ -1,9 +1,9 @@
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useState } from 'react';
 import { ChatContext } from './provider';
 import { FlexCenter, Spacer, Splash } from '../components/layout';
 import { Button } from '../components/buttons';
 import { Tag } from '../components/tags';
-import { useScrollIntoView } from './hooks';
+import { useChatResizer, useRegisterChatUser, useScrollIntoView } from './hooks';
 import { useScrollInhibitor } from '../hooks';
 import { ChatUser } from './types';
 import OptionSwitch from '../components/optionSwitch';
@@ -35,28 +35,11 @@ const Chat = (props: ChatProps) => {
 
     const { state, actions } = useContext(ChatContext);
     const [messageText, setMessageText] = useState('')
-    const [rect, setRect] = useState<DOMRect | null>(null)
+    const { rect, containerRef } = useChatResizer(!!props.embedded)
     const chatRef = useScrollIntoView([state.messages])
-    const containerRef = useRef<HTMLDivElement>(null)
+    useRegisterChatUser()
     useScrollInhibitor(true)
-
-    useEffect(() => {
-        actions.register(state.user.username, state.user.id)
-    }, [])
-
-    useLayoutEffect(() => {
-        if(rect) return
-        const containerSize = containerRef.current?.getBoundingClientRect()
-        if (!containerSize) return
-        setRect(containerSize)
-    }, [containerRef.current, rect])
-
-    useEffect(() => {
-        const listener = () => setRect(null)
-        window.addEventListener('resize', listener)
-        return () => window.removeEventListener('resize', listener)
-    }, [])
-
+    
     const sendMessage = () => {
         if (!messageText) return
         actions.sendChat(messageText)
