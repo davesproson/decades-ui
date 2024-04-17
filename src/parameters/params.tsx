@@ -13,6 +13,28 @@ import { memo } from "react"
 
 type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
 
+type ParameterInputProps = {
+    name: string
+    id: number | string
+}
+const ParameterInput = (props: ParameterInputProps) => {
+    const dispatch = useDispatch()
+
+    const keyPress = (e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            dispatch(toggleParamSelected({
+                id: props.id
+            }))
+        }
+    }
+    return (
+        <label tabIndex={0} onKeyDown={keyPress} style={{cursor: "pointer"}}>
+            {props.name}
+        </label>
+    )
+}
+
 const ParameterLine = memo((props: ParameterLineProps) => {
     const dispatch = useDispatch()
 
@@ -48,7 +70,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
             {/* @ts-ignore TODO */}
             <td style={{ width: "0" }} className={statusClass} data="is-status">{statusText}</td>
             <td style={{ width: "0" }}>{props.id}</td>
-            <td>{props.name}</td>
+            <td><ParameterInput name={props.name} id={props.id}/></td>
             <td>{props.units}</td>
         </tr>
     )
