@@ -49,8 +49,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
     const dispatch = useDispatch()
 
     const toggleSelected = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => {
-        // @ts-ignore TODO
-        const value = (e.target as Element).attributes.data?.value;
+        const value = (e.target as HTMLTableRowElement).dataset?.data;
 
         if (value !== "is-status") {
             return dispatch(toggleParamSelected({
@@ -77,8 +76,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
 
     return (
         <tr className={selectedClass} onClick={(e) => toggleSelected(e)} style={{ "cursor": "pointer" }}>
-            {/* @ts-ignore TODO */}
-            <td style={{ width: "0" }} className={statusClass} data="is-status">{statusText}</td>
+            <td style={{ width: "0" }} className={statusClass} data-data="is-status">{statusText}</td>
             <td style={{ width: "0" }}>{props.id}</td>
             <td><ParameterInput name={props.name} id={props.id} selected={props.selected}/></td>
             <td>{props.units}</td>
