@@ -93,13 +93,13 @@ const Chat = (props: ChatProps) => {
 
             <div className="is-flex is-flex-direction-row" style={{ width: "100%", padding: "10px" }}>
                 <div className="is-flex is-flex-grow-1" >
-                    <input className="input" type="text" style={{ width: "100%" }} value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={handleEnter} />
+                    <input className="input is-secondary mr-1" type="text" style={{ width: "100%" }} value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={handleEnter} />
                 </div>
 
                 <div className="is-flex">
-                    <Button.Info onClick={sendMessage}>
-                        Send Message
-                    </Button.Info>
+                    <Button.Secondary outlined onClick={sendMessage}>
+                        Send
+                    </Button.Secondary>
                 </div>
             </div>
         </FlexCenter >
@@ -108,7 +108,7 @@ const Chat = (props: ChatProps) => {
 
     return (
         <div ref={containerRef} style={extraStyle}>
-            {rect ? ChatContainer : null}
+            {(rect || !props.embedded) ? ChatContainer : null}
         </div>
     );
 }
