@@ -16,22 +16,32 @@ type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
 type ParameterInputProps = {
     name: string
     id: number | string
+    selected: boolean
 }
 const ParameterInput = (props: ParameterInputProps) => {
     const dispatch = useDispatch()
 
-    const keyPress = (e: React.KeyboardEvent<HTMLElement>) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault()
-            dispatch(toggleParamSelected({
-                id: props.id
-            }))
-        }
+    const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation()
+        dispatch(toggleParamSelected({
+            id: props.id
+        }))
     }
+
+    const style = {
+        background: "none",
+        cursor: "pointer",
+        border: "none",
+    }
+
+    const classes = props.selected
+        ? "has-text-light"
+        : "has-text-dark"
+
     return (
-        <label tabIndex={0} onKeyDown={keyPress} style={{cursor: "pointer"}}>
+        <button onClick={onClick} style={style} className={classes}>
             {props.name}
-        </label>
+        </button>
     )
 }
 
@@ -70,7 +80,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
             {/* @ts-ignore TODO */}
             <td style={{ width: "0" }} className={statusClass} data="is-status">{statusText}</td>
             <td style={{ width: "0" }}>{props.id}</td>
-            <td><ParameterInput name={props.name} id={props.id}/></td>
+            <td><ParameterInput name={props.name} id={props.id} selected={props.selected}/></td>
             <td>{props.units}</td>
         </tr>
     )
