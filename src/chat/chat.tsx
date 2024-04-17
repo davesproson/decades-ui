@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChatContext } from './provider';
 import { FlexCenter, Spacer, Splash } from '../components/layout';
 import { Button } from '../components/buttons';
@@ -21,7 +21,7 @@ const ChatNotOn = () => {
     )
 }
 
-const ChatTime = (props: {time: number}) => {
+const ChatTime = (props: { time: number }) => {
     const date = new Date(props.time)
     return <span>{date.toLocaleTimeString()}</span>
 }
@@ -35,11 +35,26 @@ const Chat = (props: ChatProps) => {
 
     const { state, actions } = useContext(ChatContext);
     const [messageText, setMessageText] = useState('')
-    const ref = useScrollIntoView([state.messages])
+    const [rect, setRect] = useState<DOMRect | null>(null)
+    const chatRef = useScrollIntoView([state.messages])
+    const containerRef = useRef<HTMLDivElement>(null)
     useScrollInhibitor(true)
 
     useEffect(() => {
         actions.register(state.user.username, state.user.id)
+    }, [])
+
+    useLayoutEffect(() => {
+        if(rect) return
+        const containerSize = containerRef.current?.getBoundingClientRect()
+        if (!containerSize) return
+        setRect(containerSize)
+    }, [containerRef.current, rect])
+
+    useEffect(() => {
+        const listener = () => setRect(null)
+        window.addEventListener('resize', listener)
+        return () => window.removeEventListener('resize', listener)
     }, [])
 
     const sendMessage = () => {
@@ -56,10 +71,21 @@ const Chat = (props: ChatProps) => {
 
     if (!state.config.chatActive) return <ChatNotOn />
 
-    const top = props.embedded ? "0" : "40px"
+    const standaloneStyle: React.CSSProperties = {
+        position: "absolute",
+        inset: 0,
+        top: "40px"
+    }
 
-    return (
-        <FlexCenter direction="column" extraStyle={{ inset: 0, position: "relative", top: top }}>
+    const embeddedStyle: React.CSSProperties = {
+        position: "relative",
+        height: rect?.height,
+    }
+
+    const extraStyle = props.embedded ? embeddedStyle : standaloneStyle
+
+    const ChatContainer = (
+        <FlexCenter direction="column" extraStyle={extraStyle}>
             <div className="is-flex is-flex-grow-1 is-flex-direction-column" style={{ justifyContent: "left", width: "100%", padding: "20px", overflow: "auto" }}>
                 {state.messages.map(message => {
 
@@ -79,7 +105,7 @@ const Chat = (props: ChatProps) => {
                         </div>
                     )
                 })}
-                <div ref={ref} />
+                <div ref={chatRef} />
             </div>
 
             <div className="is-flex is-flex-direction-row" style={{ width: "100%", padding: "10px" }}>
@@ -93,8 +119,14 @@ const Chat = (props: ChatProps) => {
                     </Button.Info>
                 </div>
             </div>
-
         </FlexCenter >
+    )
+
+
+    return (
+        <div ref={containerRef} style={extraStyle}>
+            {rect ? ChatContainer : null}
+        </div>
     );
 }
 
@@ -116,7 +148,7 @@ export const ChatRegistration = () => {
 
     const register = () => {
         if (!username) return
-        if(username === state.user.username) 
+        if (username === state.user.username)
             actions.register(username, state.user.id)
         else
             actions.register(username)
@@ -166,7 +198,7 @@ export const ChatConfigSwitch = () => {
                     return { type: "chatEnabled", value: null }
                 }}
                 useStore={false} />
-                <Button small kind={buttonType} onClick={toggleNotify}>Notify</Button>
+            <Button small kind={buttonType} onClick={toggleNotify}>Notify</Button>
         </>
     )
 }
