@@ -45,7 +45,7 @@ interface OptionsState {
 const getUrl = (options: OptionsState) => {
     
     // Convert the axes options to an array of strings
-    const axisStrings = options.axes.map(x=>([] as Array<String>).concat(x).join(','))
+    const axisStrings = options.axes.map(x=>([] as Array<string>).concat(x).join(','))
 
     // Iniitialise the URL
     const url = new URL(`${siteBase}plot`, window.location.origin)
