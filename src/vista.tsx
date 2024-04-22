@@ -27,6 +27,7 @@ const RollIndicator = lazy(() => import('./roll/roll'))
 const PitchIndicator = lazy(() => import('./pitch/pitch'))
 const ChatProvider = lazy(() => import('./chat/provider'))
 const Chat = lazy(() => import('./chat/chat'))
+const DecadesMap = lazy(() => import('./map/decadesMap'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useDispatch } from './redux/store';
@@ -102,6 +103,7 @@ const DecadesVista = () => {
         <Route path="/heading" element={<SuspenseLoader><HeadingIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/roll" element={<SuspenseLoader><RollIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/pitch" element={<SuspenseLoader><PitchIndicator standalone={true}/></SuspenseLoader>} />
+        <Route path="/map" element={<SuspenseLoader><DecadesMap /></SuspenseLoader>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </SuspenseLoader>
