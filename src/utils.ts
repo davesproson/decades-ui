@@ -8,6 +8,21 @@ export const capitalize = (s: string) => (s && s[0].toUpperCase() + s.slice(1)) 
 
 export const nullNaN = (x: number) => isNaN(x) ? null : x
 
+export const ddToDmm = (dd: number, hemisphereOpts: Array<string>) => {
+    const hemisphere = dd >= 0 ? hemisphereOpts[0] : hemisphereOpts[1]
+    const absDd = Math.abs(dd)
+    const d = Math.floor(absDd)
+    const m = (absDd - d) * 60
+    return {
+        coord: `${d}° ${m.toFixed(1)}'`,
+        hemisphere: hemisphere
+    }
+}
+
+export const metresToFeet = (m: number) => m * 3.28084
+export const feetToMetres = (f: number) => f / 3.28084
+export const msToKnots = (ms: number) => ms * 1.94384
+
 /**
  * A wrapper around localStorage that allows for setting an expiry time for items.
  * 

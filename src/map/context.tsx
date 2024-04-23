@@ -10,3 +10,28 @@ export const MapContext = createContext<MapContextType>({
         addLayer: () => { },
     },
 });
+
+export type PositionData = {
+    lat: number,
+    lon: number,
+    time: number,
+    alt?: number,
+    heading?: number,
+    groundSpeed?: number,
+}
+
+export type PositionDataHistory = Array<PositionData>
+
+export type AircraftData = {
+    aircraftData: PositionData,
+    aircraftHistory: PositionDataHistory,
+}
+
+export const DataContext = createContext<AircraftData>({
+    aircraftData: {
+        lat: 0,
+        lon: 0,
+        time: 0,
+    },
+    aircraftHistory: [],
+});
