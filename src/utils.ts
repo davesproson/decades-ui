@@ -136,3 +136,14 @@ export const authFetch = async (url: string, options?: RequestInit): Promise<Res
 
     return response
 }
+
+/**
+ * Get the flight number from the tank status endpoint.
+ * 
+ * @returns the flight number
+ */
+export const getFlightNumber = async () => {
+    const response = await authFetch(apiEndpoints.tank_status)
+    const data = await response.json()
+    return data.flight_number as string
+}

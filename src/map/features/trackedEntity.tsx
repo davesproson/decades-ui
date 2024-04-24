@@ -58,6 +58,7 @@ const TrackedEntity = (props: TrackedEntityProps) => {
     useEffect(() => {
         if (!state.map) return
         const vectorLayer = new VectorLayer()
+        vectorLayer.setZIndex(99)
         const vectorSource = new VectorSource()
         vectorLayer.setSource(vectorSource)
 
