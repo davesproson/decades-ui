@@ -9,6 +9,7 @@ import { useScrollInhibitor } from '../hooks';
 import { VectorLayer } from './layers/vector';
 import { POI } from './features/poi';
 import { Toolbar } from './controls';
+import { Toolbox } from './toolbox';
 import { useState } from 'react';
 import { LayersMenu } from './layersMenu';
 import { GeoJson } from './features/geojson';
@@ -70,7 +71,10 @@ const DecadesMap = () => {
     const { aircraftData, aircraftHistory } = useAircraftData()
     const [showHeader, setShowHeader] = useState<boolean>(false)
     const [showLayersMenu, setShowLayersMenu] = useState<boolean>(false)
+    const [showToolbox, setShowToolbox] = useState<boolean>(false)
+
     useScrollInhibitor(true)
+
     const [layers, setLayers] = useState<LayerType[]>([{
         type: 'vector',
         visible: false,
@@ -91,13 +95,15 @@ const DecadesMap = () => {
     const state = {
         showHeader,
         showLayersMenu,
+        showToolbox,
         layers,
     }
 
     const actions = {
         setShowHeader,
         setShowLayersMenu,
-        setLayers
+        setLayers,
+        setShowToolbox,
     }
 
     const toggleLayerVisibility = (name: string) => {
@@ -142,6 +148,7 @@ const DecadesMap = () => {
                 })}
 
                 <Toolbar state={state} actions={actions} />
+                <Toolbox show={showToolbox} />
                 <LayersMenu show={showLayersMenu} layers={layers} toggleLayerVisibility={toggleLayerVisibility} />
             </Map>
         </DataContext.Provider>

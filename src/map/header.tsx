@@ -1,4 +1,5 @@
 import { DataContext } from './context';
+import { OverlayBox } from './overlayBox';
 import { ddToDmm, metresToFeet, msToKnots, getFlightNumber } from '../utils';
 import { useContext, useEffect, useState } from 'react';
 
@@ -44,24 +45,25 @@ const MapHeader = ({show}: {show: boolean}) => {
 
     if(!show) return null
 
-    const style: React.CSSProperties = {
-        zIndex: 5,
-        position: "relative",
-        margin: "10px",
-        borderRadius: "10px",
-        backgroundColor: "white",
-        padding: "10px",
+    const style = {
+        zIndex: 10,
+        top: 10,
+        left: 10,
+        right: 10,
+        height: 100,
     }
 
     return (
-        <div  className="has-background-light level is-mobile" style={style}>
-            <HeaderElement title="Flight Number" value={flightNumber} />
-            <HeaderElement title="Latitude" value={lat.coord} unit={lat.hemisphere} />
-            <HeaderElement title="Longitude" value={lon.coord} unit={lon.hemisphere} />
-            <HeaderElement title="Altitude" value={alt} unit="ft" />
-            <HeaderElement title="Heading" value={heading} unit="Degrees" />
-            <HeaderElement title="Groundspeed" value={speed} unit="knots" />
-        </div>
+        <OverlayBox show={show} {...style}>
+            <div className="level is-mobile">
+                <HeaderElement title="Flight Number" value={flightNumber} />
+                <HeaderElement title="Latitude" value={lat.coord} unit={lat.hemisphere} />
+                <HeaderElement title="Longitude" value={lon.coord} unit={lon.hemisphere} />
+                <HeaderElement title="Altitude" value={alt} unit="ft" />
+                <HeaderElement title="Heading" value={heading} unit="Degrees" />
+                <HeaderElement title="Groundspeed" value={speed} unit="knots" />
+            </div>
+        </OverlayBox>
     )
 }
 

@@ -3,11 +3,13 @@ import { Button } from "../components/buttons"
 type ToolbarProps = {
     state: {
         showHeader: boolean,
-        showLayersMenu: boolean
+        showLayersMenu: boolean,
+        showToolbox: boolean,
     },
     actions: {
         setShowHeader: Function,
         setShowLayersMenu: Function,
+        setShowToolbox: Function,
     }
 }
 const Toolbar = (props: ToolbarProps) => {
@@ -20,6 +22,7 @@ const Toolbar = (props: ToolbarProps) => {
         padding: "10px",
         display: "flex",
         flexDirection: "row",
+        justifyContent: "space-between",
     }
 
     const buttonStyle: React.CSSProperties = {
@@ -31,8 +34,13 @@ const Toolbar = (props: ToolbarProps) => {
 
     return (
         <div style={style}>
-            <Button.Light small style={buttonStyle} onClick={()=>props.actions.setShowLayersMenu((x: boolean)=>!x)}>L</Button.Light>
-            <Button.Light small style={buttonStyle} onClick={()=>props.actions.setShowHeader((x:boolean)=>!x)}>L</Button.Light>
+            <div>
+                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowLayersMenu((x: boolean) => !x)}>L</Button.Light>
+                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowHeader((x: boolean) => !x)}>L</Button.Light>
+            </div>
+            <div>
+                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowToolbox((x: boolean) => !x)}>L</Button.Light>
+            </div>
         </div>
     )
 }
