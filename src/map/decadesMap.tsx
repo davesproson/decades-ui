@@ -13,23 +13,13 @@ import { Toolbox } from './toolbox';
 import { useState } from 'react';
 import { LayersMenu } from './layersMenu';
 import { GeoJson } from './features/geojson';
+import { FeatureType, LayerType } from './types';
 
 const LayerHash = {
     'vector': VectorLayer,
     'geojson': VectorLayer
 }
 
-type POIFeatureType = {
-    type: "poi",
-    latitude: number,
-    longitude: number,
-    color?: string
-}
-type GeoJsonFeatureType = {
-    type: "geojson"
-    data?: any
-}
-type FeatureType = POIFeatureType | GeoJsonFeatureType
 
 function getFeatureType(feature: FeatureType): React.FC<any> {
     switch (feature.type) {
@@ -41,31 +31,6 @@ function getFeatureType(feature: FeatureType): React.FC<any> {
             throw new Error('Unknown feature type')
     }
 }
-
-
-interface AbstractLayerType {
-    type: string,
-    name: string,
-    visible: boolean
-}
-
-interface POILayerType extends AbstractLayerType {
-    type: 'vector',
-    features: {
-        type: 'poi',
-        latitude: number,
-        longitude: number,
-        color?: string
-    }[]
-}
-interface GeoJsonLayerType extends AbstractLayerType {
-    type: 'geojson',
-    features: {
-        type: 'geojson',
-        data: any
-    }[]
-}
-type LayerType = POILayerType | GeoJsonLayerType
 
 const DecadesMap = () => {
     const { aircraftData, aircraftHistory } = useAircraftData()

@@ -9,3 +9,31 @@ export type MapContextType = {
         addLayer: () => void;
     };
 };
+
+type POIFeatureType = {
+    type: "poi",
+    latitude: number,
+    longitude: number,
+    color?: string
+}
+type GeoJsonFeatureType = {
+    type: "geojson"
+    data?: any
+}
+export type FeatureType = POIFeatureType | GeoJsonFeatureType
+
+interface AbstractLayerType {
+    type: string,
+    name: string,
+    visible: boolean
+}
+
+interface POILayerType extends AbstractLayerType {
+    type: 'vector',
+    features: Array<POIFeatureType>
+}
+interface GeoJsonLayerType extends AbstractLayerType {
+    type: 'geojson',
+    features: Array<GeoJsonFeatureType>
+}
+export type LayerType = POILayerType | GeoJsonLayerType
