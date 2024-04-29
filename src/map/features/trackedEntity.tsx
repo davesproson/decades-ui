@@ -14,8 +14,8 @@ type TrackedEntityProps = {
     icon: {
         src: string,
         scale?: number,
-        name?: string
     },
+    name?: string,
     updater?: Function,
     updateFrequency?: number
 }
@@ -65,7 +65,7 @@ const TrackedEntity = (props: TrackedEntityProps) => {
         // Init the icon feature
         const iconFeature = new Feature({
             geometry: new Point(fromLonLat([0, 0])),
-            name: props.icon.name
+            name: props.name
         })
         const iconStyle = new Style({
             image: new Icon({
@@ -108,7 +108,7 @@ const TrackedEntity = (props: TrackedEntityProps) => {
     useEffect(() => {
         if(!layer) return
         const iconFeature = layer.getSource()?.getFeatures().find(
-            (feature) => feature.get('name') === props.icon.name || 'icon'
+            (feature) => feature.get('name') === props.name || 'feature'
         )
 
         if(!iconFeature) {
@@ -122,7 +122,6 @@ const TrackedEntity = (props: TrackedEntityProps) => {
 
         iconFeature.setGeometry(new Point(coords))
         style.getImage()?.setRotation(rotation)
-        console.log('Updating icon', loc)
     }, [loc])
 
     useEffect(() => {
@@ -135,7 +134,6 @@ const TrackedEntity = (props: TrackedEntityProps) => {
         const coords = track.map((loc) => fromLonLat([loc.lon, loc.lat]))
         const geometry = new LineString(coords)
         trackFeature.setGeometry(geometry)
-        console.log('Updating track')
     }, [track])
 
 

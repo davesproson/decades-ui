@@ -5,6 +5,7 @@ import { defaults as controlDefaults} from 'ol/control/defaults';
 import { getData } from "../plot/plotUtils";
 import { PositionData, PositionDataHistory } from "./context";
 import { badData } from "../settings";
+import { DecadesMapActions, DecadesMapModality, DecadesMapState, MapFlag } from "./types";
 
 const useOpenLayersMap = () => {
     const mapRef = useRef<HTMLDivElement>(null);
@@ -127,4 +128,47 @@ const useAircraftData = () => {
     return { aircraftData, aircraftHistory }
 }
 
-export { useOpenLayersMap, useAircraftData }
+
+const useDecadesMapState = () => {
+    const [showHeader, setShowHeader] = useState<boolean>(true)
+    const [showLayersMenu, setShowLayersMenu] = useState<boolean>(true)
+    const [showToolbox, setShowToolbox] = useState<boolean>(true)
+    const [layers, setLayers] = useState([])
+    const [flags, setFlags] = useState([])
+    const [overlay, setOverlay] = useState<MapFlag & {x: number, y: number} | null>(null)
+
+    const [mapModes, setMapModes] = useState<Array<DecadesMapModality>>([])
+
+    const toggleMapMode = (mode: DecadesMapModality) => {
+        setMapModes(x=>{
+            if(x.includes(mode)) {
+                return x.filter(m=>m !== mode)
+            }
+            return [...x, mode]
+        })
+    }
+       
+
+    return {
+        state: {
+            showHeader,
+            showLayersMenu,
+            showToolbox,
+            layers,
+            flags,
+            mapModes,
+            overlay
+        } as DecadesMapState,
+        actions: {
+            setShowHeader,
+            setShowLayersMenu,
+            setLayers,
+            setShowToolbox,
+            setFlags,
+            toggleMapMode,
+            setOverlay
+        } as DecadesMapActions
+    }
+}
+
+export { useOpenLayersMap, useAircraftData, useDecadesMapState}

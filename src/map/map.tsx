@@ -6,9 +6,8 @@ type MapProps = {
     top?: number,
 }
 
-const Map = (props: MapProps) => {
+const OpenLayersMap = (props: MapProps) => {
     const {mapRef, state, actions} = useOpenLayersMap()
-    
 
     return (
         <MapContext.Provider value={{state, actions}}>
@@ -19,4 +18,4 @@ const Map = (props: MapProps) => {
     )
 }
 
-export default Map;
+export default OpenLayersMap;
