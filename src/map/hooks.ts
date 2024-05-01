@@ -130,13 +130,14 @@ const useAircraftData = () => {
 
 
 const useDecadesMapState = () => {
-    const [showHeader, setShowHeader] = useState<boolean>(true)
+    const [showHeaderBar, setShowHeaderBar] = useState<boolean>(true)
     const [showLayersMenu, setShowLayersMenu] = useState<boolean>(true)
     const [showToolbox, setShowToolbox] = useState<boolean>(true)
+    const [showGraticule, setShowGraticule] = useState<boolean>(false)
     const [layers, setLayers] = useState([])
     const [flags, setFlags] = useState([])
     const [overlay, setOverlay] = useState<MapFlag & {x: number, y: number} | null>(null)
-
+    const [aircraftMeasures, setAircraftMeasures] = useState<PositionData[]>([])
     const [mapModes, setMapModes] = useState<Array<DecadesMapModality>>([])
 
     const toggleMapMode = (mode: DecadesMapModality) => {
@@ -148,25 +149,28 @@ const useDecadesMapState = () => {
         })
     }
        
-
     return {
         state: {
-            showHeader,
+            showHeaderBar,
             showLayersMenu,
             showToolbox,
+            showGraticule,
             layers,
             flags,
             mapModes,
-            overlay
+            overlay,
+            aircraftMeasures
         } as DecadesMapState,
         actions: {
-            setShowHeader,
+            setShowHeaderBar,
             setShowLayersMenu,
-            setLayers,
             setShowToolbox,
+            setShowGraticule,
+            setLayers,
             setFlags,
             toggleMapMode,
-            setOverlay
+            setOverlay,
+            setAircraftMeasures,
         } as DecadesMapActions
     }
 }

@@ -1,16 +1,13 @@
 import { Button } from "../components/buttons"
+import type { DecadesMapActions } from "./types"
+import type { DecadesMapState } from "./types"
+
+type ToolbarState = Pick<DecadesMapState, "showHeaderBar" | "showLayersMenu" | "showToolbox" | "showGraticule">
+type ToolbarActions = Pick<DecadesMapActions, "setShowHeaderBar" | "setShowLayersMenu" | "setShowToolbox" | "setShowGraticule">
 
 type ToolbarProps = {
-    state: {
-        showHeader: boolean,
-        showLayersMenu: boolean,
-        showToolbox: boolean,
-    },
-    actions: {
-        setShowHeader: Function,
-        setShowLayersMenu: Function,
-        setShowToolbox: Function,
-    }
+    state: ToolbarState,
+    actions: ToolbarActions
 }
 const Toolbar = (props: ToolbarProps) => {
     const style: React.CSSProperties = {
@@ -36,10 +33,12 @@ const Toolbar = (props: ToolbarProps) => {
         <div style={style}>
             <div>
                 <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowLayersMenu((x: boolean) => !x)}>L</Button.Light>
-                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowHeader((x: boolean) => !x)}>L</Button.Light>
+                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowHeaderBar((x: boolean) => !x)}>H</Button.Light>
+                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowGraticule((x: boolean) => !x)}>G</Button.Light>
+                <Button.Light small style={buttonStyle} onClick={() => {}}>P</Button.Light>
             </div>
             <div>
-                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowToolbox((x: boolean) => !x)}>L</Button.Light>
+                <Button.Light small style={buttonStyle} onClick={() => props.actions.setShowToolbox((x: boolean) => !x)}>T</Button.Light>
             </div>
         </div>
     )

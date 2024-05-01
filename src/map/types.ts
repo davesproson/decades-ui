@@ -1,5 +1,6 @@
 import { Map } from "ol";
 import { Dispatch, SetStateAction } from "react";
+import { PositionData } from "./context";
 
 export type MapContextType = {
     state: {
@@ -46,26 +47,31 @@ export type MapFlag = {
 }
 
 export type DecadesMapState = {
-    showHeader: boolean,
+    showHeaderBar: boolean,
     showLayersMenu: boolean,
     showToolbox: boolean,
+    showGraticule: boolean,
     layers: Array<LayerType>,
     flags: Array<MapFlag>,
     mapModes: Array<DecadesMapModality>
     overlay: MapFlag & {x: number, y: number} | null,
+    aircraftMeasures: Array<PositionData>,
 }
 
 export type DecadesMapActions = {
-    setShowHeader: Dispatch<SetStateAction<boolean>>,
+    setShowHeaderBar: Dispatch<SetStateAction<boolean>>,
     setShowLayersMenu: Dispatch<SetStateAction<boolean>>,
     setLayers: Dispatch<SetStateAction<Array<LayerType>>>,
     setShowToolbox: Dispatch<SetStateAction<boolean>>,
+    setShowGraticule: Dispatch<SetStateAction<boolean>>,
     setFlags: Dispatch<SetStateAction<Array<MapFlag>>>,
     toggleMapMode: (mode: DecadesMapModality) => void,
     setOverlay: Dispatch<SetStateAction<MapFlag & {x: number, y: number} | null>>,
+    setAircraftMeasures: Dispatch<SetStateAction<Array<PositionData>>>,
 }
 
 export enum DecadesMapModality {
     DEFAULT,
     DELETE_FLAG,
+    ADD_AIRCRAFT_MEASURE
 }

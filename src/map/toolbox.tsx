@@ -31,7 +31,14 @@ const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & 
         actions.setFlags(x => [...x, newFlag])
     }
 
+    const clearMeasurements = () => {
+        actions.setAircraftMeasures([])
+    }
+
     const outlineFlagDeleteButton = !state.mapModes.includes(DecadesMapModality.DELETE_FLAG)
+    const measureFrom146kind = state.mapModes.includes(DecadesMapModality.ADD_AIRCRAFT_MEASURE)
+        ? 'success'
+        : 'info'
 
     if (!show) {
         return null
@@ -41,13 +48,13 @@ const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & 
         <>
             <ToolBoxSection title="Flags">
                 <Button.Info {...buttonOpts} onClick={addFlag}>Drop</Button.Info>
-                <Button.Success {...buttonOpts} onClick={toggle}>Add</Button.Success>
+                <Button.Info {...buttonOpts} onClick={toggle}>Add</Button.Info>
                 <Button.Danger {...buttonOpts} outlined={outlineFlagDeleteButton} onClick={() => actions.toggleMapMode(DecadesMapModality.DELETE_FLAG)}>Remove</Button.Danger>
             </ToolBoxSection>
             <ToolBoxSection title="Measure">
-                <Button.Info {...buttonOpts}>From 146</Button.Info>
+                <Button kind={measureFrom146kind} {...buttonOpts} onClick={() => actions.toggleMapMode(DecadesMapModality.ADD_AIRCRAFT_MEASURE)}>From 146</Button>
                 <Button.Info {...buttonOpts}>Line</Button.Info>
-                <Button.Danger {...buttonOpts}>Clear</Button.Danger>
+                <Button.Danger {...buttonOpts} onClick={clearMeasurements}>Clear</Button.Danger>
             </ToolBoxSection>
             <ToolBoxSection title="Wind">
                 <Button.Info {...buttonOpts}>Vane</Button.Info>
