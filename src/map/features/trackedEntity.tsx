@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react"
-import { DataContext, MapContext, PositionData, PositionDataHistory } from "../context"
+import { DataContext, MapContext } from "../context"
+import { PositionData, PositionDataHistory } from "../types"
 import VectorLayer from "ol/layer/Vector"
 import Feature from "ol/Feature"
 import Point from "ol/geom/Point"

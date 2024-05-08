@@ -3,9 +3,8 @@ import { Map as OlMap, View } from 'ol';
 import {fromLonLat} from 'ol/proj.js';
 import { defaults as controlDefaults} from 'ol/control/defaults';
 import { getData } from "../plot/plotUtils";
-import { PositionData, PositionDataHistory } from "./context";
 import { badData } from "../settings";
-import { DecadesMapActions, DecadesMapModality, DecadesMapState, MapFlag } from "./types";
+import { DecadesMapActions, DecadesMapModality, DecadesMapState, MapFlag, Position, PositionData, PositionDataHistory } from "./types";
 
 const useOpenLayersMap = () => {
     const mapRef = useRef<HTMLDivElement>(null);
@@ -128,7 +127,6 @@ const useAircraftData = () => {
     return { aircraftData, aircraftHistory }
 }
 
-
 const useDecadesMapState = () => {
     const [showHeaderBar, setShowHeaderBar] = useState<boolean>(true)
     const [showLayersMenu, setShowLayersMenu] = useState<boolean>(true)
@@ -138,6 +136,7 @@ const useDecadesMapState = () => {
     const [flags, setFlags] = useState([])
     const [overlay, setOverlay] = useState<MapFlag & {x: number, y: number} | null>(null)
     const [aircraftMeasures, setAircraftMeasures] = useState<PositionData[]>([])
+    const [measurements, setMeasurements] = useState<Array<Position[]>>([])
     const [mapModes, setMapModes] = useState<Array<DecadesMapModality>>([])
 
     const toggleMapMode = (mode: DecadesMapModality) => {
@@ -159,7 +158,8 @@ const useDecadesMapState = () => {
             flags,
             mapModes,
             overlay,
-            aircraftMeasures
+            aircraftMeasures,
+            measurements
         } as DecadesMapState,
         actions: {
             setShowHeaderBar,
@@ -171,6 +171,7 @@ const useDecadesMapState = () => {
             toggleMapMode,
             setOverlay,
             setAircraftMeasures,
+            setMeasurements
         } as DecadesMapActions
     }
 }

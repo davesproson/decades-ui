@@ -12,9 +12,10 @@ import { Toolbar } from './controls';
 import { Toolbox } from './toolbox';
 import { LayersMenu } from './layersMenu';
 import { GeoJson } from './features/geojson';
-import { FeatureType, MapFlag } from './types';
+import { DecadesMapModality, FeatureType, MapFlag, Position } from './types';
 import { ddToDmm } from '../utils';
 import { AircraftMeasurement } from './features/aircraftMeasurement';
+import { LineMeasurement, LineMeasurementInteraction } from './features/lineMeasurement';
 import { MapClickEvent, MouseMoveEvent } from './events';
 import { Graticule } from './layers/graticule';
 
@@ -74,69 +75,83 @@ const DecadesMap = () => {
     }
 
     return (
-        <>
-            <DataContext.Provider value={{ aircraftData, aircraftHistory }}>
-                <MapHeader show={state.showHeaderBar} />
-                <OpenLayersMap>
+        <DataContext.Provider value={{ aircraftData, aircraftHistory }}>
+            <MapHeader show={state.showHeaderBar} />
+            <OpenLayersMap>
 
-                    <BaseLayer />
-                    {state.showGraticule && <Graticule />}
+                <BaseLayer />
+                {state.showGraticule && <Graticule />}
 
-                    <MapClickEvent state={state} actions={actions} />
-                    <MouseMoveEvent state={state} actions={actions} />
+                <MapClickEvent state={state} actions={actions} />
+                <MouseMoveEvent state={state} actions={actions} />
 
-                    {state.overlay && <POIOverlay {...state.overlay} />}
+                {state.overlay && <POIOverlay {...state.overlay} />}
 
-                    <TrackedEntity
-                        icon={{
-                            src: 'mapicons/g-luxe.png',
-                            scale: 0.5,
-                        }}
-                        name='G-LUXE'
+                <TrackedEntity
+                    icon={{
+                        src: 'mapicons/g-luxe.png',
+                        scale: 0.5,
+                    }}
+                    name='G-LUXE'
+                />
+
+                {state.layers.map((layer, i) => {
+                    if (!layer.visible) return null
+                    const Layer = LayerHash[layer.type]
+                    return (
+                        <Layer key={i}>
+                            {layer.features.map((feature, j) => {
+                                const Feature = getFeatureType(feature)
+                                return <Feature key={j} {...feature} />
+                            })}
+                        </Layer>
+                    )
+                })}
+
+                <VectorLayer>
+                    {state.flags.map((flag) => (
+                        <POI key={flag.name}
+                            latitude={flag.lat}
+                            longitude={flag.lon}
+                            name={flag.name}
+                            icon={{
+                                src: 'mapicons/flag-marker.png',
+                                scale: 0.15,
+                            }}
+                        />
+                    ))}
+                </VectorLayer>
+
+                <VectorLayer>
+                    {state.aircraftMeasures.map((flag, i) => (
+                        <AircraftMeasurement key={i}
+                            lat={flag.lat}
+                            lon={flag.lon}
+                        />
+                    ))}
+                </VectorLayer>
+
+                <VectorLayer>
+                    <LineMeasurementInteraction
+                        active={state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)}
+                        addMeasurement={(startPos: Position, endPos: Position) => actions.setMeasurements([...state.measurements, [startPos, endPos]])}
                     />
 
-                    {state.layers.map((layer, i) => {
-                        if (!layer.visible) return null
-                        const Layer = LayerHash[layer.type]
-                        return (
-                            <Layer key={i}>
-                                {layer.features.map((feature, j) => {
-                                    const Feature = getFeatureType(feature)
-                                    return <Feature key={j} {...feature} />
-                                })}
-                            </Layer>
-                        )
-                    })}
+                    {state.measurements.map((measurement, i) => (
+                        <LineMeasurement key={i}
+                            startPos={measurement[0]}
+                            endPos={measurement[1]}
+                        />
+                    ))}
 
-                    <VectorLayer>
-                        {state.flags.map((flag) => (
-                            <POI key={flag.name}
-                                latitude={flag.lat}
-                                longitude={flag.lon}
-                                name={flag.name}
-                                icon={{
-                                    src: 'mapicons/flag-marker.png',
-                                    scale: 0.15,
-                                }}
-                            />
-                        ))}
-                    </VectorLayer>
+                </VectorLayer>
 
-                    <VectorLayer>
-                        {state.aircraftMeasures.map((flag, i) => (
-                            <AircraftMeasurement key={i}
-                                lat={flag.lat}
-                                lon={flag.lon}
-                            />
-                        ))}
-                    </VectorLayer>
+                <Toolbar state={state} actions={actions} />
+                <Toolbox show={state.showToolbox} actions={actions} state={state} />
 
-                    <Toolbar state={state} actions={actions} />
-                    <Toolbox show={state.showToolbox} actions={actions} state={state} />
-                    <LayersMenu show={state.showLayersMenu} layers={state.layers} toggleLayerVisibility={toggleLayerVisibility} />
-                </OpenLayersMap>
-            </DataContext.Provider>
-        </>
+                <LayersMenu show={state.showLayersMenu} layers={state.layers} toggleLayerVisibility={toggleLayerVisibility} />
+            </OpenLayersMap>
+        </DataContext.Provider>
     )
 }
 
