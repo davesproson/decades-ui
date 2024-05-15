@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useContext, useState } from "react"
 import { Button } from "../components/buttons"
 import { DataContext } from "./context"
 import { OverlayBox } from "./overlayBox"
-import { DecadesMapModality, type DecadesMapActions, type DecadesMapState } from "./types"
+import { DecadesMapModality, type DecadesMapActions, type DecadesMapState, DrawModeType } from "./types"
 
 const buttonOpts = {
     extraClasses: "is-flex is-flex-grow-1 m-1",
@@ -18,11 +18,31 @@ const ToolBoxSection = ({ title, children }: { title: string, children: React.Re
     </div>
 )
 
+const getKind = (test: (() => boolean) | boolean) => {
+    if(typeof test === 'function') {
+        return test() ? 'success' : 'info'
+    }
+    return test ? 'success' : 'info'
+}
+
 const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & { toggle: () => void }) => {
     const { aircraftData } = useContext(DataContext)
-
+    
+    if (!show) {
+        return null
+    }
+    
     const addFlag = () => {
-        const numFlags = state.flags.length
+        if (!aircraftData) {
+            return
+        }
+        const lastFlag = state.flags[state.flags.length - 1]
+        let numFlags: number
+        if (!lastFlag?.name) {
+            numFlags = 0
+        } else {
+            numFlags = parseInt(lastFlag.name.split(' ')[1])
+        }
         const newFlag = {
             lat: aircraftData.lat,
             lon: aircraftData.lon,
@@ -36,18 +56,36 @@ const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & 
         actions.setMeasurements([])
     }
 
-    const outlineFlagDeleteButton = !state.mapModes.includes(DecadesMapModality.DELETE_FLAG)
-    const measureFrom146kind = state.mapModes.includes(DecadesMapModality.ADD_AIRCRAFT_MEASURE)
-        ? 'success'
-        : 'info'
-
-    const measureKind = state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)
-        ? 'success'
-        : 'info'
-
-    if (!show) {
-        return null
+    const setDrawMode = (mode: DrawModeType) => {
+        if(state.drawMode === mode) {
+            actions.setDrawMode(null)
+            return
+        }
+        actions.setDrawMode(mode)
     }
+
+    const outlineFlagDeleteButton = !state.mapModes.includes(DecadesMapModality.DELETE_FLAG)
+
+    const measureFrom146kind = getKind(
+        state.mapModes.includes(DecadesMapModality.ADD_AIRCRAFT_MEASURE)
+    )
+
+    const measureKind = getKind(
+        state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)
+    )
+
+    const dropDrifter = () => {
+        if (!aircraftData) {
+            return
+        }
+        const newDrifter = {
+            lat: aircraftData.lat,
+            lon: aircraftData.lon,
+            time: new Date().getTime()
+        }
+        actions.setDrifters(x => [...x, newDrifter])
+    }
+
 
     return (
         <>
@@ -62,15 +100,15 @@ const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & 
                 <Button.Danger {...buttonOpts} onClick={clearMeasurements}>Clear</Button.Danger>
             </ToolBoxSection>
             <ToolBoxSection title="Wind">
-                <Button.Info {...buttonOpts}>Vane</Button.Info>
-                <Button.Info {...buttonOpts}>Drop Drifters</Button.Info>
-                <Button.Danger {...buttonOpts}>Clear Drifters</Button.Danger>
+                <Button kind={getKind(state.showWindVane)} {...buttonOpts} onClick={()=>actions.setShowWindVane(x=>!x)}>Vane</Button>
+                <Button.Info {...buttonOpts} onClick={dropDrifter}>Drop Drifter</Button.Info>
+                <Button.Danger {...buttonOpts} onClick={()=>actions.setDrifters([])}>Clear Drifters</Button.Danger>
             </ToolBoxSection>
             <ToolBoxSection title="Draw">
-                <Button.Info {...buttonOpts}>Line</Button.Info>
-                <Button.Info {...buttonOpts}>Circle</Button.Info>
-                <Button.Info {...buttonOpts}>Polygon</Button.Info>
-                <Button.Danger {...buttonOpts}>Clear</Button.Danger>
+                <Button kind={getKind(state.drawMode==="LineString")} {...buttonOpts} onClick={()=>setDrawMode("LineString")}>Line</Button>
+                <Button kind={getKind(state.drawMode==="Circle")} {...buttonOpts} onClick={()=>setDrawMode("Circle")}>Circle</Button>
+                <Button kind={getKind(state.drawMode==="Polygon")} {...buttonOpts} onClick={()=>setDrawMode("Polygon")}>Polygon</Button>
+                <Button.Danger {...buttonOpts} onClick={()=>setDrawMode(DecadesMapModality.DELETE_DRAWING)}>Clear</Button.Danger>
             </ToolBoxSection>
         </>
     )
@@ -98,7 +136,13 @@ const AddFlagContent = ({ toggle, state, actions}: { toggle: () => void, state: 
             return
         }
 
-        const numFlags = state.flags.length
+        let lastFlag = state.flags[state.flags.length - 1]
+        let numFlags: number
+        if(!lastFlag.name) {
+            numFlags = 0
+        } else {
+            numFlags = parseInt(lastFlag.name.split(' ')[1])
+        }
         const newFlag = {
             lat: parseFloat(lat),
             lon: parseFloat(lon),
