@@ -4,11 +4,12 @@ type LayerMenuProps = {
     show: boolean,
     toggleLayerVisibility: Function,
     layers: Array<any>
+    headerActive: boolean
 }
 
-const LayersMenu = ({show, toggleLayerVisibility, layers}: LayerMenuProps) => {
+const LayersMenu = ({show, toggleLayerVisibility, layers, headerActive}: LayerMenuProps) => {
     const style = {
-        top: 120,
+        top: headerActive ? 120 : 20,
         bottom: 50,
         width: 250,
         left: 10,
