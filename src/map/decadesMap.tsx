@@ -18,6 +18,10 @@ import { AircraftMeasurement } from './features/aircraftMeasurement';
 import { LineMeasurement, LineMeasurementInteraction } from './features/lineMeasurement';
 import { MapClickEvent, MouseMoveEvent } from './events';
 import { Graticule } from './layers/graticule';
+import { WindVane } from './features/windVane';
+import { MapCenter } from './utils/mapCenter';
+import { Drawings } from './features/drawings';
+import { Drifter } from './features/drifters';
 
 const LayerHash = {
     'vector': VectorLayer,
@@ -48,9 +52,9 @@ const POIOverlay = (props: MapFlag & { x: number, y: number } | null) => {
             zIndex: 999, position: "fixed", top: props.y, left: props.x,
             pointerEvents: "none", borderRadius: "5px", transform: "translate(-50%, -110%)"
         }}>
-            <h2 className="title is-5">{props.name}</h2>
-            <p>Lat: {`${latInfo.coord} °${latInfo.hemisphere}`}</p>
-            <p>Lon: {`${lonInfo.coord} °${lonInfo.hemisphere}`}</p>
+            <h2 className="title is-6">{props.name}</h2>
+            <span>{`${latInfo.coord} ${latInfo.hemisphere}`}</span>
+            <p>{`${lonInfo.coord} ${lonInfo.hemisphere}`}</p>
         </div>
     )
 }
@@ -77,23 +81,31 @@ const DecadesMap = () => {
     return (
         <DataContext.Provider value={{ aircraftData, aircraftHistory }}>
             <MapHeader show={state.showHeaderBar} />
-            <OpenLayersMap>
+            <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}}>
 
                 <BaseLayer />
                 {state.showGraticule && <Graticule />}
 
+                <MapCenter active={state.pinAircraft} latitude={aircraftData?.lat} longitude={aircraftData?.lon} />
                 <MapClickEvent state={state} actions={actions} />
                 <MouseMoveEvent state={state} actions={actions} />
 
                 {state.overlay && <POIOverlay {...state.overlay} />}
 
-                <TrackedEntity
-                    icon={{
-                        src: 'mapicons/g-luxe.png',
-                        scale: 0.5,
-                    }}
-                    name='G-LUXE'
-                />
+                <VectorLayer>
+                    <TrackedEntity
+                        icon={{
+                            src: 'mapicons/g-luxe.png',
+                            scale: 0.5,
+                        }}
+                        name='G-LUXE'
+                        history={aircraftHistory}
+                    />
+                </VectorLayer>
+
+                <VectorLayer>
+                    <WindVane show={state.showWindVane} />
+                </VectorLayer>
 
                 {state.layers.map((layer, i) => {
                     if (!layer.visible) return null
@@ -146,10 +158,22 @@ const DecadesMap = () => {
 
                 </VectorLayer>
 
+                <VectorLayer>
+                    {state.drifters.map((drifter, i) => {
+                        return (
+                            <Drifter key={i} {...drifter} />
+                        )
+                    })}
+                </VectorLayer>
+
+                <VectorLayer>
+                    <Drawings drawMode={state.drawMode}/>
+                </VectorLayer>
+
                 <Toolbar state={state} actions={actions} />
                 <Toolbox show={state.showToolbox} actions={actions} state={state} />
 
-                <LayersMenu show={state.showLayersMenu} layers={state.layers} toggleLayerVisibility={toggleLayerVisibility} />
+                <LayersMenu headerActive={state.showHeaderBar} show={state.showLayersMenu} layers={state.layers} toggleLayerVisibility={toggleLayerVisibility} />
             </OpenLayersMap>
         </DataContext.Provider>
     )
