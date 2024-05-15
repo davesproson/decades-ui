@@ -4,9 +4,17 @@ import {fromLonLat} from 'ol/proj.js';
 import { defaults as controlDefaults} from 'ol/control/defaults';
 import { getData } from "../plot/plotUtils";
 import { badData } from "../settings";
-import { DecadesMapActions, DecadesMapModality, DecadesMapState, MapFlag, Position, PositionData, PositionDataHistory } from "./types";
+import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 
-const useOpenLayersMap = () => {
+type OpenLayersMapArgs = {
+    zoom?: number,
+    center?: {
+        lat: number,
+        lon: number
+    }
+}
+
+const useOpenLayersMap = ({zoom, center}: OpenLayersMapArgs) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const [map, setMap] = useState<OlMap | null>(null);
     const state = {
@@ -25,8 +33,8 @@ const useOpenLayersMap = () => {
 
         const olMap = new OlMap({
             view: new View({
-                center: fromLonLat([0, 52]),
-                zoom: 6
+                center: fromLonLat(center?.lon !== undefined ? [center.lon, center.lat] : [0, 0]),
+                zoom: zoom
             }),
             controls: controlDefaults({
                 attribution: false,
@@ -48,11 +56,7 @@ const useOpenLayersMap = () => {
 }
 
 const useAircraftData = () => {
-    const [aircraftData, setAircraftData] = useState<PositionData>({
-        lat: 0,
-        lon: 0,
-        time: 0,
-    })
+    const [aircraftData, setAircraftData] = useState<PositionData | null>(null)
     const [aircraftHistory, setAircraftHistory] = useState<PositionDataHistory>([])
 
     const params = [
@@ -66,16 +70,25 @@ const useAircraftData = () => {
             params: params
         }, now - 2, now - 1);
 
-        const acData = {
-            lat: data.gin_latitude[data.gin_latitude.length - 1],
-            lon: data.gin_longitude[data.gin_longitude.length - 1],
-            alt: data.gin_altitude[data.gin_altitude.length - 1],
-            heading: data.gin_heading[data.gin_heading.length - 1],
-            groundSpeed: data.gin_speed[data.gin_speed.length - 1],
-            time: data.utc_time[data.utc_time.length - 1],
-        };
+        let acData: PositionData
+        try {
+            acData = {
+                lat: data.gin_latitude[data.gin_latitude.length - 1],
+                lon: data.gin_longitude[data.gin_longitude.length - 1],
+                alt: data.gin_altitude[data.gin_altitude.length - 1],
+                heading: data.gin_heading[data.gin_heading.length - 1],
+                groundSpeed: data.gin_speed[data.gin_speed.length - 1],
+                time: data.utc_time[data.utc_time.length - 1],
+            };
+        } catch (e) {
+            console.error('Error updating aircraft data', e)
+            return
+        }
 
         if(acData.lat === badData || acData.lon === badData) return
+        if(acData.lat === null || acData.lon === null) return
+        if(acData.lat === undefined || acData.lon === undefined) return
+        if(isNaN(acData.lat) || isNaN(acData.lon)) return
 
         setAircraftData(acData)
         setAircraftHistory((oldState) => [...oldState, acData])
@@ -115,9 +128,7 @@ const useAircraftData = () => {
 
     useEffect(() => {
         initAircraft()
-        const interval = setInterval(() => {
-            updateAircraft()
-        }, 3000)
+        const interval = setInterval(updateAircraft, 1000)
 
         return () => {
             clearInterval(interval)
@@ -129,8 +140,8 @@ const useAircraftData = () => {
 
 const useDecadesMapState = () => {
     const [showHeaderBar, setShowHeaderBar] = useState<boolean>(true)
-    const [showLayersMenu, setShowLayersMenu] = useState<boolean>(true)
-    const [showToolbox, setShowToolbox] = useState<boolean>(true)
+    const [showLayersMenu, setShowLayersMenu] = useState<boolean>(false)
+    const [showToolbox, setShowToolbox] = useState<boolean>(false)
     const [showGraticule, setShowGraticule] = useState<boolean>(false)
     const [layers, setLayers] = useState([])
     const [flags, setFlags] = useState([])
@@ -138,6 +149,10 @@ const useDecadesMapState = () => {
     const [aircraftMeasures, setAircraftMeasures] = useState<PositionData[]>([])
     const [measurements, setMeasurements] = useState<Array<Position[]>>([])
     const [mapModes, setMapModes] = useState<Array<DecadesMapModality>>([])
+    const [showWindVane, setShowWindVane] = useState<boolean>(false)
+    const [pinAircraft, setPinAircraft] = useState<boolean>(true)
+    const [drawMode, setDrawMode] = useState<DrawModeType>(null)
+    const [drifters, setDrifters] = useState<Array<PositionWithTime>>([])
 
     const toggleMapMode = (mode: DecadesMapModality) => {
         setMapModes(x=>{
@@ -154,24 +169,32 @@ const useDecadesMapState = () => {
             showLayersMenu,
             showToolbox,
             showGraticule,
+            showWindVane,
+            pinAircraft,
             layers,
             flags,
             mapModes,
             overlay,
             aircraftMeasures,
-            measurements
+            measurements,
+            drawMode,
+            drifters
         } as DecadesMapState,
         actions: {
             setShowHeaderBar,
             setShowLayersMenu,
             setShowToolbox,
             setShowGraticule,
+            setShowWindVane,
+            setPinAircraft,
             setLayers,
             setFlags,
             toggleMapMode,
             setOverlay,
             setAircraftMeasures,
-            setMeasurements
+            setMeasurements,
+            setDrawMode,
+            setDrifters
         } as DecadesMapActions
     }
 }
