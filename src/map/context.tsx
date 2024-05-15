@@ -12,10 +12,6 @@ export const MapContext = createContext<MapContextType>({
 });
 
 export const DataContext = createContext<AircraftData>({
-    aircraftData: {
-        lat: 0,
-        lon: 0,
-        time: 0,
-    },
+    aircraftData: null,
     aircraftHistory: [],
 });
