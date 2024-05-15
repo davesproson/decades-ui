@@ -1,9 +1,13 @@
+import { useContext, useState } from "react"
 import { Button } from "../components/buttons"
 import type { DecadesMapActions } from "./types"
 import type { DecadesMapState } from "./types"
+import { MapContext } from "./context"
 
 type ToolbarState = Pick<DecadesMapState, "showHeaderBar" | "showLayersMenu" | "showToolbox" | "showGraticule" | "pinAircraft">
 type ToolbarActions = Pick<DecadesMapActions, "setShowHeaderBar" | "setShowLayersMenu" | "setShowToolbox" | "setShowGraticule" | "setPinAircraft">
+
+/* Credit: SVG icons from reactsvgicons.com */
 
 const IconLayers = () => {
     return (
@@ -73,12 +77,70 @@ const IconTools = () => {
     );
   }
 
+const IconZoom = () => {
+    return (
+      <svg
+        baseProfile="tiny"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        height="1em"
+        width="1em"
+      >
+        <path d="M13 4c-3.859 0-7 3.141-7 7 0 .763.127 1.495.354 2.183l-.749.75-.511.512-1.008 1.045a3.076 3.076 0 00-.891 2.185 3.134 3.134 0 003.13 3.131c.757 0 1.504-.278 2.104-.784l.064-.055.061-.061 1.512-1.51.75-.749A6.983 6.983 0 0013 18c3.859 0 7-3.141 7-7s-3.141-7-7-7zm0 12c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5zm0-9c-2.205 0-4 1.794-4 4s1.795 4 4 4 4-1.794 4-4-1.795-4-4-4zm0 7a3.001 3.001 0 010-6 3.001 3.001 0 010 6z" />
+      </svg>
+    );
+  }
+
+const buttonStyle: React.CSSProperties = {
+    marginRight: "5px",
+    borderRadius: "5px",
+    pointerEvents: "auto",
+}
+
+const ZoomControl = () => {
+    const { state } = useContext(MapContext)
+    
+
+    const zoom = (delta: number) => {
+        if (!state.map) return
+        const view = state.map.getView()
+        const currentZoom = view.getZoom()
+        if (!currentZoom) return
+        view.animate({
+            zoom: currentZoom + delta,
+            duration: 500
+        })
+    }
+    const [zoomActive, setZoomActive] = useState(false)
+    const zoomButtonKind = zoomActive ? "success" : "light"
+
+    const ZoomButtons = () => {
+        if(!zoomActive) return null
+        return (
+            <>
+                <Button.Light small style={{marginTop: "2px", ...buttonStyle}} onClick={()=>zoom(-1)}>-</Button.Light>
+                <Button.Light small style={{marginTop: "2px", ...buttonStyle}} onClick={()=>zoom(1)}>+</Button.Light>
+            </>
+        )
+    }
+
+    return (
+    <div style={{display: "inline-flex"}}>
+                    <div style={{display: "flex", flexDirection: "column-reverse", height: "auto", bottom: 0, position: "absolute", padding: "10px 10px 10px 0px"}}>
+                        <Button kind={zoomButtonKind} small style={{marginTop: "2px", ...buttonStyle}} onClick={()=>setZoomActive(x=>!x)}><IconZoom /></Button>
+                        <ZoomButtons />
+                  </div>
+                </div>
+    )
+}
+
 
 type ToolbarProps = {
     state: ToolbarState,
     actions: ToolbarActions
 }
 const Toolbar = (props: ToolbarProps) => {
+    
     const style: React.CSSProperties = {
         pointerEvents: 'none',
         zIndex: 2,
@@ -89,12 +151,6 @@ const Toolbar = (props: ToolbarProps) => {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-    }
-
-    const buttonStyle: React.CSSProperties = {
-        marginRight: "5px",
-        borderRadius: "5px",
-        pointerEvents: "auto",
     }
 
     const layerButtonKind = props.state.showLayersMenu ? "success" : "light"
@@ -110,6 +166,7 @@ const Toolbar = (props: ToolbarProps) => {
                 <Button kind={headerButtonKind} small style={buttonStyle} onClick={() => props.actions.setShowHeaderBar((x: boolean) => !x)}><IconPageLayoutHeader /></Button>
                 <Button kind={graticuleButtonKind} small style={buttonStyle} onClick={() => props.actions.setShowGraticule((x: boolean) => !x)}><IconViewGrid /></Button>
                 <Button kind={pinAircraftButtonKind} small style={buttonStyle} onClick={() => props.actions.setPinAircraft((x: boolean) => !x)}><IconPinFill /></Button>
+                <ZoomControl />
             </div>
             <div>
                 <Button kind={toolboxButtonKind} small style={buttonStyle} onClick={() => props.actions.setShowToolbox((x: boolean) => !x)}><IconTools /></Button>
