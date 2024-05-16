@@ -93,6 +93,7 @@ const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & 
                 <Button.Info {...buttonOpts} onClick={addFlag}>Drop</Button.Info>
                 <Button.Info {...buttonOpts} onClick={toggle}>Add</Button.Info>
                 <Button.Danger {...buttonOpts} outlined={outlineFlagDeleteButton} onClick={() => actions.toggleMapMode(DecadesMapModality.DELETE_FLAG)}>Remove</Button.Danger>
+                <Button.Danger {...buttonOpts} onClick={() => actions.setFlags([])}>Clear</Button.Danger>
             </ToolBoxSection>
             <ToolBoxSection title="Measure">
                 <Button kind={measureFrom146kind} {...buttonOpts} onClick={() => actions.toggleMapMode(DecadesMapModality.ADD_AIRCRAFT_MEASURE)}>From 146</Button>
