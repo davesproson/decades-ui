@@ -22,6 +22,8 @@ import { WindVane } from './features/windVane';
 import { MapCenter } from './utils/mapCenter';
 import { Drawings } from './features/drawings';
 import { Drifter } from './features/drifters';
+import { Show } from '../components/flow';
+import { Optional } from '../types';
 
 const LayerHash = {
     'vector': VectorLayer,
@@ -39,10 +41,12 @@ function getFeatureType(feature: FeatureType): React.FC<any> {
     }
 }
 
-
-const POIOverlay = (props: MapFlag & { x: number, y: number } | null) => {
+type POIOverlayProps =  (Optional<MapFlag, "lat" | "lon" | "name"> & { x?: number, y?: number }) | null | undefined
+const POIOverlay = (props: POIOverlayProps) => {
 
     if (!props) return null
+    if (props.x === undefined || props.y === undefined) return null
+    if (props.lat === undefined || props.lon === undefined) return null
 
     const latInfo = ddToDmm(props.lat, ['N', 'S'])
     const lonInfo = ddToDmm(props.lon, ['E', 'W'])
@@ -80,18 +84,27 @@ const DecadesMap = () => {
 
     return (
         <DataContext.Provider value={{ aircraftData, aircraftHistory }}>
-            <MapHeader show={state.showHeaderBar} />
+
+            <Show when={state.showHeaderBar}>
+                <MapHeader />
+            </Show>
+
             <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}}>
 
                 <BaseLayer />
-                {state.showGraticule && <Graticule />}
+
+                <Show when={state.showGraticule}>
+                    <Graticule />
+                </Show>
 
                 <MapCenter active={state.pinAircraft} latitude={aircraftData?.lat} longitude={aircraftData?.lon} />
                 <MapClickEvent state={state} actions={actions} />
                 <MouseMoveEvent state={state} actions={actions} />
 
-                {state.overlay && <POIOverlay {...state.overlay} />}
-
+                <Show when={!!state.overlay}>
+                    <POIOverlay {...state.overlay} />
+                </Show>
+                
                 <VectorLayer>
                     <TrackedEntity
                         icon={{
@@ -103,9 +116,11 @@ const DecadesMap = () => {
                     />
                 </VectorLayer>
 
-                <VectorLayer>
-                    <WindVane show={state.showWindVane} />
-                </VectorLayer>
+                <Show when={state.showWindVane}>
+                    <VectorLayer>
+                        <WindVane />
+                    </VectorLayer>
+                </Show>
 
                 {state.layers.map((layer, i) => {
                     if (!layer.visible) return null
@@ -144,10 +159,11 @@ const DecadesMap = () => {
                 </VectorLayer>
 
                 <VectorLayer>
-                    <LineMeasurementInteraction
-                        active={state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)}
-                        addMeasurement={(startPos: Position, endPos: Position) => actions.setMeasurements([...state.measurements, [startPos, endPos]])}
-                    />
+                    <Show when={state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)}>
+                        <LineMeasurementInteraction
+                            addMeasurement={(startPos: Position, endPos: Position) => actions.setMeasurements([...state.measurements, [startPos, endPos]])}
+                        />
+                    </Show>
 
                     {state.measurements.map((measurement, i) => (
                         <LineMeasurement key={i}
@@ -171,9 +187,17 @@ const DecadesMap = () => {
                 </VectorLayer>
 
                 <Toolbar state={state} actions={actions} />
-                <Toolbox show={state.showToolbox} actions={actions} state={state} />
 
-                <LayersMenu headerActive={state.showHeaderBar} show={state.showLayersMenu} layers={state.layers} toggleLayerVisibility={toggleLayerVisibility} />
+                <Show when={state.showToolbox}>
+                    <Toolbox actions={actions} state={state} />
+                </Show>
+
+                <Show when={state.showLayersMenu}>
+                    <LayersMenu headerActive={state.showHeaderBar} 
+                        layers={state.layers}
+                        toggleLayerVisibility={toggleLayerVisibility}
+                    />
+                </Show>
             </OpenLayersMap>
         </DataContext.Provider>
     )

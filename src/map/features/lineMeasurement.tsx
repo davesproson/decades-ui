@@ -75,16 +75,14 @@ const LineMeasurement = ({ startPos, endPos }: { startPos: Position, endPos: Pos
 }
 
 type LineMeasurementProps = {
-    active: boolean,
     addMeasurement: (startPos: Position, endPos: Position) => void
 }
-const LineMeasurementInteraction = ({ active, addMeasurement }: LineMeasurementProps) => {
+const LineMeasurementInteraction = ({ addMeasurement }: LineMeasurementProps) => {
     const { layer } = useContext(VectorLayerContext)
     const { state } = useContext(MapContext)
 
     useEffect(() => {
         if (!layer || !state.map) return
-        if (!active) return
 
         const interaction = new Draw({
             source: new VectorSource(),
@@ -109,7 +107,7 @@ const LineMeasurementInteraction = ({ active, addMeasurement }: LineMeasurementP
             state.map?.removeInteraction(interaction)
             interaction.un('drawend', f)
         }
-    }, [layer, state.map, active])
+    }, [layer, state.map])
 
         
     return null

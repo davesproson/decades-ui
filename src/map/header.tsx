@@ -27,7 +27,7 @@ const HeaderElement = ({ title, value, unit, hide }: HeaderElementProps) => {
     )
 }
 
-const MapHeader = ({show}: {show: boolean}) => {
+const MapHeader = () => {
     const { aircraftData } = useContext(DataContext)
     const [ flightNumber, setFlightNumber ] = useState<string>('----')
     
@@ -48,8 +48,6 @@ const MapHeader = ({show}: {show: boolean}) => {
     const heading = Math.floor(aircraftData.heading || 0).toString().padStart(3, '0')
     const speed = msToKnots(aircraftData.groundSpeed || 0).toFixed(0)
 
-    if(!show) return null
-
     const style = {
         zIndex: 10,
         top: 10,
@@ -59,7 +57,7 @@ const MapHeader = ({show}: {show: boolean}) => {
     }
 
     return (
-        <OverlayBox show={show} {...style}>
+        <OverlayBox {...style}>
             <div className="level is-mobile">
                 <HeaderElement hide="mobile" title="Flight Number" value={flightNumber} />
                 <HeaderElement title="Latitude" value={lat.coord} unit={lat.hemisphere} />

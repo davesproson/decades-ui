@@ -11,13 +11,12 @@ import { DataContext } from "../context"
 import { getData } from "../../plot/plotUtils"
 import { badData } from "../../settings"
 
-const WindVane = ({ show }: { show: boolean }) => {
+const WindVane = () => {
     const { layer } = useContext(VectorLayerContext)
     const { aircraftData } = useContext(DataContext)
     const [windDir, setWindDir] = useState<number|null>(null)
 
     useEffect(() => {
-        if (!show) return
         const update = () => {
             const now = Math.floor(new Date().getTime() / 1000)
             const then = now - 1
@@ -32,11 +31,10 @@ const WindVane = ({ show }: { show: boolean }) => {
         update()
         const interval = setInterval(update, 3000)
         return () => clearInterval(interval)
-    }, [show])
+    }, [])
 
     useEffect(() => {
         if (!layer) return
-        if (!show) return
         if (windDir === badData) return
         layer.setZIndex(100)
 
@@ -86,12 +84,11 @@ const WindVane = ({ show }: { show: boolean }) => {
         return () => {
             layer.getSource()?.clear()
         }
-    }, [layer, show])
+    }, [layer])
 
     useEffect(() => {
         if (!layer) return
         if (!aircraftData) return
-        if (!show) return
         if (windDir === null || windDir === badData) return
 
         const features = layer.getSource()?.getFeatures()
@@ -118,7 +115,7 @@ const WindVane = ({ show }: { show: boolean }) => {
         }
     }, [aircraftData])
 
-    if (!show) return null
+    return null
 }
 
 export { WindVane }

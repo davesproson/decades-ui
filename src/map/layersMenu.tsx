@@ -1,13 +1,12 @@
 import { OverlayBox } from "./overlayBox"
 
 type LayerMenuProps = {
-    show: boolean,
     toggleLayerVisibility: Function,
     layers: Array<any>
     headerActive: boolean
 }
 
-const LayersMenu = ({show, toggleLayerVisibility, layers, headerActive}: LayerMenuProps) => {
+const LayersMenu = ({toggleLayerVisibility, layers, headerActive}: LayerMenuProps) => {
     const style = {
         top: headerActive ? 120 : 20,
         bottom: 50,
@@ -16,7 +15,7 @@ const LayersMenu = ({show, toggleLayerVisibility, layers, headerActive}: LayerMe
     }
 
     return (
-        <OverlayBox show={show} {...style}>
+        <OverlayBox {...style}>
             <h2 className="title is-4">Layers</h2>
             <ul>
                 {layers.map((layer: any) => (

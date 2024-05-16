@@ -3,6 +3,7 @@ import { Button } from "../components/buttons"
 import { DataContext } from "./context"
 import { OverlayBox } from "./overlayBox"
 import { DecadesMapModality, type DecadesMapActions, type DecadesMapState, DrawModeType } from "./types"
+import { Show } from "../components/flow"
 
 const buttonOpts = {
     extraClasses: "is-flex is-flex-grow-1 m-1",
@@ -25,13 +26,9 @@ const getKind = (test: (() => boolean) | boolean) => {
     return test ? 'success' : 'info'
 }
 
-const DefaultToolboxContent = ({ show, state, actions, toggle }: ToolboxProps & { toggle: () => void }) => {
+const DefaultToolboxContent = ({ state, actions, toggle }: ToolboxProps & { toggle: () => void }) => {
     const { aircraftData } = useContext(DataContext)
-    
-    if (!show) {
-        return null
-    }
-    
+      
     const addFlag = () => {
         if (!aircraftData) {
             return
@@ -189,11 +186,10 @@ const ToolBoxTitle = () => (
 )
 
 type ToolboxProps = {
-    show: boolean,
     state: DecadesMapState,
     actions: DecadesMapActions
 }
-const Toolbox = ({ show, state, actions }: ToolboxProps) => {
+const Toolbox = ({ state, actions }: ToolboxProps) => {
     const [showToolbox, setShowToolbox] = useState<boolean>(true)
 
     const style = {
@@ -203,14 +199,16 @@ const Toolbox = ({ show, state, actions }: ToolboxProps) => {
         width: 350,
     }
 
-    const content = showToolbox
-        ? <DefaultToolboxContent show={showToolbox} toggle={() => setShowToolbox(x => !x)} state={state} actions={actions} />
-        : <AddFlagContent toggle={() => setShowToolbox(x => !x)} state={state} actions={actions}/>
 
     return (
-        <OverlayBox show={show} {...style}>
+        <OverlayBox {...style}>
             <ToolBoxTitle />
-            {content}
+            <Show when={showToolbox}>
+                <DefaultToolboxContent toggle={() => setShowToolbox(x => !x)} state={state} actions={actions} />
+            </Show>
+            <Show when={!showToolbox}>
+                <AddFlagContent toggle={() => setShowToolbox(x => !x)} state={state} actions={actions}/>
+            </Show>
         </OverlayBox>
     )
 }

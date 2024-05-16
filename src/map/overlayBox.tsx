@@ -1,6 +1,5 @@
 type OverlayBoxProps = {
     children: React.ReactNode,
-    show: boolean,
     top?: number | "auto",
     right?: number | "auto",
     bottom?: number | "auto",
@@ -24,10 +23,6 @@ const OverlayBox = (props: OverlayBoxProps) => {
         padding: "10px",
         borderRadius: "10px",
         opacity: .95
-    }
-
-    if(!props.show) {
-        return null
     }
 
     return (
