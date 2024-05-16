@@ -20,3 +20,5 @@ export type QCCArg = QcResponse | Array<DecadesParameter>
 export const isQCResponse = (p: QcResponse | DecadesParameter[]): p is QcResponse => {
     return (p as QcResponse).variables !== undefined;
 }
+
+export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
