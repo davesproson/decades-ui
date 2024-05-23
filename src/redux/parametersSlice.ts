@@ -13,7 +13,7 @@ interface Parameter {
 };
 
 interface DecadesParameter {
-    ParameterIdentifier: number,
+    ParameterIdentifier: number | string,
     ParameterName: string,
     DisplayText: string,
     DisplayUnits: string,

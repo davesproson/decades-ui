@@ -9,15 +9,47 @@ import { VistaError } from "../components/error"
 import { Parameter } from "../redux/parametersSlice"
 import { ParameterSearchInput } from "./filterBar"
 import { Container } from "../components/container"
+import { memo } from "react"
 
 type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
 
-const ParameterLine = (props: ParameterLineProps) => {
+type ParameterInputProps = {
+    name: string
+    id: number | string
+    selected: boolean
+}
+const ParameterInput = (props: ParameterInputProps) => {
+    const dispatch = useDispatch()
+
+    const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation()
+        dispatch(toggleParamSelected({
+            id: props.id
+        }))
+    }
+
+    const style = {
+        background: "none",
+        cursor: "pointer",
+        border: "none",
+    }
+
+    const classes = props.selected
+        ? "has-text-light"
+        : "has-text-dark"
+
+    return (
+        <button onClick={onClick} style={style} className={classes}>
+            {props.name}
+        </button>
+    )
+}
+
+const ParameterLine = memo((props: ParameterLineProps) => {
     const dispatch = useDispatch()
 
     const toggleSelected = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => {
-        // @ts-ignore TODO
-        const value = (e.target as Element).attributes.data?.value;
+        const value = (e.target as HTMLTableRowElement).dataset?.data;
 
         if (value !== "is-status") {
             return dispatch(toggleParamSelected({
@@ -44,16 +76,15 @@ const ParameterLine = (props: ParameterLineProps) => {
 
     return (
         <tr className={selectedClass} onClick={(e) => toggleSelected(e)} style={{ "cursor": "pointer" }}>
-            {/* @ts-ignore TODO */}
-            <td style={{ width: "0" }} className={statusClass} data="is-status">{statusText}</td>
+            <td style={{ width: "0" }} className={statusClass} data-data="is-status">{statusText}</td>
             <td style={{ width: "0" }}>{props.id}</td>
-            <td>{props.name}</td>
+            <td><ParameterInput name={props.name} id={props.id} selected={props.selected}/></td>
             <td>{props.units}</td>
         </tr>
     )
-}
+})
 
-const ParameterTable = () => {
+const ParameterTable = memo(() => {
 
     const vars = useSelector(state => state.vars)
     const filterText = useSelector(state => state.paramfilter)
@@ -67,9 +98,7 @@ const ParameterTable = () => {
     if (!vars.params) return <Loader text="Getting parameters..." />;
     if (server === null) return <VistaError message="Server is not available." error={null} />
 
-    const params = [...vars.params];
-
-    const rows = params
+    const rows = vars.params
         .filter(
             x => (x.name.toLowerCase().includes(filterText.filterText.toLowerCase())
                 || x.id.toString().toLowerCase().includes(filterText.filterText.toLowerCase())))
@@ -99,6 +128,6 @@ const ParameterTable = () => {
             </Container>
         </FadeOut>
     )
-}
+})
 
 export default ParameterTable

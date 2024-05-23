@@ -1,10 +1,9 @@
-import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom'
-import { useServers, useDarkMode } from './hooks';
-import { Loader } from './components/loader';
-import { useSearchParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setParamSet } from './redux/parametersSlice';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { lazy, useEffect } from 'react';
+import { Routes, Route, useSearchParams } from 'react-router-dom'
+import { useServers, useDarkMode, useQuickLookTimeframe } from './hooks';
+import { SuspenseLoader } from './components/loader';
 
 const Navbar = lazy(() => import('./navbar/navbar'))
 const TimeframeSelector = lazy(() => import('./timeframe/timeframe'))
@@ -27,22 +26,18 @@ const HeadingIndicator = lazy(() => import('./heading/heading'))
 const RollIndicator = lazy(() => import('./roll/roll'))
 const PitchIndicator = lazy(() => import('./pitch/pitch'))
 const Redash = lazy(() => import('./redash/redash'))
+const ChatProvider = lazy(() => import('./chat/provider'))
+const Chat = lazy(() => import('./chat/chat'))
+const DecadesMap = lazy(() => import('./map/decadesMap'))
 
 import { VistaErrorBoundary } from './components/error';
-import { useEffect } from 'react';
+import { useDispatch } from './redux/store';
+import { setParamSet } from './redux/parametersSlice';
+import { setQuickLookMode } from './redux/configSlice';
+import { setQcJob } from './redux/quicklookSlice';
+import { ToastContainer } from 'react-toastify';
 
-interface SuspenseLoaderProps {
-  text?: string,
-  children: React.ReactNode
-}
-const SuspenseLoader = (props: SuspenseLoaderProps) => {
 
-  return (
-    <Suspense fallback={<Loader text={props.text || "Loading..."} />}>
-      {props.children}
-    </Suspense>
-  )
-}
 
 /**
  * The main app component. This is the entry point for the application, which
@@ -57,10 +52,10 @@ const SuspenseLoader = (props: SuspenseLoaderProps) => {
 const DecadesVista = () => {
   
   useServers()
-  const [searchParams, _] = useSearchParams()
   const dispatch = useDispatch()
+  const [searchParams, _] = useSearchParams()
   const [_darkMode, _setDarkMode] = useDarkMode()
-
+  
   useEffect(() => {
     const paramSet = searchParams.get('paramset')
     if (paramSet) {
@@ -68,8 +63,22 @@ const DecadesVista = () => {
     }
   }, [searchParams, dispatch])
 
+  // If a job is passed in the URL, set the quicklook mode to true
+  // and set the job in the quicklook slice
+  useEffect(() => {
+    if(searchParams.has('job')) {
+      const job = searchParams.get('job')
+      dispatch(setQcJob(job))
+      dispatch(setQuickLookMode(true))
+    }
+  }, [searchParams])
+  
+  useQuickLookTimeframe()
+
   return (
     <VistaErrorBoundary>
+      <ChatProvider>
+      <ToastContainer />
     <SuspenseLoader text="Initializing..." >
       <Routes>
         <Route path="/" element={<><Navbar /><Tutorial /></>} >
@@ -81,10 +90,11 @@ const DecadesVista = () => {
           <Route path="/alarm-config" element={<SuspenseLoader><AlarmList /></SuspenseLoader>} />
           <Route path="/timer-config" element={<SuspenseLoader><TimerConfig /></SuspenseLoader>} />
           <Route path="/gauge-config" element={<SuspenseLoader><GaugeConfigurator /></SuspenseLoader>} />
+          <Route path="/chat" element={<SuspenseLoader><Chat /></SuspenseLoader>} />
         </Route>
         <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
         <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
-        {/* @ts-ignore TODO - why the whining here? */}
+        {/* @ts-ignore TODO: TS complaining here as PlotDispatcher expects PlotURLOptions & PlotDispatcherProps */}
         <Route path="/plot" element={<SuspenseLoader><PlotDispatcher /></SuspenseLoader>} />
         <Route path="/dashboard" element={<SuspenseLoader><DashboardDispatcher /></SuspenseLoader>} />
         <Route path="/tephigram" element={<SuspenseLoader><Tephigram /></SuspenseLoader>} />
@@ -95,9 +105,11 @@ const DecadesVista = () => {
         <Route path="/roll" element={<SuspenseLoader><RollIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/pitch" element={<SuspenseLoader><PitchIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/redash" element={<Suspense><Redash /></Suspense>} />
+        <Route path="/map" element={<SuspenseLoader><DecadesMap /></SuspenseLoader>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </SuspenseLoader>
+    </ChatProvider>
     </VistaErrorBoundary>
   )
 }

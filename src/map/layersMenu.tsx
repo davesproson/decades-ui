@@ -1,0 +1,34 @@
+import { OverlayBox } from "./overlayBox"
+
+type LayerMenuProps = {
+    show: boolean,
+    toggleLayerVisibility: Function,
+    layers: Array<any>
+}
+
+const LayersMenu = ({show, toggleLayerVisibility, layers}: LayerMenuProps) => {
+    const style = {
+        top: 120,
+        bottom: 50,
+        width: 250,
+        left: 10,
+    }
+
+    return (
+        <OverlayBox show={show} {...style}>
+            <h2 className="title is-4">Layers</h2>
+            <ul>
+                {layers.map((layer: any) => (
+                    <li key={layer.name}>
+                        <label className="checkbox">
+                            <input style={{marginRight: "5px"}} type="checkbox" checked={layer.visible} onChange={()=>toggleLayerVisibility(layer.name)} />
+                            {layer.name}
+                        </label>
+                    </li>
+                ))}
+            </ul>
+        </OverlayBox>
+    )
+}
+
+export { LayersMenu }

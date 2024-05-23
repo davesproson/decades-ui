@@ -1,3 +1,8 @@
+/**
+ * This is the main entry point for the Decades Vista application, 
+ * which is mounted to the root element of the document.
+ */
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import DecadesVista from './vista'

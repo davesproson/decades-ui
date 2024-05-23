@@ -1,44 +1,35 @@
-const booleanEnv = (key: string, defaultValue: boolean) => {
-    if (import.meta.env[key] === undefined) {
-        return defaultValue
-    }
-    return import.meta.env[key] === "true"
-}
+import { booleanEnv, numberEnv } from "./utils"
 
-const numberEnv = (key: string, defaultValue: number) => {
-    if (import.meta.env[key] === undefined) {
-        return defaultValue
-    }
+// The deployment mode of the application. Expectss "demo", "dev" or "prod"
+export const deployment = import.meta.env.VITE_VISTA_DEPLOYMENT_MODE || "dev"
 
-    try {
-        return parseFloat(import.meta.env[key])
-    } catch {
-        return defaultValue
-    }
-}
-
-export const deployment = import.meta.env.VITE_DEPLOYMENT_MODE || "dev"
-
-export const serverPrefix = ""
+// The protocol used by the server. This is determined by the deployment mode.
 export const serverProtocol = {
     'demo': "https",
     'dev': "http",
     'prod': "http"
 }[deployment]
 
+// The protocol used by the websocket. This is determined by the server protocol.
 export const wsProtocol = serverProtocol === "https" ? "wss" : "ws"
-export const useWebSocketData = booleanEnv("VITE_USE_WEBSOCKET_DATA", false)
 
-export const base = import.meta.env.VITE_BASE_URL || "/decades-vista/"
+// Flag to enable the use of websocket data for data fetching
+export const useWebSocketData = booleanEnv("VITE_VISTA_USE_WEBSOCKET_DATA", false)
 
-export const badData = numberEnv("VITE_BAD_DATA", -999.99)
+// The base URL of the application. Defaults to "/decades-vista/"
+export const base = import.meta.env.VITE_VISTA_BASE_URL || "/decades-vista/"
 
+// The value to use to indicate bad or missing data. Defaults to -999.99
+export const badData = numberEnv("VITE_VISTA_BAD_DATA", -999.99)
+
+// The base URL to use for the API.
 export const apiBase = {
     "demo": "/live",
     "dev": "/decades",
     "prod": "/decades"
 }[deployment]
 
+// The endpoints to use for the API
 export const apiEndpoints = {
     'parameters': `${apiBase}/parano.json`,
     'parameter_availability': `${apiBase}/params/availability`,
@@ -46,21 +37,27 @@ export const apiEndpoints = {
     'data_ws': `${apiBase}/livedata_ws`,
     'tank_status': `${apiBase}/tank_status`,
     'flightsummary': `${apiBase}/flightsummary/get`,
+    'chat': `${apiBase}/chat`,
+    'login': `${apiBase}/login`,
+    'logout': `${apiBase}/logout`,
+    'quicklook_jobs': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-jobs`,
+    'quicklook_data': `https://www.faam.ac.uk/gluxe/api/v1/quicklook-data`,
 }
 
-export const enableTutorial = booleanEnv("VITE_ENABLE_TUTORIAL", true)
+// Flag to enable the tutorial overlay
+export const enableTutorial = booleanEnv("VITE_VISTA_ENABLE_TUTORIAL", true)
 
-type TransformType<T> = {
-    [key: string]: (data: T) => T
-}
-export const apiTransforms: TransformType<any> = {}
-
+// Map geographic coordinates to the parameter names. This allows quick
+// plotting against geographic coordinates.
+// TODO: These should be changed for quicklook mode/data.
 export const geoCoords = {
     'latitude': 'gin_latitude',
     'longitude': 'gin_longitude',
     'altitude': 'pressure_height_kft'
 }
 
+// The default parameters to plot when the user selects a preset.
+// TODO: These should be changed for quicklook mode/data.
 export const presets = {
     'True air temperatures (C)': [521, 524],
     'Dew points (C)': [529, 550, 931],
@@ -70,7 +67,12 @@ export const presets = {
     'Turbulence Probe': [593, 594, 595]
 }
 
+// Default parameters to include in plot headers
 export const plotHeaderDefaults = [
     'gin_latitude', 'gin_longitude', 'pressure_height_kft', 'deiced_true_air_temp_c',
     'dew_point'
 ]
+
+// Experimental features
+export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
+export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "../redux/store"
-import { useState } from "react"
+import { useState, lazy } from "react"
 import { setFilterText } from "../redux/filterSlice"
 import { Link, useLocation } from "react-router-dom"
 import { toggleParamSelected, unselectAllParams } from "../redux/parametersSlice"
@@ -10,10 +10,16 @@ import { useTephiAvailable, useTephiUrl } from "../tephigram/hooks"
 import { Outlet } from "react-router-dom"
 import { loadSavedView, setViewConfigTab } from "../redux/viewSlice"
 import { useNavigate } from "react-router-dom"
-import { presets, geoCoords } from "../settings"
+import { presets, geoCoords, enableQuicklook, enableChat } from "../settings"
 import { Button } from "../components/buttons"
 import PropTypes from "prop-types"
 import { ConfigPanel } from "../configPanel/config"
+import { SuspenseLoader } from "../components/loader"
+import { LiveDataOnly } from "../quicklook"
+import { BleedingEdge } from "../components/bleeding"
+
+const VistaModeSelector = lazy(() => import('../modeSelect'))
+const QuicklookSelector = lazy(() => import('../quicklook'))
 
 
 
@@ -52,11 +58,11 @@ const NavTimeFrameSelector = () => {
         const active = x.selected ? "has-text-success is-underlined" : ""
 
         const onSetTimeframe = (e: string) => {
-            dispatch(setTimeframe({value: e}))
+            dispatch(setTimeframe({ value: e }))
         }
 
         return (
-            <a className="navbar-item" key={x.value} onClick={()=>{onSetTimeframe(x.value);toggleVisible()}}>
+            <a className="navbar-item" key={x.value} onClick={() => { onSetTimeframe(x.value); toggleVisible() }}>
                 <span className={active}>{x.label}</span>
             </a>
         )
@@ -65,18 +71,20 @@ const NavTimeFrameSelector = () => {
     const visibleClass = visible ? "is-active" : ""
 
     return (
-        <div id="timeframe-navbar" className={`navbar-item has-dropdown ${visibleClass}`} onMouseLeave={()=>setVisible(false)}>
+        <div id="timeframe-navbar" className={`navbar-item has-dropdown ${visibleClass}`} onMouseLeave={() => setVisible(false)}>
             <a id="timeframe-navbar-item" className="navbar-link" onClick={toggleVisible}>
                 Timeframe
             </a>
 
             <div className="navbar-dropdown" >
-                {timeframeElements}
-                <hr className="navbar-divider" />
-                <div  onClick={toggleVisible}>
-                <Link to="/timeframe" className="navbar-item" >
-                    <span className={customActiveClass}>Custom...</span>
-                </Link>
+                <LiveDataOnly >
+                    {timeframeElements}
+                    <hr className="navbar-divider" />
+                </LiveDataOnly>
+                <div onClick={toggleVisible}>
+                    <Link to="/timeframe" className="navbar-item" >
+                        <span className={customActiveClass}>Custom...</span>
+                    </Link>
                 </div>
             </div>
         </div>
@@ -104,26 +112,26 @@ const PresetSelector = () => {
         setVisible(!visible)
     }
 
-    const setPreset = (presets: Array<string|number>) => {
+    const setPreset = (presets: Array<string | number>) => {
         dispatch(unselectAllParams())
-        for(let p of presets) {
-            dispatch(toggleParamSelected({id: p.toString()}))
+        for (let p of presets) {
+            dispatch(toggleParamSelected({ id: p.toString() }))
         }
         setVisible(false)
     }
 
     const visibleClass = visible ? "is-active" : ""
     const presetOptions = Object.entries(presets).map(x => {
-        
+
         return (
-            <a className="navbar-item" key={x[0]} onClick={()=>setPreset(x[1])}>
+            <a className="navbar-item" key={x[0]} onClick={() => setPreset(x[1])}>
                 <span>{x[0]}</span>
             </a>
         )
     })
 
     return (
-        <div className={`navbar-item has-dropdown ${visibleClass}`} onMouseLeave={()=>setVisible(false)}>
+        <div className={`navbar-item has-dropdown ${visibleClass}`} onMouseLeave={() => setVisible(false)}>
             <a className="navbar-link" onClick={toggleVisible}>
                 Presets
             </a>
@@ -159,10 +167,10 @@ const ViewsSelector = () => {
 
     // I've named a function goto. I'm sorry.
     const goto = (id: string) => {
-        dispatch(loadSavedView({id: id}))
+        dispatch(loadSavedView({ id: id }))
         const viewVersion = savedViews.find(x => x.id == id).version
 
-        switch(viewVersion) {
+        switch (viewVersion) {
             case 2:
                 dispatch(setViewConfigTab("BASIC"))
                 break
@@ -179,7 +187,7 @@ const ViewsSelector = () => {
 
     const viewElements = savedViews.map((x, i) => {
         return (
-            <a className="navbar-item" key={i} onClick={()=>goto(x.id)}>
+            <a className="navbar-item" key={i} onClick={() => goto(x.id)}>
                 <span>{x.name}</span>
             </a>
         )
@@ -191,11 +199,11 @@ const ViewsSelector = () => {
             <a id="views-navbar-item" className="navbar-link" onClick={toggleVisible}>
                 Views
             </a>
-            <div className="navbar-dropdown" onClick={()=>setVisible(false)} onMouseLeave={()=>setVisible(false)}>
-                <Link to="/config-view"  className="navbar-item">
+            <div className="navbar-dropdown" onClick={() => setVisible(false)} onMouseLeave={() => setVisible(false)}>
+                <Link to="/config-view" className="navbar-item">
                     Config...
                 </Link>
-                <Link to="/view-library"  className="navbar-item">
+                <Link to="/view-library" className="navbar-item">
                     Library...
                 </Link>
                 <hr className="navbar-divider" />
@@ -221,16 +229,9 @@ const ViewsSelector = () => {
  */
 
 const MoreSelector = () => {
-    // const dispatch = useDispatch()
-    // const navigate = useNavigate()
     const [visible, setVisible] = useState(false)
 
     const visibleClass = visible ? "is-active" : ""
-
-    // const goto = (id) => {
-    //     dispatch(loadSavedView({id: id}))
-    //     navigate("/config-view")
-    // }
 
     const toggleVisible = () => {
         setVisible(!visible)
@@ -241,14 +242,20 @@ const MoreSelector = () => {
             <a id="views-navbar-item" className="navbar-link" onClick={toggleVisible}>
                 More
             </a>
-            <div className="navbar-dropdown" onClick={()=>setVisible(false)} onMouseLeave={()=>setVisible(false)}>
-                <Link to="/alarm-config"  className="navbar-item">
+            <div className="navbar-dropdown" onClick={() => setVisible(false)} onMouseLeave={() => setVisible(false)}>
+                <BleedingEdge show={enableChat}>
+                    <Link to="/chat" className="navbar-item">
+                        Chat...
+                    </Link>
+                    <hr className="navbar-divider" />
+                </BleedingEdge>
+                <Link to="/alarm-config" className="navbar-item">
                     Alarms...
                 </Link>
-                <Link to="/timer-config"  className="navbar-item">
+                <Link to="/timer-config" className="navbar-item">
                     Timers...
                 </Link>
-                <Link to="/gauge-config"  className="navbar-item">
+                <Link to="/gauge-config" className="navbar-item">
                     Gauges...
                 </Link>
             </div>
@@ -280,7 +287,7 @@ interface PlotButtonMenuProps {
 const PlotButtonMenu = (props: PlotButtonMenuProps) => {
     const style: React.CSSProperties = {
         boxShadow: "0 0 8px #777",
-        display: props.visible ? "block": "none",
+        display: props.visible ? "block" : "none",
         left: 0,
         position: "absolute",
         top: "100%",
@@ -288,9 +295,9 @@ const PlotButtonMenu = (props: PlotButtonMenuProps) => {
         backgroundColor: "#fff",
     }
 
-    const latUrl = usePlotUrl({"ordvar": geoCoords.latitude, swapxy: true})
-    const lonUrl = usePlotUrl({"ordvar": geoCoords.longitude})
-    const heightUrl = usePlotUrl({"ordvar": geoCoords.altitude, swapxy: true})
+    const latUrl = usePlotUrl({ "ordvar": geoCoords.latitude, swapxy: true })
+    const lonUrl = usePlotUrl({ "ordvar": geoCoords.longitude })
+    const heightUrl = usePlotUrl({ "ordvar": geoCoords.altitude, swapxy: true })
     const latUrlStr = latUrl ? latUrl.toString() : "#"
     const lonUrlStr = lonUrl ? lonUrl.toString() : "#"
     const heightUrlStr = heightUrl ? heightUrl.toString() : "#"
@@ -352,11 +359,13 @@ const PlotButton = () => {
         padding: "5px"
     }
 
-    if(disable) {
+    if (disable) {
         return (
             <>
                 <Button.Primary style={leftStyle} disabled>Plot</Button.Primary>
-                <Button.Primary style={rightStyle} disabled>▾</Button.Primary>
+                <LiveDataOnly>
+                    <Button.Primary style={rightStyle} disabled>▾</Button.Primary>
+                </LiveDataOnly>
             </>
         )
     }
@@ -366,10 +375,12 @@ const PlotButton = () => {
             <Button.Primary anchor style={leftStyle} href={plotUrlStr} target="_blank" rel="noopener noreferrer">
                 Plot
             </Button.Primary>
-            <Button.Primary style={rightStyle} onClick={toggleMenuVisible}>
-                ▾
-                <PlotButtonMenu visible={menuVisible} hide={()=>setMenuVisible(false)} />
-            </Button.Primary>
+            <LiveDataOnly>
+                <Button.Primary style={rightStyle} onClick={toggleMenuVisible}>
+                    ▾
+                    <PlotButtonMenu visible={menuVisible} hide={() => setMenuVisible(false)} />
+                </Button.Primary>
+            </LiveDataOnly>
         </>
     )
 }
@@ -390,7 +401,7 @@ const TephiButton = () => {
     const available = useTephiAvailable()
     const url = useTephiUrl()
 
-    if(!available) {
+    if (!available) {
         return (
             <Button.Primary disabled>Tephigram</Button.Primary>
         )
@@ -420,7 +431,7 @@ const DashButton = () => {
     const disable = params.filter(x => x.selected).length == 0
     const dashUrl = useDashboardUrl()
 
-    if(disable) {
+    if (disable) {
         return (
             <Button.Primary disabled>Dashboard</Button.Primary>
         )
@@ -446,7 +457,7 @@ const DashButton = () => {
 const OptionsButton = () => {
 
     const location = useLocation()
-    
+
     const to = location.pathname === "/" ? "/options" : "/"
     const text = location.pathname !== "/" ? "Home" : "Options"
 
@@ -474,7 +485,7 @@ const ClearButton = () => {
 
     const clear = () => {
         dispatch(unselectAllParams())
-        dispatch(setFilterText({filterText: ""}))
+        dispatch(setFilterText({ filterText: "" }))
         dispatch(setOrdinateAxis('utc_time'))
     }
 
@@ -504,14 +515,16 @@ const NavbarMenu = (props: NavbarMenuProps) => {
 
     const navbarClass = props.active ? "navbar-menu is-active" : "navbar-menu"
 
-    return(
+    return (
         <div id="navbar" className={navbarClass}>
             <div className="navbar-start">
-               <ConfigPanel />
+                <ConfigPanel />
                 <NavTimeFrameSelector />
-                <PresetSelector />  
-                <ViewsSelector />
-                <MoreSelector />
+                <LiveDataOnly>
+                    <PresetSelector />
+                    <ViewsSelector />
+                    <MoreSelector />
+                </LiveDataOnly>
             </div>
 
             <div className="navbar-end">
@@ -520,8 +533,10 @@ const NavbarMenu = (props: NavbarMenuProps) => {
                         <ClearButton />
                         <OptionsButton />
                         <PlotButton />
-                        <TephiButton />
-                        <DashButton />
+                        <LiveDataOnly>
+                            <TephiButton />
+                            <DashButton />
+                        </LiveDataOnly>
                     </div>
                 </div>
             </div>
@@ -556,8 +571,8 @@ const NavbarBurger = (props: NavbarBurgerProps) => {
 
     return (
         <div className="navbar-brand">
-            <a  role="button" className={burgerClass} 
-                aria-label="menu" aria-expanded="false" 
+            <a role="button" className={burgerClass}
+                aria-label="menu" aria-expanded="false"
                 data-target="navbar" onClick={props.toggle}
             >
                 <span aria-hidden="true"></span>
@@ -584,6 +599,15 @@ NavbarBurger.propTypes = {
  */
 const Navbar = () => {
     const [active, setActive] = useState(false)
+    const modeSelected = useSelector(state => state.config.modeSelected)
+    const quicklookMode = useSelector(state => state.config.quickLookMode)
+    const qcJob = useSelector(state => state.quicklook.qcJob)
+
+    // This probably isn't the best place for this, but...
+    if (enableQuicklook) {
+        if (!modeSelected) return <SuspenseLoader><VistaModeSelector /></SuspenseLoader>
+        if (!qcJob && quicklookMode) return <SuspenseLoader><QuicklookSelector /></SuspenseLoader>
+    }
 
     const toggleActive = () => {
         setActive(!active)
@@ -591,7 +615,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="navbar is-fixed-top" role="navigation" aria-label="main navigation">  
+            <nav className="navbar is-fixed-top" role="navigation" aria-label="main navigation">
                 <NavbarBurger active={active} toggle={toggleActive} />
                 <NavbarMenu active={active} />
             </nav>

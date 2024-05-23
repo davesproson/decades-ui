@@ -82,7 +82,7 @@ const TutorialPanel = (props: TutorialPanelProps) => {
         }}>
             <div className="container ">
                 <div className="section">
-                    <h6 className="title has-text-white">{props.title}</h6>
+                    <h6 className="title" style={{color: "white"}}>{props.title}</h6>
                     {props.text}
                     <div className="mt-4">
                     {continueButton}

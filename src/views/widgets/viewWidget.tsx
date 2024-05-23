@@ -113,18 +113,19 @@ const _View = (props: ViewProps) => {
 
     const elements = props.elements
 
-    const getRowColPercent = (i: 'rowPercent' | 'columnPercent'): string => {
+    const getRowColFrac = (i: 'rowPercent' | 'columnPercent'): string => {
+        const theMax = props[i].reduce((a, b) => Math.max(a, b))
         try {
-            return props[i].map(x=>`${x}%`).join(" ")
+            return props[i].map(x=>`${x/theMax}fr`).join(" ")
         } catch (e) {
-            return "100%"
+            return "1fr"
         }
     }
 
     const style = {
         display: "grid",
-        gridTemplateRows: getRowColPercent("rowPercent"),
-        gridTemplateColumns: getRowColPercent("columnPercent"),
+        gridTemplateRows: getRowColFrac("rowPercent"),
+        gridTemplateColumns: getRowColFrac("columnPercent"),
         width: props.top ? "100vw" : undefined, 
         height: props.top ? "100vh" : undefined 
     }

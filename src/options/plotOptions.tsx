@@ -8,6 +8,8 @@ import { useServers } from '../hooks'
 
 import OptionSwitch from '../components/optionSwitch';
 import ToggleSwitch from '../components/toggleSwitch';
+import { Panel } from '../components/panel';
+import { LiveDataOnly } from '../quicklook';
 
 interface OptionBlockProps {
     flexDirection?: 'row' | 'column'
@@ -111,28 +113,38 @@ const PlotOptionCard = () => {
     const dataHeaderOn = useSelector(s=>s.options.dataHeader)
     const plotStyle = useSelector(s=>s.options.plotStyle)
 
-    const ordinateSwapToggleSwitch = <ToggleSwitch on={swapToggleOn} toggle={toggleSwapOrientation}/>
-    const plotStyleToggleSwitch = <OptionSwitch options={plotStyle.options} value={plotStyle.value} toggle={togglePlotStyle} />
-    const scrollingWindowToggleSwitch = <ToggleSwitch on={scrollingOn} toggle={toggleScrollingWindow} />
-    const dataHeaderToggleSwitch = <ToggleSwitch on={dataHeaderOn} toggle={toggleDataHeader} />
-    const paramSelector = <ParameterSelectorDropdown />
-    const serverSelector = <ServerSelectorDropDown />
-
     return (
-        <nav className="panel mt-4 is-dark">
-            <p className="panel-heading">
-                
-                Plot options
-            </p>
-            <div className="p-4">
-            <OptionBlock title="Swap ordinate/coordinate orientation" optionComponent={ordinateSwapToggleSwitch}/>
-            <OptionBlock title="Plot Style" optionComponent={plotStyleToggleSwitch}/>
-            <OptionBlock title="Scrolling Window" optionComponent={scrollingWindowToggleSwitch} />
-            <OptionBlock title="Data Header" optionComponent={dataHeaderToggleSwitch} />
-            <OptionBlock title="Ordinate Axis" optionComponent={paramSelector}/>
-            <OptionBlock title="Server" optionComponent={serverSelector} />
-            </div>
-        </nav>
+        <Panel.Dark title="Plot Options">
+            <OptionBlock title="Swap ordinate/coordinate orientation">
+                <ToggleSwitch on={swapToggleOn} toggle={toggleSwapOrientation}/>
+            </OptionBlock>
+
+            <OptionBlock title="Plot Style">
+                <OptionSwitch options={plotStyle.options} value={plotStyle.value} toggle={togglePlotStyle} />
+            </OptionBlock>
+
+            <LiveDataOnly >
+                <OptionBlock title="Scrolling Window">
+                    <ToggleSwitch on={scrollingOn} toggle={toggleScrollingWindow} />
+                </OptionBlock>
+            </LiveDataOnly>
+
+            <LiveDataOnly>
+                <OptionBlock title="Data Header">
+                    <ToggleSwitch on={dataHeaderOn} toggle={toggleDataHeader} />
+                </OptionBlock>
+            </LiveDataOnly>
+
+            <OptionBlock title="Ordinate Axis">
+                <ParameterSelectorDropdown />
+            </OptionBlock>
+
+            <LiveDataOnly>
+                <OptionBlock title="Server">
+                    <ServerSelectorDropDown />
+                </OptionBlock>
+            </LiveDataOnly>
+        </Panel.Dark>
     )
 }
 

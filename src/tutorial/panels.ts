@@ -2,8 +2,7 @@
 import { setFilterText } from "../redux/filterSlice"
 import { unselectAllParams, toggleParamSelected } from "../redux/parametersSlice"
 import { setTimeframe } from "../redux/optionsSlice"
-import { saveView, clearSavedViews, reset } from "../redux/viewSlice"
-import { v4 as uuidv4 } from 'uuid'
+import { saveView, clearSavedViews, reset, loadSavedView } from "../redux/viewSlice"
 
 import { libraryViews } from "../views/libraryEntries"
 
@@ -73,7 +72,7 @@ const panels: Array<TutorialPanelConfig> = [
                changed by clicking on the "Timeframe" menu at the top of the page.
                I've done this for you.`,
         action: () => {
-            const el = getElementByIdOrWarn("timeframe-navbar-name")
+            const el = getElementByIdOrWarn("timeframe-navbar-item")
             el && el.click()
         }
     },
@@ -193,7 +192,8 @@ const panels: Array<TutorialPanelConfig> = [
         },
         dispatch: [
             () => clearSavedViews(),
-            () => saveView({name: libraryViews[0].title, id: uuidv4(), ...libraryViews[0].config})
+            () => saveView({name: libraryViews[0].title, id: 'tutid', title: libraryViews[0].title, ...libraryViews[0].config}),
+            () => loadSavedView({id: 'tutid'})
         ],
         nextRoute: "/config-view"
     },

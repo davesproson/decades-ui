@@ -12,9 +12,9 @@ export default ({ mode }) => {
         typescript: true,
       }),
     ],
-    base: env.VITE_BASE_URL,
+    base: env.VITE_VISTA_BASE_URL,
     build: {
-      sourcemap: env.VITE_DEPLOYMENT_MODE === 'dev' ? 'inline' : false
+      sourcemap: env.VITE_VISTA_DEPLOYMENT_MODE === 'dev' ? 'inline' : false
     }
   })
 }
