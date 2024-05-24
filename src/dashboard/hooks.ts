@@ -4,6 +4,7 @@ import { base as siteBase } from '../settings'
 import { getData } from '../plot/plotUtils';
 import { DashboardOptions } from './dashboard.types';
 import { DecadesDataResponse } from '../plot/plot.types';
+import { useLocalStorage } from 'usehooks-ts';
 
 const useDashboardUrl = () => {
     const params = useSelector(state => state.vars.params);
@@ -12,7 +13,10 @@ const useDashboardUrl = () => {
     const selectedParams = params.filter(param => param.selected)
                                     .map(param => param.raw)
     const server = options.server
-    return origin + `${siteBase}dashboard?params=${selectedParams.join(',')}&server=${server}`
+    const useNewDashboard = useLocalStorage<boolean>('useNewDashboard', false)[0]
+
+    const dashboard = useNewDashboard ? 'redash' : 'dashboard'
+    return origin + `${siteBase}${dashboard}?params=${selectedParams.join(',')}&server=${server}`
 }
 
 const useDashboardData = (dataOptions: DashboardOptions) => {
