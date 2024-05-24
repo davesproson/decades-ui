@@ -180,7 +180,9 @@ export const ChatConfigSwitch = () => {
                     actions.toggleChatEnabled()
                     return { type: "chatEnabled", value: null }
                 }}
-                useStore={false} />
+                useStore={false} 
+                small
+            />
             <Button small kind={buttonType} onClick={toggleNotify}>Notify</Button>
         </>
     )
