@@ -53,7 +53,7 @@ const POIOverlay = (props: POIOverlayProps) => {
 
     return (
         <div className="has-background-light p-2" style={{
-            zIndex: 999, position: "fixed", top: props.y, left: props.x,
+            zIndex: 999, position: "absolute", top: props.y, left: props.x,
             pointerEvents: "none", borderRadius: "5px", transform: "translate(-50%, -110%)"
         }}>
             <h2 className="title is-6">{props.name}</h2>
