@@ -104,7 +104,7 @@ const DecadesVista = () => {
         <Route path="/heading" element={<SuspenseLoader><HeadingIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/roll" element={<SuspenseLoader><RollIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/pitch" element={<SuspenseLoader><PitchIndicator standalone={true}/></SuspenseLoader>} />
-        <Route path="/redash" element={<Suspense><Redash /></Suspense>} />
+        <Route path="/redash" element={<SuspenseLoader><Redash /></SuspenseLoader>} />
         <Route path="/map" element={<SuspenseLoader><DecadesMap /></SuspenseLoader>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
