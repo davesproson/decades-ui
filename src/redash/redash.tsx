@@ -45,7 +45,7 @@ const DashDisplay = (props: DashDisplayProps) => {
     const fontSize = props.fontSize || 3
     const fontSizeStr = `${fontSize}px`
 
-    const text = (props.value == null || props.value === badData)
+    const text = (props.value === null || props.value === badData)
         ? "No Data"
         : `${props.value?.toFixed(2)} ${props.units}`
 
@@ -82,7 +82,7 @@ const Dash = (props: DashProps) => {
 
     const limit = props.limits.filter(x => x.param === props.param.ParameterName)[0]
     if (limit) {
-        if ((value != null) && (limit.min > value || limit.max < value)) {
+        if ((value !== null) && (limit.min > value || limit.max < value)) {
             inAlarm = true
         }
     }

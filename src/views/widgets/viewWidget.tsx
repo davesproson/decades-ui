@@ -37,12 +37,12 @@ const ConfigViewArea = forwardRef<ConfigHandle<ConfigViewData>, {}>((_props, ref
 
     // Validate the form data
     const validate = () => {
-        if (rowPc == "") {
+        if (rowPc === "") {
             let _rows = parseFloat(rows)
             setRowPc(new Array(_rows).fill((100 / _rows).toString()).join(","))
         }
 
-        if (colPc == "") {
+        if (colPc === "") {
             let _cols = parseFloat(cols)
             setColPc(new Array(_cols).fill((100 / _cols).toString()).join(","))
         }

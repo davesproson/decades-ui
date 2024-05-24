@@ -336,8 +336,8 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             }
 
             // So sorry for this
-            let position = anchor == "free"
-                ? (i == 2 ? 0 : 1)
+            let position = anchor === "free"
+                ? (i === 2 ? 0 : 1)
                 : null;
     
             // Add the current axis to the layout.
@@ -391,7 +391,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                 line: {}
             } as PlotlyTrace
             
-            if(options.style == "scatter") {
+            if(options.style === "scatter") {
                 opts.mode = "markers";
             } else {
                 opts.mode = "lines";

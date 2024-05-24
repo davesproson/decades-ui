@@ -151,12 +151,12 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
 
     // Map utc_time to milliseconds
     const timeMap = (data: number) => {
-        return options.ordvar == 'utc_time' ? data * 1000 : data
+        return options.ordvar === 'utc_time' ? data * 1000 : data
     }
 
     // Map bad data to null
     // const badDataMap = (data: number) => {
-    //     return data == badData ? null : data
+    //     return data === badData ? null : data
     // }
 
     let yData: Array<Array<number>> = []

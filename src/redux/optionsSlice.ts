@@ -103,7 +103,7 @@ export const optionsSlice = createSlice({
             }
             state.useCustomTimeframe = true;
 
-            if(action.payload.start != null) {
+            if(action.payload.start !== null && action.payload.start != undefined) {
                 state.customTimeframe.start = action.payload.start;
             }
             if(action.payload.end !== undefined) {

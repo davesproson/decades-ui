@@ -75,7 +75,7 @@ const AxisSelectorItem = (props: AxisSelectorItemProps) => {
     const axes = useSelector(state => state.vars.axes)
     const dispatch = useDispatch()
 
-    const axesOptions = axes.filter(x => x.units == props.param.units).map(x => {
+    const axesOptions = axes.filter(x => x.units === props.param.units).map(x => {
         return <option key={x.id}  value={x.id}>Axis {x.id} ({x.units})</option>
     })
 

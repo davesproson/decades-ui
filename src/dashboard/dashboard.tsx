@@ -142,8 +142,8 @@ const LargeDashPanel = (props: DashPanelProps) => {
 
     const [showPlot, setShowPlot] = useState(false)
 
-    let dataVal = props?.value?.filter(x => x != null)
-        ?.filter(x => x != badData)
+    let dataVal = props?.value?.filter(x => x !== null)
+        ?.filter(x => x !== badData)
         ?.reverse()
     let dataValString = ""
 
@@ -269,8 +269,8 @@ const LargeDashPanel = (props: DashPanelProps) => {
  * )
  */
 const SmallDashPanel = (props: DashPanelProps) => {
-    let dataVal = props?.value?.filter(x => x != null)
-        ?.filter(x => x != badData)
+    let dataVal = props?.value?.filter(x => x !== null)
+        ?.filter(x => x !== badData)
         ?.reverse()
     let dataValString = ""
 
@@ -335,7 +335,7 @@ const SmallDashPanel = (props: DashPanelProps) => {
  * )
  */
 const DashPanel = (props: {size: string} & DashPanelProps) => {
-    if (props.size == "large") {
+    if (props.size === "large") {
         return <LargeDashPanel {...props} />
     } else {
         return <SmallDashPanel {...props} />
@@ -453,7 +453,7 @@ const DashboardDispatcher = (props: DashboardDispatcherProps) => {
         const params = (searchParams.get("params") || '').split(",")
         return params
     })()
-    const isCompact = props.compact || searchParams.get("compact") == "true"
+    const isCompact = props.compact || searchParams.get("compact") === "true"
     const server = props.server || searchParams.get("server") || location.host
     const limits = props.limits 
     const size = isCompact ? "small" : "large"

@@ -20,7 +20,7 @@ interface OptionBlockProps {
 const OptionBlock = (props: OptionBlockProps) => {
 
     const flexDirectionClass = props.flexDirection 
-        ? props.flexDirection == 'column'
+        ? props.flexDirection === 'column'
             ? 'is-flex-direction-column'
             : 'is-flex-direction-row'
         : 'is-flex-direction-row'

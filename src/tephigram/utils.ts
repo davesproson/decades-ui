@@ -47,7 +47,7 @@ const populateTephigram = (
 
     let cnt = 0
     for(var par of Object.keys(data)) {
-        if(par == 'static_pressure' || par == 'utc_time') {
+        if(par === 'static_pressure' || par === 'utc_time') {
             continue;
         }
         
@@ -193,7 +193,7 @@ const getIsotherms = (
 
     let _line
     isotherms.forEach((t, i) => {
-        if((isoThermMin + i*dIsoTherm) == 0) {
+        if((isoThermMin + i*dIsoTherm) === 0) {
             _line = {
                 color: '#aa0000',
                 width: 1.5
@@ -317,7 +317,7 @@ const getIsobars = (
     isobars.forEach((t, i) => {
         const _pres = pressMax - (i)*dPress;
         let _line
-        if(_pres == 1000 || _pres == 500 || _pres == 250) {
+        if(_pres === 1000 || _pres === 500 || _pres === 250) {
             _line = {
                 color: darkMode ? "cyan" : '#0000aa',
                 width: 1.5,
@@ -333,7 +333,7 @@ const getIsobars = (
 
         const _text: string[][] = [];
         for(let _j=0; _j<t[0].length; _j++) {
-            if(_j%3 == 0)
+            if(_j%3 === 0)
                 _text.push([_pres + ' hPa']);
             else
                 _text.push([""]);
@@ -348,7 +348,7 @@ const getIsobars = (
             line: _line,
         }
 
-        if(_pres % 100 == 0) {
+        if(_pres % 100 === 0) {
             _trace = {
                 ..._trace,
                 text: _text,

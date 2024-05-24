@@ -48,10 +48,10 @@ class DECADESCache {
 
     timeseries = async (key: string, from: number | null, to: number | null) => {
         let data = this.data[key]
-        if (from != null) {
+        if (from !== null) {
             data = data.filter(x => x[0] >= from)
         }
-        if (to != null) {
+        if (to !== null) {
             data = data.filter(x => x[0] <= to)
         }
         return {

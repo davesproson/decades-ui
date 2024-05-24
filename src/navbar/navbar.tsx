@@ -48,7 +48,7 @@ const NavTimeFrameSelector = () => {
 
     const timeframes = useSelector(state => state.options.timeframes)
     const selectedTimeframes = timeframes.filter(x => x.selected)
-    const customActiveClass = selectedTimeframes.length == 0 ? "has-text-success is-underlined" : ""
+    const customActiveClass = selectedTimeframes.length === 0 ? "has-text-success is-underlined" : ""
 
     const toggleVisible = () => {
         setVisible(!visible)
@@ -168,7 +168,7 @@ const ViewsSelector = () => {
     // I've named a function goto. I'm sorry.
     const goto = (id: string) => {
         dispatch(loadSavedView({ id: id }))
-        const viewVersion = savedViews.find(x => x.id == id).version
+        const viewVersion = savedViews.find(x => x.id === id).version
 
         switch (viewVersion) {
             case 2:
@@ -335,7 +335,7 @@ PlotButtonMenu.propTypes = {
  */
 const PlotButton = () => {
     const params = useSelector(state => state.vars.params)
-    const disable = params.filter(x => x.selected).length == 0
+    const disable = params.filter(x => x.selected).length === 0
     const [menuVisible, setMenuVisible] = useState(false)
 
     const toggleMenuVisible = () => {
@@ -428,7 +428,7 @@ const TephiButton = () => {
  */
 const DashButton = () => {
     const params = useSelector(state => state.vars.params)
-    const disable = params.filter(x => x.selected).length == 0
+    const disable = params.filter(x => x.selected).length === 0
     const dashUrl = useDashboardUrl()
 
     if (disable) {
