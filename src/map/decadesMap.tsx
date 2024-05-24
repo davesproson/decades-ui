@@ -12,11 +12,18 @@ import { Toolbar } from './controls';
 import { Toolbox } from './toolbox';
 import { LayersMenu } from './layersMenu';
 import { GeoJson } from './features/geojson';
-import { FeatureType, MapFlag } from './types';
+import { DecadesMapModality, FeatureType, MapFlag, Position } from './types';
 import { ddToDmm } from '../utils';
 import { AircraftMeasurement } from './features/aircraftMeasurement';
+import { LineMeasurement, LineMeasurementInteraction } from './features/lineMeasurement';
 import { MapClickEvent, MouseMoveEvent } from './events';
 import { Graticule } from './layers/graticule';
+import { WindVane } from './features/windVane';
+import { MapCenter } from './utils/mapCenter';
+import { Drawings } from './features/drawings';
+import { Drifter } from './features/drifters';
+import { Show } from '../components/flow';
+import { Optional } from '../types';
 
 const LayerHash = {
     'vector': VectorLayer,
@@ -34,10 +41,12 @@ function getFeatureType(feature: FeatureType): React.FC<any> {
     }
 }
 
-
-const POIOverlay = (props: MapFlag & { x: number, y: number } | null) => {
+type POIOverlayProps =  (Optional<MapFlag, "lat" | "lon" | "name"> & { x?: number, y?: number }) | null | undefined
+const POIOverlay = (props: POIOverlayProps) => {
 
     if (!props) return null
+    if (props.x === undefined || props.y === undefined) return null
+    if (props.lat === undefined || props.lon === undefined) return null
 
     const latInfo = ddToDmm(props.lat, ['N', 'S'])
     const lonInfo = ddToDmm(props.lon, ['E', 'W'])
@@ -47,9 +56,9 @@ const POIOverlay = (props: MapFlag & { x: number, y: number } | null) => {
             zIndex: 999, position: "fixed", top: props.y, left: props.x,
             pointerEvents: "none", borderRadius: "5px", transform: "translate(-50%, -110%)"
         }}>
-            <h2 className="title is-5">{props.name}</h2>
-            <p>Lat: {`${latInfo.coord} °${latInfo.hemisphere}`}</p>
-            <p>Lon: {`${lonInfo.coord} °${lonInfo.hemisphere}`}</p>
+            <h2 className="title is-6">{props.name}</h2>
+            <span>{`${latInfo.coord} ${latInfo.hemisphere}`}</span>
+            <p>{`${lonInfo.coord} ${lonInfo.hemisphere}`}</p>
         </div>
     )
 }
@@ -74,69 +83,123 @@ const DecadesMap = () => {
     }
 
     return (
-        <>
-            <DataContext.Provider value={{ aircraftData, aircraftHistory }}>
-                <MapHeader show={state.showHeaderBar} />
-                <OpenLayersMap>
+        <DataContext.Provider value={{ aircraftData, aircraftHistory }}>
 
-                    <BaseLayer />
-                    {state.showGraticule && <Graticule />}
+            <Show when={state.showHeaderBar}>
+                <MapHeader />
+            </Show>
 
-                    <MapClickEvent state={state} actions={actions} />
-                    <MouseMoveEvent state={state} actions={actions} />
+            <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}}>
 
-                    {state.overlay && <POIOverlay {...state.overlay} />}
+                <BaseLayer />
 
+                <Show when={state.showGraticule}>
+                    <Graticule />
+                </Show>
+
+                <MapCenter active={state.pinAircraft} latitude={aircraftData?.lat} longitude={aircraftData?.lon} />
+                <MapClickEvent state={state} actions={actions} />
+                <MouseMoveEvent state={state} actions={actions} />
+
+                <Show when={!!state.overlay}>
+                    <POIOverlay {...state.overlay} />
+                </Show>
+                
+                <VectorLayer>
                     <TrackedEntity
                         icon={{
                             src: 'mapicons/g-luxe.png',
                             scale: 0.5,
                         }}
                         name='G-LUXE'
+                        history={aircraftHistory}
                     />
+                </VectorLayer>
 
-                    {state.layers.map((layer, i) => {
-                        if (!layer.visible) return null
-                        const Layer = LayerHash[layer.type]
+                <Show when={state.showWindVane}>
+                    <VectorLayer>
+                        <WindVane />
+                    </VectorLayer>
+                </Show>
+
+                {state.layers.map((layer, i) => {
+                    if (!layer.visible) return null
+                    const Layer = LayerHash[layer.type]
+                    return (
+                        <Layer key={i}>
+                            {layer.features.map((feature, j) => {
+                                const Feature = getFeatureType(feature)
+                                return <Feature key={j} {...feature} />
+                            })}
+                        </Layer>
+                    )
+                })}
+
+                <VectorLayer>
+                    {state.flags.map((flag) => (
+                        <POI key={flag.name}
+                            latitude={flag.lat}
+                            longitude={flag.lon}
+                            name={flag.name}
+                            icon={{
+                                src: 'mapicons/flag-marker.png',
+                                scale: 0.15,
+                            }}
+                        />
+                    ))}
+                </VectorLayer>
+
+                <VectorLayer>
+                    {state.aircraftMeasures.map((flag, i) => (
+                        <AircraftMeasurement key={i}
+                            lat={flag.lat}
+                            lon={flag.lon}
+                        />
+                    ))}
+                </VectorLayer>
+
+                <VectorLayer>
+                    <Show when={state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)}>
+                        <LineMeasurementInteraction
+                            addMeasurement={(startPos: Position, endPos: Position) => actions.setMeasurements([...state.measurements, [startPos, endPos]])}
+                        />
+                    </Show>
+
+                    {state.measurements.map((measurement, i) => (
+                        <LineMeasurement key={i}
+                            startPos={measurement[0]}
+                            endPos={measurement[1]}
+                        />
+                    ))}
+
+                </VectorLayer>
+
+                <VectorLayer>
+                    {state.drifters.map((drifter, i) => {
                         return (
-                            <Layer key={i}>
-                                {layer.features.map((feature, j) => {
-                                    const Feature = getFeatureType(feature)
-                                    return <Feature key={j} {...feature} />
-                                })}
-                            </Layer>
+                            <Drifter key={i} {...drifter} />
                         )
                     })}
+                </VectorLayer>
 
-                    <VectorLayer>
-                        {state.flags.map((flag) => (
-                            <POI key={flag.name}
-                                latitude={flag.lat}
-                                longitude={flag.lon}
-                                name={flag.name}
-                                icon={{
-                                    src: 'mapicons/flag-marker.png',
-                                    scale: 0.15,
-                                }}
-                            />
-                        ))}
-                    </VectorLayer>
+                <VectorLayer>
+                    <Drawings drawMode={state.drawMode}/>
+                </VectorLayer>
 
-                    <VectorLayer>
-                        {state.aircraftMeasures.map((flag, i) => (
-                            <AircraftMeasurement key={i}
-                                lat={flag.lat}
-                                lon={flag.lon}
-                            />
-                        ))}
-                    </VectorLayer>
+                <Toolbar state={state} actions={actions} />
 
-                    <Toolbar state={state} actions={actions} />
-                    <Toolbox show={state.showToolbox} actions={actions} state={state} />
-                    <LayersMenu show={state.showLayersMenu} layers={state.layers} toggleLayerVisibility={toggleLayerVisibility} />
-                </OpenLayersMap>
-            </DataContext.Provider>
-        </>
+                <Show when={state.showToolbox}>
+                    <Toolbox actions={actions} state={state} />
+                </Show>
+
+                <Show when={state.showLayersMenu}>
+                    <LayersMenu headerActive={state.showHeaderBar} 
+                        layers={state.layers}
+                        toggleLayerVisibility={toggleLayerVisibility}
+                    />
+                </Show>
+            </OpenLayersMap>
+        </DataContext.Provider>
     )
 }
 

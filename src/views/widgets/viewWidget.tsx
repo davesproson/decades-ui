@@ -136,7 +136,7 @@ const _View = (props: ViewProps) => {
             {elements.map((element, i) => {
                 const Element = register.getWidget(element.type).component
                 return (
-                    <div key={i} style={{display: "grid"}}>
+                    <div key={i} style={{display: "grid", position: "relative"}}>
                         <Element  {...element} />
                     </div>
                 )

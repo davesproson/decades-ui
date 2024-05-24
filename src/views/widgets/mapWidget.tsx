@@ -1,13 +1,5 @@
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./widgets.types"
-import { onLuxe } from "../../utils"
-
-const MapView = (props: {url: string}) => {
-    return (
-        <iframe src={props.url} 
-             style={{border: "none", overflow: "hidden", width: "100%", height: "100%"}}/>
-            
-    )
-}
+import DecadesMap from "../../map/decadesMap"
 
 const ConfigMapArea = () => {
     return (
@@ -25,16 +17,13 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "map",
-                url: onLuxe()
-                    ? "http://192.168.101.105/gluxe/position"
-                    : "https://www.faam.ac.uk/gluxe/position"
             })
             return true
         },
         icon: 'dashicons/globe.svg',
         tooltip: 'Display a map of the aircraft position',
-        component: MapView
+        component: DecadesMap
     })
 }
 
-export { useMapWidget, MapView }
+export { useMapWidget }

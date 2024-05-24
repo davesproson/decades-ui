@@ -7,14 +7,17 @@ type HeaderElementProps = {
     title?: string,
     value: string,
     unit?: string,
+    hide?: "mobile" | "touch"
 }
-const HeaderElement = ({ title, value, unit }: HeaderElementProps) => {
+const HeaderElement = ({ title, value, unit, hide }: HeaderElementProps) => {
     const TitleElement = () => title ? <p className="heading">{title}</p> : null
     const UnitElement = () =>unit ? <p className="heading">{unit}</p> : null
     const ValueElement = () => <p className="title">{value}</p>
 
+    const hiddenClass = hide ? `is-hidden-${hide}` : ''
+
     return (
-        <div className="level-item has-text-centered">
+        <div className={`level-item has-text-centered ${hiddenClass}`}>
             <div>
                 <TitleElement />
                 <ValueElement />
@@ -24,7 +27,7 @@ const HeaderElement = ({ title, value, unit }: HeaderElementProps) => {
     )
 }
 
-const MapHeader = ({show}: {show: boolean}) => {
+const MapHeader = () => {
     const { aircraftData } = useContext(DataContext)
     const [ flightNumber, setFlightNumber ] = useState<string>('----')
     
@@ -37,13 +40,13 @@ const MapHeader = ({show}: {show: boolean}) => {
         return () => clearInterval(interval)
     }, [])
 
+    if(!aircraftData) return null
+
     const lat = ddToDmm(aircraftData.lat, ['North', 'South'])
     const lon = ddToDmm(aircraftData.lon, ['East', 'West'])
     const alt = metresToFeet(aircraftData.alt || 0).toFixed(0)
     const heading = Math.floor(aircraftData.heading || 0).toString().padStart(3, '0')
     const speed = msToKnots(aircraftData.groundSpeed || 0).toFixed(0)
-
-    if(!show) return null
 
     const style = {
         zIndex: 10,
@@ -54,14 +57,14 @@ const MapHeader = ({show}: {show: boolean}) => {
     }
 
     return (
-        <OverlayBox show={show} {...style}>
+        <OverlayBox {...style}>
             <div className="level is-mobile">
-                <HeaderElement title="Flight Number" value={flightNumber} />
+                <HeaderElement hide="mobile" title="Flight Number" value={flightNumber} />
                 <HeaderElement title="Latitude" value={lat.coord} unit={lat.hemisphere} />
                 <HeaderElement title="Longitude" value={lon.coord} unit={lon.hemisphere} />
-                <HeaderElement title="Altitude" value={alt} unit="ft" />
-                <HeaderElement title="Heading" value={heading} unit="Degrees" />
-                <HeaderElement title="Groundspeed" value={speed} unit="knots" />
+                <HeaderElement hide="touch" title="Altitude" value={alt} unit="ft" />
+                <HeaderElement hide="touch" title="Heading" value={heading} unit="Degrees" />
+                <HeaderElement hide="touch" title="Groundspeed" value={speed} unit="knots" />
             </div>
         </OverlayBox>
     )
