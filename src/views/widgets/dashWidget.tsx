@@ -1,9 +1,10 @@
 import React, { useImperativeHandle } from 'react'
 import { useSelector } from '../../redux/store'
+import { useLocalStorage } from 'usehooks-ts'
 import { Tag } from '../../components/tags'
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './widgets.types'
-// import { Dashboard } from '../../dashboard/dashboard'
 import { DashboardProps } from '../../dashboard/dashboard.types'
+import { Dashboard } from '../../dashboard/dashboard'
 import { Redash } from '../../redash/redash'
 
 
@@ -53,6 +54,8 @@ const ConfigDashboardArea = React.forwardRef<ConfigHandle<ConfigDashboardData>, 
 
 const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const ref = React.useRef<ConfigHandle<ConfigDashboardData>>(null)
+    const useNewDashboard = useLocalStorage<boolean>('useNewDashboard', false)[0]
+
     registry.register({
         name: "Dash",
         type: "dashboard",
@@ -67,7 +70,12 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
         },
         icon: 'dashicons/dashboard.svg',
         tooltip: 'Display a dashboard - realtime parameter values',
-        component: (props: DashboardProps) => <Redash {...props} useURL={false} />
+        component: (props: DashboardProps) => {
+            if(useNewDashboard) {
+                return <Redash {...props} useURL={false} />
+            }
+            return <Dashboard {...props} useURL={false} />
+        }
     })
 }
 
