@@ -16,6 +16,7 @@ import { ChatConfigSwitch } from "../chat/chat";
 import { BleedingEdge } from "../components/bleeding";
 
 import { enableChat } from "../settings";
+import { useLocalStorage } from "usehooks-ts";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -41,6 +42,20 @@ const DarkModeSwitch = () => {
         options={["On", "Off"]}
         toggle={() => _setDarkMode(!darkMode)}
         useStore={false}
+        small
+    />
+}
+
+const NewStyleDashboard = () => {
+    const [useNewDashboard, setUseNewDashboard] = useLocalStorage<boolean>("useNewDashboard", false);
+    return <OptionSwitch
+        value={useNewDashboard ? "New" : "Old"}
+        options={["New", "Old"]}
+        toggle={()=>{
+            setUseNewDashboard(x=>!x);
+            return { type: "useNewDashboard", value: useNewDashboard }
+        }}
+        small
     />
 }
 
@@ -122,6 +137,12 @@ const ConfigPanel = () => {
                                     <ChatConfigSwitch />
                                 </Option>
                             </BleedingEdge>
+                        </LiveDataOnly>
+
+                        <LiveDataOnly>
+                            <Option title="Dashboard Style">
+                                <NewStyleDashboard />
+                            </Option>
                         </LiveDataOnly>
                     </OptionList>
                 </div>
