@@ -8,6 +8,7 @@ interface OptionSwitchProps {
     value: string
     options: string[]
     toggle: () => { type: string }
+    small?: boolean
     useStore?: boolean
 }
 /**
@@ -42,13 +43,15 @@ const OptionSwitch = (props: OptionSwitchProps) => {
         ? props.toggle
         : () => dispatch(props.toggle())
 
+    const small = props.small ? true : false
+
     return (
         <Field addons>
             <Control>
-                <LeftButton onClick={toggle}>{capitalize(props.options[0])}</LeftButton>
+                <LeftButton small={small} onClick={toggle}>{capitalize(props.options[0])}</LeftButton>
             </Control>
             <Control>
-                <RightButton onClick={toggle}>{capitalize(props.options[1])}</RightButton>
+                <RightButton small={small} onClick={toggle}>{capitalize(props.options[1])}</RightButton>
             </Control>
         </Field>
     )
