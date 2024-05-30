@@ -31,7 +31,7 @@ const ModeSelectCard = (props: ModeSelectCardProps) => {
         <div style={{ maxWidth: "800px" }}>
             <h1 className="title">{props.title}</h1>
             <h2 className="subtitle">{props.children}</h2>
-            <Button.Dark fullWidth outlined onClick={props.onLaunch}>
+            <Button.Dark fullWidth outlined onMouseDown={props.onLaunch}>
                 Launch
             </Button.Dark>
         </div>
