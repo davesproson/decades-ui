@@ -8,6 +8,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setParamsDispatched } from "./redux/parametersSlice";
 import { useSelector } from "./redux/store";
+import { FlexCenter } from "./components/layout";
+import { useScrollInhibitor } from "./hooks";
+import { setModeSelected, setQuickLookMode } from "./redux/configSlice";
 
 type QuicklookJob = {
     flightNumber: string,
@@ -27,7 +30,7 @@ type QuicklookJobResponse = {
 }
 
 const jobSortFn = (a: QuicklookJob, b: QuicklookJob) => {
-     return new Date(b.flightDate).getTime() - new Date(a.flightDate).getTime()
+    return new Date(b.flightDate).getTime() - new Date(a.flightDate).getTime()
 }
 
 const QuicklookSelector = () => {
@@ -35,10 +38,11 @@ const QuicklookSelector = () => {
     const dispatch = useDispatch()
     const navigator = useNavigate()
 
+    useScrollInhibitor(!jobs.length)
     useEffect(() => {
         fetch(apiEndpoints.quicklook_jobs)
             .then(response => response.json())
-            .then((data: QuicklookJobResponse)  => {
+            .then((data: QuicklookJobResponse) => {
                 setJobs(data.results.map(a => {
                     return {
                         flightNumber: a.flight_number,
@@ -57,19 +61,48 @@ const QuicklookSelector = () => {
         navigator("/")
     }
 
+    const reset = () => {
+        dispatch(setQcJob(null))
+        dispatch(setFlightNumber(null))
+        dispatch(setParamsDispatched(false))
+        dispatch(setQuickLookMode(false))
+        dispatch(setModeSelected(false))
+        navigator("/")
+    }
+
+    let content: React.ReactNode;
+    if (jobs.length === 0) {
+        content = (
+            <div style={{ top: 0, bottom: 0, position: "fixed", left: 0, right: 0 }}>
+                <FlexCenter direction="column" extraStyle={{ height: "100%" }}>
+                    <h2 className="title">
+                        No flights are currently available to view
+                    </h2>
+                    <h3 className="subtitle">
+                        Flight data typically becomes available within 24 hours of a flight,
+                        and is available for viewing for approximately 2 weeks.
+                    </h3>
+                    <Button onMouseDown={reset}>
+                        Back
+                    </Button>
+                </FlexCenter>
+            </div>
+        )
+    } else {
+        content = jobs.sort(jobSortFn).map(job => {
+            return (
+                <Button.Dark key={job.flightNumber} fullWidth outlined extraClasses="m-1" onClick={() => jobSelected(job)}>
+                    {job.flightNumber} ({job.flightProject}) {job.flightDate}
+                </Button.Dark>
+            )
+        })
+    }
+
     return (
         <>
             <DecadesBanner />
             <Container>
-            {
-                jobs.sort(jobSortFn).map(job => {
-                    return (
-                        <Button.Dark key={job.flightNumber} fullWidth outlined extraClasses="m-1" onClick={()=>jobSelected(job)}>
-                            {job.flightNumber} ({job.flightProject}) {job.flightDate}
-                        </Button.Dark>
-                    )
-                })
-            }
+                {content}
             </Container>
         </>
     )
@@ -81,22 +114,22 @@ type ChildProps = {
 
 const QuicklookOnly = (props: ChildProps) => {
     const quickLookMode = useSelector(state => state.config.quickLookMode)
-    
-    if(quickLookMode)
+
+    if (quickLookMode)
         return props.children
 
     return <></>
-    
+
 }
 
 const LiveDataOnly = (props: ChildProps) => {
     const quickLookMode = useSelector(state => state.config.quickLookMode)
-    
-    if(!quickLookMode)
+
+    if (!quickLookMode)
         return props.children
 
     return <></>
-    
+
 }
 
 export default QuicklookSelector;
