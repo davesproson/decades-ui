@@ -5,7 +5,7 @@ import { useDashboardData } from "../dashboard/hooks";
 import { DashboardOptions } from "../dashboard/dashboard.types";
 import { DecadesParameter } from "../redux/parametersSlice";
 import { badData } from "../settings";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect,  useRef, useState } from "react";
 import { Button } from "../components/buttons";
 import { SimplePlot } from "../plot/plot";
 
@@ -37,7 +37,7 @@ interface DashDisplayProps {
     value: number | null,
     units: string,
     inAlarm?: boolean,
-    fontSize?: number
+    fontSize?: number | string
 }
 const DashDisplay = (props: DashDisplayProps) => {
     let alarmClass = ""
@@ -50,7 +50,7 @@ const DashDisplay = (props: DashDisplayProps) => {
         : `${props.value?.toFixed(2)} ${props.units}`
 
     return (
-        <div className={alarmClass} style={{ padding: "5px", fontSize: fontSizeStr, display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1 }}>
+        <div className={alarmClass} style={{ fontSize: fontSizeStr, display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1 }}>
             {text}
         </div>
     )
@@ -62,7 +62,7 @@ interface DashProps {
     limits: { param: string, min: number, max: number }[],
     maximized: boolean,
     setMaximized: (param: string | null) => void,
-    fontSize?: number
+    fontSize?: number | string
 }
 const Dash = (props: DashProps) => {
 
@@ -96,7 +96,7 @@ const Dash = (props: DashProps) => {
         : { border: "2px solid gray", flexGrow: 1, borderRadius: "5px", display: "flex", flexDirection: "column" }
 
     const contents = props.maximized
-        ? <SimplePlot params={[props.param.ParameterName]} style={{height: "97%"}} />
+        ? <SimplePlot params={[props.param.ParameterName]} style={{height: "95%"}} />
         : <DashDisplay fontSize={props.fontSize} value={value} units={props.param.DisplayUnits} inAlarm={inAlarm} />
 
     return (
@@ -123,7 +123,7 @@ const Redash = (props: RedashProps) => {
     const [searchParams, _] = useSearchParams()
     const [maximized, setMaximized] = useState<string | null>(null)
     const [ratio, setRatio] = useState(1)
-    const [fontSize, setFontSize] = useState(64)
+    const [fontSize, setFontSize] = useState(48)
 
     useLayoutEffect(() => {
         if (!ref.current) return
@@ -146,8 +146,6 @@ const Redash = (props: RedashProps) => {
             })
         }
       }, [ref, ratio, fontSize]);
-
-    const singleColumn = ratio < 0.7
 
     let limits = searchParams.getAll('limits').map(x => {
         const [param, min, max] = x.split(',')
@@ -187,14 +185,7 @@ const Redash = (props: RedashProps) => {
         }
     }
 
-    const nCols = singleColumn
-        ? 1
-        : ratio < 1
-            ? Math.min(2, props.params.length)
-            : ratio < 1.5
-                ? Math.min(3, props.params.length)
-                : Math.min(4, props.params.length)
-
+    const nCols = Math.min(Math.floor(ratio * 2.5), props.params.length)
     const nRows = Math.ceil(props.params.length / nCols)
 
     const style: React.CSSProperties = {
