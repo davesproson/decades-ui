@@ -4,6 +4,7 @@ import { useState } from "react"
 import { TimerConfig } from "./timers.types"
 
 import { Button } from "../components/buttons"
+import { useDarkMode } from "../hooks"
 
 /**
  * A simple compenent which displays an editable name.
@@ -43,7 +44,7 @@ const NameEditor = ({ name, setName }: {
                     />
                 </div>
                 <div className="control">
-                    <a className="button is-info is-small" onClick={save}>
+                    <a className="button is-success is-small" onClick={save}>
                         Save
                     </a>
                 </div>
@@ -51,7 +52,7 @@ const NameEditor = ({ name, setName }: {
         )
     }
 
-    return <Button.Info small outlined onClick={edit}>{name}</Button.Info>
+    return <Button.Dark small outlined onClick={edit}>{name}</Button.Dark>
 }
 
 /**
@@ -76,10 +77,11 @@ const TimerContainer = (
     }) => {
 
     const [displayName, setDisplayName] = useState(name)
+    const [darkMode, _setDarkMode] = useDarkMode()
 
     // Container style
     const panelStyle = {
-        border: "1px solid black",
+        border: darkMode ? "1px solid white" : "1px solid black",
         borderRadius: "5px",
     }
     const extraClasses = inAlarm
@@ -101,19 +103,15 @@ const TimerContainer = (
         <div className={`m-2 is-flex is-flex-grow-1 ${extraClasses}`} style={panelStyle}>
 
             <div className={`is-flex is-flex-direction-column is-flex-grow-1`} >
-                <div className={`is-flex is-flex-direction-row is-justify-content-space-between`} style={{
-                    background: "#252243",
-                    color: "#0abbef",
-                    borderBottom: "1px solid black",
-                }}>
+                <div className={`is-flex is-flex-direction-row is-justify-content-space-between has-background-light`}>
                     <div className="p-3 is-uppercase is-flex">
                         <div className="is-flex">
                             <NameEditor name={displayName} setName={setDisplayName} />
                         </div>
                     </div>
                     <div className="m-2 is-flex">
-                        {buttons?.map((b, i) => <Button.Info key={i} 
-                        small outlined onClick={b.onClick}>{b.text}</Button.Info>)}
+                        {buttons?.map((b, i) => <Button.Dark key={i} 
+                        small outlined onClick={b.onClick}>{b.text}</Button.Dark>)}
                     </div>
                 </div>
 
@@ -289,9 +287,9 @@ const Timers = ({initialTimers}: {initialTimers?: Array<TimerConfig>}) => {
                 display: showContextMenu ? "block": "none",
                 top: contextMenuPosition.y - 10,
                 left: contextMenuPosition.x - 10,
-                background: "#ffffff88",
+                // background: "#ffffff88",
                 padding: "3px",
-                border: timers.length ? "1px solid black" : "",
+                // border: timers.length ? "1px solid black" : "",
                 zIndex: 100,
                 borderRadius: "5px",
             }}
