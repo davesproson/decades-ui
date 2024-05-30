@@ -5,6 +5,7 @@ import { base as siteBase } from '../settings'
 import { Button } from '../components/buttons'
 import { JsonEditor } from '../components/jsonEditor'
 import { AlarmListProps, AlarmProps } from './alarm.types'
+import { FlexCenter } from '../components/layout'
 
 interface AlarmEditorProps {
     display: boolean
@@ -249,7 +250,7 @@ const AlarmList = (props: AlarmListProps) => {
     }
 
     return (
-        <div className="container mt-2">
+        <div style={{display: "grid", gridTemplateColumns: "1fr", gap: "3px"}}>
             {alarms.map(a => <Alarm key={a.id} {...a} {...alarmParams}
                                             remove={()=>tryToRemove(a.id)} />)}
         </div>
@@ -265,20 +266,26 @@ const Alarm = (props: AlarmProps) => {
     const flashActive = useFlash(600)
 
     const messageClass = passing
-        ? "is-success"
+        ? "has-background-success"
         : passing === undefined
             ? "is-secondary"
             : flashActive
                 ? props.disableFlash
-                    ? "is-danger"
-                    : "has-background-danger"
-                : "is-danger"
+                    ? "has-background-danger"
+                    : "has-background-danger-light"
+                : "has-background-danger"
 
     const messageText = passing
         ? props.passingText || "PASS"
         : passing === undefined
             ? "UNKNOWN"
             : props.failingText || "FAIL"
+
+    const textClass = passing
+        ? "has-text-light"
+        : passing === undefined
+            ? "has-text-light"
+            : "has-text-dark"
 
     const rule = showRule
         ? <div className="block"><code>{props.rule}</code></div>
@@ -292,18 +299,19 @@ const Alarm = (props: AlarmProps) => {
     }
 
     return (
-        <article className={`message mb-1 mt-1 is-small ${messageClass}`}>
-            <div className="message-body">
-                <span><strong><button style={{all: "unset", cursor: "pointer"}} onClick={()=>setShowRule(x=>!x)}>{props.name}</button></strong> - {props.description}</span>
-                <span className="is-pulled-right">
-                    <span className="mr-2 ml-2">{messageText}</span>
-                    <button className="delete" aria-label="delete" onClick={props.remove}></button>
-                </span>
-                {rule}
-
-            </div>
-
+        <article style={{borderRadius: "5px", display: "flex", justifyContent: 'space-between', padding: "10px", marginRight: "5px", marginBottom: "3px", fontSize: ".8em", height: "100%"}} className={messageClass}>
+            <FlexCenter extraStyle={{width: "100%", justifyContent: "space-between"}}>
+            <span className={textClass}>
+                <strong>
+                    <button className={textClass} style={{all: "unset", cursor: "pointer"}} onClick={()=>setShowRule(x=>!x)}>{props.name}</button>
+                </strong>
+            </span>
+            <span className={`ml-5 ${textClass}`}>{props.description}</span>
+                <span className={`mr-2 ml-2 ${textClass}`}>{messageText}</span>
+            {rule}
+            </FlexCenter>
         </article>
+ 
     )
 }
 
