@@ -10,7 +10,7 @@ import { useTephiAvailable, useTephiUrl } from "../tephigram/hooks"
 import { Outlet } from "react-router-dom"
 import { loadSavedView, setViewConfigTab } from "../redux/viewSlice"
 import { useNavigate } from "react-router-dom"
-import { presets, geoCoords, enableQuicklook, enableChat } from "../settings"
+import { presets, geoCoords, enableQuicklook, enableChat, enableMap } from "../settings"
 import { Button } from "../components/buttons"
 import PropTypes from "prop-types"
 import { ConfigPanel } from "../configPanel/config"
@@ -243,6 +243,11 @@ const MoreSelector = () => {
                 More
             </a>
             <div className="navbar-dropdown" onClick={() => setVisible(false)} onMouseLeave={() => setVisible(false)}>
+                <BleedingEdge show={enableMap}>
+                    <Link to="/map" className="navbar-item">
+                        Map...
+                    </Link>
+                </BleedingEdge>
                 <BleedingEdge show={enableChat}>
                     <Link to="/chat" className="navbar-item">
                         Chat...
