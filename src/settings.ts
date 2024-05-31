@@ -76,3 +76,4 @@ export const plotHeaderDefaults = [
 // Experimental features
 export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
 export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)
+export const enableMap = booleanEnv("VITE_VISTA_ENABLE_MAP", false)

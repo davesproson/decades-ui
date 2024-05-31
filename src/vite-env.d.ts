@@ -9,6 +9,8 @@ interface ImportMetaEnv {
 
     // Experimental features
     readonly VITE_VISTA_ENABLE_QUICKLOOK: string | undefined
+    readonly VITE_VISTA_ENABLE_CHAT: string | undefined
+    readonly VITE_VISTA_ENABLE_MAP: string | undefined
 }
 
 interface ImportMeta {
