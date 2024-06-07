@@ -12,6 +12,17 @@ import { Container } from "../components/container"
 import { memo } from "react"
 
 type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
+type MouseOrKeyboardEvent = React.MouseEvent<HTMLButtonElement, MouseEvent> | React.KeyboardEvent<HTMLButtonElement>
+
+/**
+ * Discriminate between a mouse event and a keyboard event.
+ * 
+ * @param e - the event to check
+ * @returns true if the event is a keyboard event, false otherwise
+ */
+const isKeyboardEvent = (e: MouseOrKeyboardEvent): e is React.KeyboardEvent<HTMLButtonElement> => {
+    return (e as React.KeyboardEvent<HTMLButtonElement>).key !== undefined
+}
 
 type ParameterInputProps = {
     name: string
@@ -21,7 +32,8 @@ type ParameterInputProps = {
 const ParameterInput = (props: ParameterInputProps) => {
     const dispatch = useDispatch()
 
-    const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const onToggleAction = (e: MouseOrKeyboardEvent) => {
+        if (isKeyboardEvent(e) && e.key !== "Enter" && e.key !== ' ') return
         e.stopPropagation()
         dispatch(toggleParamSelected({
             id: props.id
@@ -39,7 +51,7 @@ const ParameterInput = (props: ParameterInputProps) => {
         : "has-text-dark"
 
     return (
-        <button onClick={onClick} style={style} className={classes}>
+        <button onMouseDown={onToggleAction} onKeyDown={onToggleAction} style={style} className={classes}>
             {props.name}
         </button>
     )
@@ -75,7 +87,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
     const selectedClass = props.selected ? "has-background-dark has-text-light" : ""
 
     return (
-        <tr className={selectedClass} onClick={(e) => toggleSelected(e)} style={{ "cursor": "pointer" }}>
+        <tr className={selectedClass} onMouseDown={(e) => toggleSelected(e)} style={{ "cursor": "pointer" }}>
             <td style={{ width: "0" }} className={statusClass} data-data="is-status">{statusText}</td>
             <td style={{ width: "0" }}>{props.id}</td>
             <td><ParameterInput name={props.name} id={props.id} selected={props.selected}/></td>
