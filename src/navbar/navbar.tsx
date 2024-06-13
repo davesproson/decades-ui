@@ -383,7 +383,7 @@ const PlotButton = () => {
     const plotButton = tabbedPlots
         ? (
             <Button.Primary style={leftStyle} onClick={()=>{
-                dispatch(addTab({type: 'plot', ...plotOptions}))
+                dispatch(addTab({type: 'plot', name: 'New Plot', ...plotOptions}))
             }}>
                 Plot
             </Button.Primary>

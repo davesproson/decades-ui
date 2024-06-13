@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { PlotViewConfig } from '../views/views.types';
 
-
+type NamedConfig = {name: string} & (
+	PlotViewConfig
+)
 
 type TabsState = {
-	tabs: Array<PlotViewConfig>,
+	tabs: Array<NamedConfig>,
 	selectedTab: number
 }
 
@@ -22,16 +24,19 @@ export const tabbedPlotsSlice = createSlice({
 		},
 		removeTab: (state, action) => {
 			state.tabs.splice(action.payload - 1, 1);
-			state.selectedTab = state.selectedTab - 1;
+			state.selectedTab = 0;
 		},
 		selectTab: (state, action) => {
 			state.selectedTab = action.payload;
+		},
+		renameTab: (state, action) => {
+			state.tabs[action.payload.index].name = action.payload.name;
 		}
 	},
 });   
 
 export const { 
-	addTab, removeTab, selectTab
+	addTab, removeTab, selectTab, renameTab
 } = tabbedPlotsSlice.actions;
 
 export default tabbedPlotsSlice.reducer;

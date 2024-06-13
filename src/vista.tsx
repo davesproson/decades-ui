@@ -1,6 +1,6 @@
 import 'react-toastify/dist/ReactToastify.css';
 
-import { lazy, useEffect } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { Routes, Route, useSearchParams } from 'react-router-dom'
 import { useServers, useDarkMode, useQuickLookTimeframe } from './hooks';
 import { SuspenseLoader } from './components/loader';
@@ -37,7 +37,8 @@ import { setQuickLookMode } from './redux/configSlice';
 import { setQcJob } from './redux/quicklookSlice';
 import { ToastContainer } from 'react-toastify';
 import { When } from './components/flow';
-import { removeTab, selectTab } from './redux/tabsSlice';
+import { removeTab, renameTab, selectTab } from './redux/tabsSlice';
+import { Input } from './components/forms';
 
 type TypeMapType = {
   [key: string]: React.FC<any>
@@ -65,6 +66,8 @@ const MainTabContent = () => {
   const typeMap: TypeMapType = {
     "plot": PlotDispatcher,
   }
+  
+  if(selectedTab === -1) return null
  
   const childStyle: React.CSSProperties = selectedTab === 0
     ? {}
@@ -80,6 +83,27 @@ const MainTabContent = () => {
   )
 }
 
+const TabTitle = ({name, index}: {name: string, index: number}) => {
+  const [editing, setEditing] = useState(false)
+  const dispatch = useDispatch()
+
+  if(!editing) return <span onDoubleClick={()=>setEditing(true)}>{name}</span>
+  return (
+    <Input
+      style={{width: 130}}
+      autoFocus
+      value={name}
+      onChange={(e)=>{dispatch(renameTab({index, name: e.target.value}))}}
+      onBlur={()=>setEditing(false)}
+      onFocus={(e)=>e.target.select()}
+      onKeyDown={(e)=>{
+        if(e.key === "Enter") setEditing(false)
+      }}
+    />
+  
+  )
+}
+
 const TabPanel = () => {
   const selectedTab = useSelector(state => state.tabs.selectedTab)
   const tabs = useSelector(state => state.tabs.tabs)
@@ -91,13 +115,19 @@ const TabPanel = () => {
       <ul>
       <li  className={selectedTab===0 ? "is-active" : ""}>
             <a onClick={() => dispatch(selectTab(0))}>
-              Parameters
+              <strong>Parameters</strong>
             </a>
       </li>
         {tabs.map((_c, i) => {
           return (<li key={i} className={i + 1 === selectedTab   ? "is-active" : ""}>
-            <a onClick={() => dispatch(selectTab(i+1))}>
-              Tab 
+            <a onClick={() => {
+                if(i+1 === selectedTab) return
+                // This is a horrible hack to get the tab to refresh when it is clicked.
+                // It's required because the plotly hooks are reacting correctly.
+                // TODO: Do something better here.
+                dispatch(selectTab(-1)); setTimeout(()=>dispatch(selectTab(i+1)), 0)}
+              }>
+              <TabTitle index={i} name={tabs[i].name}/>
             </a>
           </li>)
         })}

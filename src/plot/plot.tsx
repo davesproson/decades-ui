@@ -89,7 +89,11 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
         ? options.params
         : null
 
-    return <Plot ref={ref} parameters={headerParams} loadDone={loadDone} style={props.containerStyle}/>
+    return <Plot ref={ref} 
+        parameters={headerParams} 
+        loadDone={loadDone} 
+        style={props.containerStyle}
+    />
     
 }
 
