@@ -2,14 +2,22 @@
 
 interface ContainerProps {
     children: React.ReactNode
-    fixedNav?: boolean
+    fixedNav?: boolean,
+    tabbedView?: boolean
 }
 
 const Container = (props: ContainerProps) => {
-    const divClass = props.fixedNav ? "container has-navbar-fixed-top" : "container"
+    const divClass = "container"
+    let top = 0
+    if(props.fixedNav) {
+        top += 60
+    }
+    if(props.tabbedView) {
+        top += 50
+    }
 
     return (
-        <div className={divClass}>
+        <div className={divClass} style={{top}}>
             {props.children}
         </div>
     )

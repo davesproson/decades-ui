@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 interface ConfigState {
 	darkMode: boolean,
 	quickLookMode: boolean,
-	modeSelected: boolean
+	modeSelected: boolean,
+	tabbedPlots: boolean
 }
 
 export const configSlice = createSlice({
@@ -11,7 +12,8 @@ export const configSlice = createSlice({
 	initialState: {
 		darkMode: false,
 		quickLookMode: false,
-		modeSelected: false
+		modeSelected: false,
+		tabbedPlots: false
 	} as ConfigState,
 	reducers: {
 		setDarkMode: (state, action) => {
@@ -28,14 +30,20 @@ export const configSlice = createSlice({
 		},
 		setModeSelected: (state, action) => {
 			state.modeSelected = action.payload;
-		}
+		},
+		setTabbedPlots: (state, action) => {
+			state.tabbedPlots = action.payload;
+		},
+		toggleTabbedPlots: (state) => {
+			state.tabbedPlots = !state.tabbedPlots;
+		},
 	},
 });   
 
 export const { 
 	setDarkMode, toggleDarkMode,
 	setQuickLookMode, toggleQuickLookMode,
-	setModeSelected
+	setModeSelected, setTabbedPlots, toggleTabbedPlots
 
 } = configSlice.actions;
 

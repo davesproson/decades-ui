@@ -163,4 +163,5 @@ export type {
     Version2LibraryView,
     Version1View,
     Version1LibraryView,
+    PlotViewConfig
 }

@@ -179,8 +179,6 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     const [loadDone, setLoadDone] = useState(false)
 
     const [darkMode, _setDarkMode] = useDarkMode()
-
-    console.log(options)
     
     // This effect starts the plot data fetching process. It only runs once,
     // when the plot is first initialised, indicated by the initDone flag.
@@ -511,5 +509,30 @@ const usePlotOptions = (options: PlotInternalOptions | undefined) => {
     }
 }
 
+const usePlotInternalOptions = () => {
+    // Get the plot options from the redux store and return them as an object
+    const plotOptions = useSelector(state => state.options);
+    const axisOptions = useSelector(state => state.vars.axes);
+    const params = useSelector(state => state.vars.params);
+    
+    return {
+        timeframe: plotOptions.timeframes.find(x=>x.selected)?.value || "30min",
+        swapxy: plotOptions.swapOrientation,
+        scrolling: plotOptions.scrollingWindow,
+        style: plotOptions.plotStyle.value,
+        header: plotOptions.dataHeader,
+        ordvar: plotOptions.ordinateAxis,
+        server: '127.0.0.1',
+        params: params.filter(x=>x.selected).map(x=>x.raw),
+        axes: getAxesArray({
+            params: params,
+            axes: axisOptions,
+            paramSet: 'default',
+            paramsDispatched: true
+        })
+    }
+}
+
+
 // Module exports
-export { usePlot, usePlotUrl, usePlotOptions, getUrl }
+export { usePlot, usePlotUrl, usePlotOptions, getUrl, usePlotInternalOptions }

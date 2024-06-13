@@ -4,7 +4,7 @@ import { setFilterText } from "../redux/filterSlice"
 import { Link, useLocation } from "react-router-dom"
 import { toggleParamSelected, unselectAllParams } from "../redux/parametersSlice"
 import { setOrdinateAxis, setTimeframe } from "../redux/optionsSlice"
-import { usePlotUrl } from "../plot/hooks"
+import { usePlotInternalOptions, usePlotUrl } from "../plot/hooks"
 import { useDashboardUrl } from "../dashboard/hooks"
 import { useTephiAvailable, useTephiUrl } from "../tephigram/hooks"
 import { Outlet } from "react-router-dom"
@@ -17,6 +17,7 @@ import { ConfigPanel } from "../configPanel/config"
 import { SuspenseLoader } from "../components/loader"
 import { LiveDataOnly } from "../quicklook"
 import { BleedingEdge } from "../components/bleeding"
+import { addTab } from "../redux/tabsSlice"
 
 const VistaModeSelector = lazy(() => import('../modeSelect'))
 const QuicklookSelector = lazy(() => import('../quicklook'))
@@ -340,6 +341,9 @@ PlotButtonMenu.propTypes = {
  */
 const PlotButton = () => {
     const params = useSelector(state => state.vars.params)
+    const tabbedPlots = useSelector(state => state.config.tabbedPlots)
+    const dispatch = useDispatch()
+
     const disable = params.filter(x => x.selected).length === 0
     const [menuVisible, setMenuVisible] = useState(false)
 
@@ -349,6 +353,7 @@ const PlotButton = () => {
 
     const plotUrl = usePlotUrl()
     const plotUrlStr = plotUrl ? plotUrl.toString() : "#"
+    const plotOptions = usePlotInternalOptions()
 
     const leftStyle = {
         borderTopRightRadius: "0px",
@@ -375,11 +380,24 @@ const PlotButton = () => {
         )
     }
 
-    return (
-        <>
+    const plotButton = tabbedPlots
+        ? (
+            <Button.Primary style={leftStyle} onClick={()=>{
+                dispatch(addTab({type: 'plot', ...plotOptions}))
+            }}>
+                Plot
+            </Button.Primary>
+        )
+        : (
             <Button.Primary anchor style={leftStyle} href={plotUrlStr} target="_blank" rel="noopener noreferrer">
                 Plot
             </Button.Primary>
+        )
+        
+
+    return (
+        <>
+            {plotButton}
             <LiveDataOnly>
                 <Button.Primary style={rightStyle} onClick={toggleMenuVisible}>
                     ▾

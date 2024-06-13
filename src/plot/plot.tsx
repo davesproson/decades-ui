@@ -1,5 +1,3 @@
-import "../../assets/css/no-scroll.css"
-
 import { useRef, forwardRef } from 'react'
 import { usePlot, usePlotOptions } from './hooks'
 import { Dashboard } from '../dashboard/dashboard'

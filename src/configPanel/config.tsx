@@ -17,6 +17,7 @@ import { BleedingEdge } from "../components/bleeding";
 
 import { enableChat } from "../settings";
 import { useLocalStorage } from "usehooks-ts";
+import { toggleTabbedPlots } from "../redux/configSlice";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -42,6 +43,17 @@ const DarkModeSwitch = () => {
         options={["On", "Off"]}
         toggle={() => _setDarkMode(!darkMode)}
         useStore={false}
+        small
+    />
+}
+
+const TabbedPlotsSwitch = () => {
+    const tabbedPlots = useSelector(state => state.config.tabbedPlots);
+    return <OptionSwitch
+        value={tabbedPlots ? "On" : "Off"}
+        options={["On", "Off"]}
+        toggle={toggleTabbedPlots}
+        useStore={true}
         small
     />
 }
@@ -144,6 +156,10 @@ const ConfigPanel = () => {
                                 <NewStyleDashboard />
                             </Option>
                         </LiveDataOnly>
+
+                        <Option title="Tabbed Plots">
+                            <TabbedPlotsSwitch />
+                        </Option>
                     </OptionList>
                 </div>
             </div>

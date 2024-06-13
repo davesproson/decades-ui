@@ -31,12 +31,83 @@ const Chat = lazy(() => import('./chat/chat'))
 const DecadesMap = lazy(() => import('./map/decadesMap'))
 
 import { VistaErrorBoundary } from './components/error';
-import { useDispatch } from './redux/store';
+import { useDispatch, useSelector } from './redux/store';
 import { setParamSet } from './redux/parametersSlice';
 import { setQuickLookMode } from './redux/configSlice';
 import { setQcJob } from './redux/quicklookSlice';
 import { ToastContainer } from 'react-toastify';
+import { When } from './components/flow';
+import { removeTab, selectTab } from './redux/tabsSlice';
 
+type TypeMapType = {
+  [key: string]: React.FC<any>
+}
+
+
+const CloseButton = ({tabIndex}: {tabIndex: number}) => {
+  const dispatch = useDispatch()
+
+  const closeTab = () => {
+    dispatch(removeTab(tabIndex))
+  }
+
+  if(tabIndex === 0) return null
+  return (
+    <div style={{position: "fixed", top: 70, left: 15, zIndex:9}}>
+      <button className="delete ml-1" aria-label="delete" onClick={closeTab}></button>
+    </div>
+  )
+}
+
+const MainTabContent = () => {
+  const tabs = useSelector(state => state.tabs.tabs)
+  const selectedTab = useSelector(state => state.tabs.selectedTab)
+  const typeMap: TypeMapType = {
+    "plot": PlotDispatcher,
+  }
+ 
+  const childStyle: React.CSSProperties = selectedTab === 0
+    ? {}
+    : {position: "absolute", inset: 0, top: 100}
+
+  const Component = selectedTab === 0
+  ? ParameterTable
+  : typeMap[tabs[selectedTab - 1].type]
+
+  return (<div style={childStyle}>
+      <Component {...tabs[selectedTab-1]} />
+    </div>
+  )
+}
+
+const TabPanel = () => {
+  const selectedTab = useSelector(state => state.tabs.selectedTab)
+  const tabs = useSelector(state => state.tabs.tabs)
+  const dispatch = useDispatch()
+
+  return (
+    <>
+    <div className="tabs is-centered has-navbar-fixed-top has-background-white" style={{position:"fixed", width:"100%", zIndex: 1, top: "55px", height: "50px", padding:0}}>
+      <ul>
+      <li  className={selectedTab===0 ? "is-active" : ""}>
+            <a onClick={() => dispatch(selectTab(0))}>
+              Parameters
+            </a>
+      </li>
+        {tabs.map((_c, i) => {
+          return (<li key={i} className={i + 1 === selectedTab   ? "is-active" : ""}>
+            <a onClick={() => dispatch(selectTab(i+1))}>
+              Tab 
+            </a>
+          </li>)
+        })}
+      </ul>
+    </div>
+    <CloseButton tabIndex={selectedTab}/>
+    <MainTabContent />
+    </>
+  )
+}
 
 
 /**
@@ -55,6 +126,7 @@ const DecadesVista = () => {
   const dispatch = useDispatch()
   const [searchParams, _] = useSearchParams()
   const [_darkMode, _setDarkMode] = useDarkMode()
+  const tabbedPlots = useSelector(state => state.config.tabbedPlots)
   
   useEffect(() => {
     const paramSet = searchParams.get('paramset')
@@ -82,7 +154,16 @@ const DecadesVista = () => {
     <SuspenseLoader text="Initializing..." >
       <Routes>
         <Route path="/" element={<><Navbar /><Tutorial /></>} >
-          <Route path="/" element={<SuspenseLoader><ParameterTable /></SuspenseLoader>} />
+          <Route path="/" element={
+            <SuspenseLoader>
+              <When condition={tabbedPlots}>
+                <TabPanel />
+              </When>
+              <When condition={!tabbedPlots}>
+                <ParameterTable />
+              </When>
+             </SuspenseLoader>
+          } />
           <Route path="/options" element={<SuspenseLoader><Options /></SuspenseLoader>} />
           <Route path="/timeframe" element={<SuspenseLoader><TimeframeSelector /></SuspenseLoader>} />
           <Route path="/config-view" element={<SuspenseLoader><ViewConfig /></SuspenseLoader>} />
@@ -91,6 +172,12 @@ const DecadesVista = () => {
           <Route path="/timer-config" element={<SuspenseLoader><TimerConfig /></SuspenseLoader>} />
           <Route path="/gauge-config" element={<SuspenseLoader><GaugeConfigurator /></SuspenseLoader>} />
           <Route path="/chat" element={<SuspenseLoader><Chat /></SuspenseLoader>} />
+          <Route path="/map" element={<SuspenseLoader>
+            <div style={{position: "absolute", top: "50px", bottom:0, left:0, right:0}}>
+              <DecadesMap />
+            </div>
+            </SuspenseLoader>} />
+            
         </Route>
         <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
         <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
@@ -105,7 +192,6 @@ const DecadesVista = () => {
         <Route path="/roll" element={<SuspenseLoader><RollIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/pitch" element={<SuspenseLoader><PitchIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/redash" element={<SuspenseLoader><Redash /></SuspenseLoader>} />
-        <Route path="/map" element={<SuspenseLoader><DecadesMap /></SuspenseLoader>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </SuspenseLoader>

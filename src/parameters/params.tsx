@@ -1,6 +1,6 @@
 
 import { useDispatch, useSelector } from "../redux/store"
-import { useDispatchParameters } from "../hooks"
+import { useDispatchParameters, useScrollInhibitor } from "../hooks"
 import { toggleParamSelected } from "../redux/parametersSlice"
 import { Loader } from "../components/loader"
 import { FadeOut } from "../components/fadeout"
@@ -101,7 +101,9 @@ const ParameterTable = memo(() => {
     const vars = useSelector(state => state.vars)
     const filterText = useSelector(state => state.paramfilter)
     const server = useSelector(state => state.options.server)
+    const tabbedView = useSelector(state => state.config.tabbedPlots)
     useDispatchParameters()
+    useScrollInhibitor(false)
 
     const paramsChecked = vars.params.length && vars.params.every(x => x.status !== null)
 
@@ -124,7 +126,7 @@ const ParameterTable = memo(() => {
 
     return (
         <FadeOut>
-            <Container fixedNav>
+            <Container fixedNav tabbedView={tabbedView}>
                 <ParameterSearchInput filterText={filterText.filterText} />
                 <table className="table is-narrow is-hoverable is-fullwidth is-bordered is-striped" style={{ "margin": "auto" }}>
                     <thead>
