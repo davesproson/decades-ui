@@ -77,3 +77,4 @@ export const plotHeaderDefaults = [
 export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
 export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)
 export const enableMap = booleanEnv("VITE_VISTA_ENABLE_MAP", false)
+export const enableTabbedPlots = booleanEnv("VITE_VISTA_ENABLE_TABBED_PLOTS", false)
