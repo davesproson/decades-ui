@@ -1,8 +1,10 @@
 import React from "react"
+import { useScrollInhibitor } from "../hooks"
 
 interface VistaErrorProps {
     error: Error | null,
     message: string,
+    title?: string
 }
 const VistaError = (props: VistaErrorProps) => {
     const featuresColor = "#0abbef"
@@ -29,7 +31,7 @@ const VistaError = (props: VistaErrorProps) => {
             <path d="M 30 70 Q 50 55 70 70" stroke={featuresColor} strokeWidth="6" fill="none"/>
         </svg>
         <div className="block">
-            <div className="is-size-2">Something went wrong!</div>
+            <div className="is-size-2">{props.title || "Something went wrong!"}</div>
         </div>
         <div className="block">
             <div className="is-size-8">{props.message}</div>
@@ -77,5 +79,14 @@ class VistaErrorBoundary extends React.Component<VistaErrorBoundaryProps, VistaE
     }
   }
 
+const Error404 = () => {
+    useScrollInhibitor(true)
+    const message = `The path "${window.location.pathname}" does not exist.`
 
-export { VistaErrorBoundary, VistaError }
+    return (
+        <VistaError error={null} title="That's a 404!" message={message} />
+    )
+}
+
+
+export { VistaErrorBoundary, VistaError, Error404 }

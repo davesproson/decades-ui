@@ -32,7 +32,7 @@ const DecadesMap = lazy(() => import('./map/decadesMap'))
 const TabPanel = lazy(() => import('./tabs'))
 const FlightSummary = lazy(() => import('./fltsum/fltsum'))
 
-import { VistaErrorBoundary } from './components/error';
+import { Error404, VistaErrorBoundary } from './components/error';
 import { useDispatch, useSelector } from './redux/store';
 import { setParamSet } from './redux/parametersSlice';
 import { setQuickLookMode } from './redux/configSlice';
@@ -125,7 +125,7 @@ const DecadesVista = () => {
         <Route path="/redash" element={<SuspenseLoader><Redash /></SuspenseLoader>} />
         <Route path="/map-ext" element={<SuspenseLoader><DecadesMap /></SuspenseLoader>} />
         <Route path="/fltsum-ext" element={<SuspenseLoader><FlightSummary /></SuspenseLoader>} />
-        <Route path="*" element={<h1>404</h1>} />
+        <Route path="*" element={<SuspenseLoader><Error404 /></SuspenseLoader>} />
       </Routes>
     </SuspenseLoader>
     </ChatProvider>
