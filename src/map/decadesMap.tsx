@@ -24,6 +24,7 @@ import { Drawings } from './features/drawings';
 import { Drifter } from './features/drifters';
 import { Show } from '../components/flow';
 import { Optional } from '../types';
+import { mapTilesUrl } from '../settings';
 
 const LayerHash = {
     'vector': VectorLayer,
@@ -91,7 +92,7 @@ const DecadesMap = () => {
 
             <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}}>
 
-                <BaseLayer />
+                <BaseLayer url={mapTilesUrl} />
 
                 <Show when={state.showGraticule}>
                     <Graticule />

@@ -73,6 +73,9 @@ export const plotHeaderDefaults = [
     'dew_point'
 ]
 
+// URI to retreive map slippy tiles from
+export const mapTilesUrl = import.meta.env.VITE_VISTA_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+
 // Experimental features
 export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
 export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)
