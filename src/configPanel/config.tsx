@@ -145,20 +145,20 @@ const ConfigPanel = () => {
 
                         <LiveDataOnly>
                             <BleedingEdge show={enableChat}>
-                                <Option title="Chat">
+                                <Option title="Chat" tag={{text: "Beta", is: "warning" }}>
                                     <ChatConfigSwitch />
                                 </Option>
                             </BleedingEdge>
                         </LiveDataOnly>
 
                         <LiveDataOnly>
-                            <Option title="Dashboard Style">
+                            <Option title="Dashboard Style" tag={{text: "Beta", is: "warning" }}>
                                 <NewStyleDashboard />
                             </Option>
                         </LiveDataOnly>
 
                         <BleedingEdge show={enableTabbedPlots}>
-                            <Option title="Tabbed Plots">
+                            <Option title="Tabbed Plots" tag={{text: "Alpha", is: "danger" }}>
                                 <TabbedPlotsSwitch />
                             </Option>
                         </BleedingEdge>
