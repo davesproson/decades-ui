@@ -15,7 +15,7 @@ import { Option, OptionList } from "./components";
 import { ChatConfigSwitch } from "../chat/chat";
 import { BleedingEdge } from "../components/bleeding";
 
-import { enableChat } from "../settings";
+import { enableChat, enableTabbedPlots } from "../settings";
 import { useLocalStorage } from "usehooks-ts";
 import { toggleTabbedPlots } from "../redux/configSlice";
 
@@ -59,7 +59,7 @@ const TabbedPlotsSwitch = () => {
 }
 
 const NewStyleDashboard = () => {
-    const [useNewDashboard, setUseNewDashboard] = useLocalStorage<boolean>("useNewDashboard", false);
+    const [useNewDashboard, setUseNewDashboard] = useLocalStorage<boolean>("useNewDashboard", true);
     return <OptionSwitch
         value={useNewDashboard ? "New" : "Old"}
         options={["New", "Old"]}
@@ -157,9 +157,11 @@ const ConfigPanel = () => {
                             </Option>
                         </LiveDataOnly>
 
-                        <Option title="Tabbed Plots">
-                            <TabbedPlotsSwitch />
-                        </Option>
+                        <BleedingEdge show={enableTabbedPlots}>
+                            <Option title="Tabbed Plots">
+                                <TabbedPlotsSwitch />
+                            </Option>
+                        </BleedingEdge>
                     </OptionList>
                 </div>
             </div>
