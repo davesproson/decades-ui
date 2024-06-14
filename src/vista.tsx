@@ -30,6 +30,7 @@ const ChatProvider = lazy(() => import('./chat/provider'))
 const Chat = lazy(() => import('./chat/chat'))
 const DecadesMap = lazy(() => import('./map/decadesMap'))
 const TabPanel = lazy(() => import('./tabs'))
+const FlightSummary = lazy(() => import('./fltsum/fltsum'))
 
 import { VistaErrorBoundary } from './components/error';
 import { useDispatch, useSelector } from './redux/store';
@@ -107,7 +108,7 @@ const DecadesVista = () => {
               <DecadesMap />
             </div>
             </SuspenseLoader>} />
-            
+          <Route path="/fltsum" element={<SuspenseLoader><FlightSummary hasNavbar/></SuspenseLoader>} />
         </Route>
         <Route path="/view" element={<SuspenseLoader><View /></SuspenseLoader>} />
         <Route path="/jsonview" element={<SuspenseLoader><JsonView /></SuspenseLoader>} />
@@ -123,6 +124,7 @@ const DecadesVista = () => {
         <Route path="/pitch" element={<SuspenseLoader><PitchIndicator standalone={true}/></SuspenseLoader>} />
         <Route path="/redash" element={<SuspenseLoader><Redash /></SuspenseLoader>} />
         <Route path="/map-ext" element={<SuspenseLoader><DecadesMap /></SuspenseLoader>} />
+        <Route path="/fltsum-ext" element={<SuspenseLoader><FlightSummary /></SuspenseLoader>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </SuspenseLoader>
