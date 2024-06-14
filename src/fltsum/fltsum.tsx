@@ -65,6 +65,19 @@ const FlightSummary = ({hasNavbar}: {hasNavbar?: boolean}) => {
     const [detail, setDetail] = useState<FlightSummaryEntry|null>(null)
     const data = useFlightSummary()
 
+    const numValidEntries = data
+        ? Object.values(data).filter((evt) => !evt.deleted).length
+        : 0
+
+    if(!numValidEntries) return (
+        <div style={{position: "absolute", inset: 0, display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <div className="is-flex is-flex-direction-column is-align-items-center">
+                <h3 className="title">No flight summary yet!</h3>
+                <Button to="/">Home</Button>
+            </div>
+        </div>
+    )
+
     return (
         <div className={hasNavbar ? "mt-6": ""}>
             <Info entry={detail} clearEntry={()=>setDetail(null)}/>
@@ -87,6 +100,7 @@ const FlightSummary = ({hasNavbar}: {hasNavbar?: boolean}) => {
                 </thead>
                 <tbody>
                     {data && Object.values(data).reverse().map((evt: any) => {
+                        if(evt.deleted) return null
                         const rowClass = evt.ongoing ? "has-background-info" : ""
                         return (
                             <tr key={evt.uuid} className={rowClass}>

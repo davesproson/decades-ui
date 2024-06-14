@@ -18,6 +18,7 @@ type FlightSummaryEntry = {
     },
     ongoing: boolean,
     comment: string | null,
+    deleted?: boolean
 }
 
 type FlightSummary = {
