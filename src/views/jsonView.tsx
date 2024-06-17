@@ -18,9 +18,13 @@ const JsonView = () => {
     }, [])
     
     useEffect(()=>{
-        let config = (
-            JSON.parse(localStorage.getItem('viewConfig') || '') as Version3ViewElement
-        )
+        let config
+        
+        try {
+            config = JSON.parse(localStorage.getItem('viewConfig') || '') as Version3ViewElement
+        } catch(e) {
+            console.log('No view config found in local storage')
+        }
 
         const viewName = searchParams.get('view')
 
@@ -33,6 +37,8 @@ const JsonView = () => {
             
             config = v3View.config
             if(!config.title) config.title = v3View.title
+
+            console.log(config)
         }
 
         setConfig(config)
