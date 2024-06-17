@@ -74,8 +74,10 @@ const Dash = (props: DashProps) => {
         props.setMaximized(props.param.ParameterName)
     }
 
-    const value = props.value
-        ? props.value[props.value.length - 1]
+    const filteredValue = props?.value?.filter(x => x !== badData) || []
+
+    const value = filteredValue.length
+        ? filteredValue[filteredValue.length - 1]
         : null
 
     let inAlarm = false
