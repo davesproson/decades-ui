@@ -1,11 +1,11 @@
 import { booleanEnv, numberEnv } from "./utils"
 
-// The deployment mode of the application. Expectss "demo", "dev" or "prod"
+// The deployment mode of the application. Expectss "ground", "dev" or "prod"
 export const deployment = import.meta.env.VITE_VISTA_DEPLOYMENT_MODE || "dev"
 
 // The protocol used by the server. This is determined by the deployment mode.
 export const serverProtocol = {
-    'demo': "https",
+    'ground': "https",
     'dev': "http",
     'prod': "http"
 }[deployment]
@@ -24,7 +24,7 @@ export const badData = numberEnv("VITE_VISTA_BAD_DATA", -999.99)
 
 // The base URL to use for the API.
 export const apiBase = {
-    "demo": "/live",
+    "ground": "/decades",
     "dev": "/decades",
     "prod": "/decades"
 }[deployment]
