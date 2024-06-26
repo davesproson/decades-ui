@@ -8,6 +8,7 @@ import { DecadesParameter } from "./redux/parametersSlice";
 import vistaLight from '../assets/css/vista-light.css?inline'
 import vistaDark from '../assets/css/vista-dark.css?inline'
 import { QCCArg, QcParameter, QcResponse, isQCResponse } from "./types";
+import { useSearchParams } from "react-router-dom";
 
 
 
@@ -201,11 +202,15 @@ const useServers = () => {
  */
 const useDarkMode = (): [boolean, (dm: boolean) => void] => {
 
+    const [searchParams] = useSearchParams()
+
     // The name of the local storage item
     const darkModeStorageName = "vistaDarkMode"
 
     // Get the dark mode state from local storage
     const getDarkMode = () => {
+        if(searchParams.get('darkmode') === 'true') return true
+        if(searchParams.get('darkmode') === 'false') return false
         return localStorage.getItem(darkModeStorageName) === 'true';
     }
 
