@@ -49,11 +49,17 @@ export const enableTutorial = booleanEnv("VITE_VISTA_ENABLE_TUTORIAL", true)
 
 // Map geographic coordinates to the parameter names. This allows quick
 // plotting against geographic coordinates.
-// TODO: These should be changed for quicklook mode/data.
+// geoCoords is the parameter names for the live data, while geoCoordsQuicklook
+// is the parameter names for the quicklook (processed) data.
 export const geoCoords = {
     'latitude': 'gin_latitude',
     'longitude': 'gin_longitude',
     'altitude': 'pressure_height_kft'
+}
+export const geoCoordsQuicklook = {
+    'latitude': 'LAT_GIN',
+    'longitude': 'LON_GIN',
+    'altitude': 'ALT_GIN'
 }
 
 // The default parameters to plot when the user selects a preset.

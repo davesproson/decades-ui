@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { setParams, setParamsDispatched } from "./redux/parametersSlice";
 import { setCustomTimeframe, setServer } from "./redux/optionsSlice";
-import { apiEndpoints } from "./settings";
+import { apiEndpoints, geoCoords, geoCoordsQuicklook } from "./settings";
 import { useSelector, useDispatch } from "./redux/store";
 import { DecadesParameter } from "./redux/parametersSlice";
 
@@ -328,7 +328,12 @@ const useQuickLookTimeframe = () => {
       })
 }
 
+const useGeoCoords = () => {
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
+    return quickLookMode ? geoCoordsQuicklook : geoCoords
+}
+
 export {
     useDispatchParameters, useServers, useGetParameters, useDarkMode, useBrainFade,
-    useScrollInhibitor, useQuickLookTimeframe
+    useScrollInhibitor, useQuickLookTimeframe, useGeoCoords
 }

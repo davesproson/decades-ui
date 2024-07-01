@@ -10,7 +10,7 @@ import { useTephiAvailable, useTephiUrl } from "../tephigram/hooks"
 import { Outlet } from "react-router-dom"
 import { loadSavedView, setViewConfigTab } from "../redux/viewSlice"
 import { useNavigate } from "react-router-dom"
-import { presets, geoCoords, enableQuicklook, enableChat, enableMap } from "../settings"
+import { presets, enableQuicklook, enableChat, enableMap } from "../settings"
 import { Button } from "../components/buttons"
 import PropTypes from "prop-types"
 import { ConfigPanel } from "../configPanel/config"
@@ -18,6 +18,7 @@ import { SuspenseLoader } from "../components/loader"
 import { LiveDataOnly } from "../quicklook"
 import { BleedingEdge } from "../components/bleeding"
 import { addTab } from "../redux/tabsSlice"
+import { useGeoCoords } from "../hooks"
 
 const VistaModeSelector = lazy(() => import('../modeSelect'))
 const QuicklookSelector = lazy(() => import('../quicklook'))
@@ -313,10 +314,12 @@ interface PlotButtonMenuProps {
  * )
  */
 const PlotButtonMenu = (props: PlotButtonMenuProps) => {
+    const geoCoords = useGeoCoords()
+
     const style: React.CSSProperties = {
         boxShadow: "0 0 8px #777",
         display: props.visible ? "block" : "none",
-        left: 0,
+        left: -100,
         position: "absolute",
         top: "100%",
         zIndex: "1000",
@@ -395,9 +398,7 @@ const PlotButton = () => {
         return (
             <>
                 <Button.Primary style={leftStyle} disabled>Plot</Button.Primary>
-                <LiveDataOnly>
                     <Button.Primary style={rightStyle} disabled>▾</Button.Primary>
-                </LiveDataOnly>
             </>
         )
     }
@@ -420,12 +421,10 @@ const PlotButton = () => {
     return (
         <>
             {plotButton}
-            <LiveDataOnly>
-                <Button.Primary style={rightStyle} onClick={toggleMenuVisible}>
-                    ▾
-                    <PlotButtonMenu visible={menuVisible} hide={() => setMenuVisible(false)} />
-                </Button.Primary>
-            </LiveDataOnly>
+            <Button.Primary style={rightStyle} onClick={toggleMenuVisible}>
+                ▾
+                <PlotButtonMenu visible={menuVisible} hide={() => setMenuVisible(false)} />
+            </Button.Primary>
         </>
     )
 }
