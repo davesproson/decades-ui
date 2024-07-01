@@ -11,6 +11,7 @@ import { useSelector } from "./redux/store";
 import { FlexCenter } from "./components/layout";
 import { useScrollInhibitor } from "./hooks";
 import { setModeSelected, setQuickLookMode } from "./redux/configSlice";
+import { Loader } from "./components/loader";
 
 type QuicklookJob = {
     flightNumber: string,
@@ -35,10 +36,13 @@ const jobSortFn = (a: QuicklookJob, b: QuicklookJob) => {
 
 const QuicklookSelector = () => {
     const [jobs, setJobs] = useState<QuicklookJob[]>([])
+    const [loading, setLoading] = useState(true)
+
     const dispatch = useDispatch()
     const navigator = useNavigate()
 
     useScrollInhibitor(!jobs.length)
+
     useEffect(() => {
         fetch(apiEndpoints.quicklook_jobs)
             .then(response => response.json())
@@ -52,7 +56,17 @@ const QuicklookSelector = () => {
                     }
                 }))
             })
-    }, [])
+            .then(() => setLoading(false))
+            .catch(() => {
+                throw new Error("Failed to fetch quicklook jobs")
+            })
+        }, [])
+
+    if(loading) {
+        return (
+            <Loader text="Loading quicklook jobs..." />
+        )
+    }
 
     const jobSelected = (job: QuicklookJob) => {
         dispatch(setParamsDispatched(false))
