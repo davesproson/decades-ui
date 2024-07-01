@@ -53,8 +53,8 @@ const panels: Array<TutorialPanelConfig> = [
                temperature and a dewpoint parameter for you.`,
         dispatch: [
             () => unselectAllParams(),
-            () => toggleParamSelected({id: "521"}),
-            () => toggleParamSelected({id: "529"}),
+            () => toggleParamSelected({name: 'deiced_true_air_temp_c'}),
+            () => toggleParamSelected({name: 'dew_point'}),
         ],
         clear: [() => unselectAllParams()],
     },
@@ -104,8 +104,8 @@ const panels: Array<TutorialPanelConfig> = [
                 select which server to use.`,
         dispatch: [
             () => unselectAllParams(),
-            () => toggleParamSelected({id: "521"}),
-            () => toggleParamSelected({id: "529"}),
+            () => toggleParamSelected({name: "deiced_true_air_temp_c"}),
+            () => toggleParamSelected({name: "dew_point"}),
             () => setTimeframe({value: "5min"}),
         ],
     },
@@ -125,8 +125,8 @@ const panels: Array<TutorialPanelConfig> = [
                The Tephigram button should currently be enabled - try it now.`,
         dispatch: [
             () => unselectAllParams(),
-            () => toggleParamSelected({id: "521"}),
-            () => toggleParamSelected({id: "529"}),
+            () => toggleParamSelected({name: "deiced_true_air_temp_c"}),
+            () => toggleParamSelected({name: "dew_point"}),
             () => setTimeframe({value: "30min"}),
         ]
     },
@@ -137,14 +137,14 @@ const panels: Array<TutorialPanelConfig> = [
                parameters. Click the dashboard button to open the dashboard. Try it now.`,
         dispatch: [
             () => unselectAllParams(),
-            () => toggleParamSelected({id: "521"}),
-            () => toggleParamSelected({id: "529"}),
-            () => toggleParamSelected({id: "517"}),
-            () => toggleParamSelected({id: "551"}),
-            () => toggleParamSelected({id: "570"}),
-            () => toggleParamSelected({id: "571"}),
-            () => toggleParamSelected({id: "662"}),
-            () => toggleParamSelected({id: "663"}),
+            () => toggleParamSelected({name: "deiced_true_air_temp_c"}),
+            () => toggleParamSelected({name: "dew_point"}),
+            () => toggleParamSelected({name: "true_air_speed_kts"}),
+            () => toggleParamSelected({name: "cabin_temperature"}),
+            () => toggleParamSelected({name: "adc_wind_speed"}),
+            () => toggleParamSelected({name: "n_wind"}),
+            () => toggleParamSelected({name: "gin_latitude"}),
+            () => toggleParamSelected({name: "gin_longitude"}),
         ]
     },
     {

@@ -11,7 +11,7 @@ import { ParameterSearchInput } from "./filterBar"
 import { Container } from "../components/container"
 import { memo } from "react"
 
-type ParameterLineProps = Omit<Parameter, "axisId" | "raw">
+type ParameterLineProps = Omit<Parameter, "axisId">
 type MouseOrKeyboardEvent = React.MouseEvent<HTMLButtonElement, MouseEvent> | React.KeyboardEvent<HTMLButtonElement>
 
 /**
@@ -26,7 +26,8 @@ const isKeyboardEvent = (e: MouseOrKeyboardEvent): e is React.KeyboardEvent<HTML
 
 type ParameterInputProps = {
     name: string
-    id: number | string
+    // id: number | string
+    raw: string,
     selected: boolean
 }
 const ParameterInput = (props: ParameterInputProps) => {
@@ -36,7 +37,7 @@ const ParameterInput = (props: ParameterInputProps) => {
         if (isKeyboardEvent(e) && e.key !== "Enter" && e.key !== ' ') return
         e.stopPropagation()
         dispatch(toggleParamSelected({
-            id: props.id
+            name: props.raw,
         }))
     }
 
@@ -65,7 +66,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
 
         if (value !== "is-status") {
             return dispatch(toggleParamSelected({
-                id: props.id
+                name: props.raw
             }))
         } else {
             console.log("TODO: Refresh parameter status.")
@@ -90,7 +91,7 @@ const ParameterLine = memo((props: ParameterLineProps) => {
         <tr className={selectedClass} onMouseDown={(e) => toggleSelected(e)} style={{ "cursor": "pointer" }}>
             <td style={{ width: "0" }} className={statusClass} data-data="is-status">{statusText}</td>
             <td style={{ width: "0" }}>{props.id}</td>
-            <td><ParameterInput name={props.name} id={props.id} selected={props.selected}/></td>
+            <td><ParameterInput name={props.name} raw={props.raw} selected={props.selected}/></td>
             <td>{props.units}</td>
         </tr>
     )
@@ -120,6 +121,7 @@ const ParameterTable = memo(() => {
         .map(param => <ParameterLine key={param.id}
             id={param.id}
             name={param.name}
+            raw={param.raw}
             selected={param.selected}
             units={param.units}
             status={param.status} />)

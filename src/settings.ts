@@ -65,12 +65,33 @@ export const geoCoordsQuicklook = {
 // The default parameters to plot when the user selects a preset.
 // TODO: These should be changed for quicklook mode/data.
 export const presets = {
-    'True air temperatures (C)': [521, 524],
-    'Dew points (C)': [529, 550, 931],
-    'Tephigram': [529, 521],
-    'Pressure & radar alts (ft)': [579, 977],
-    'Neph. SP (Mm-1)': [622, 623, 624],
-    'Turbulence Probe': [593, 594, 595]
+    'True air temperatures (C)': [
+        'nondeiced_true_air_temp_c',
+        'deiced_true_air_temp_c'
+    ],
+    'Dew points (C)': [
+        'dew_point',
+        'buck_mirror_temp',
+        'wvss2a_tdew'
+    ],
+    'Tephigram': [
+        'dew_point',
+        'deiced_true_air_temp_c'
+    ],
+    'Pressure & radar alts (ft)': [
+        "pressure_height_kft",
+        "radar_height_kft"
+    ],
+    'Neph. SP (Mm-1)': [
+        "aerack01_neph_total_blue",
+        "aerack01_neph_total_green",
+        "aerack01_neph_total_red"
+    ],
+    'Turbulence Probe': [
+        "turb_probe_pitot_static", 
+        "turb_probe_attack_diff",
+        "turb_probe_sideslip_diff"
+    ]
 }
 
 // Default parameters to include in plot headers

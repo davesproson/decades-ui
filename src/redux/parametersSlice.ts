@@ -117,9 +117,11 @@ export const paramSlice = createSlice({
                 param.status = action.payload.status;
             }
         },
-        toggleParamSelected: (state, action: PayloadAction<{id: ParameterID}>) => {
-            const param = state.params.find(param => param.id === action.payload.id);
-            if (param) {
+        toggleParamSelected: (state, action: PayloadAction<{name: string}>) => {
+
+            const param = state.params.find(param => param.raw === action.payload.name);
+
+            if (param !== undefined) {
                 param.selected = !param.selected;
                 if(param.selected) {
                     const pAxis = state.axes.find(axis => axis.units === param.units)
