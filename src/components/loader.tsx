@@ -22,9 +22,9 @@ interface SuspenseLoaderProps {
  *
  * @returns a progress bar
  */
-const ProgressBar = (props: { value: number, max: number }) => {
+const ProgressBar = (props: { value?: number, max?: number }) => {
     return (
-        <progress className="progress" style={{
+        <progress className="progress is-light" style={{
             width: "50%"
         }} value={props.value} max={props.max}>{props.value}</progress>
     )
@@ -44,7 +44,7 @@ const Loader = (props: LoaderProps) => {
     return (
         <Splash>
             <BrandLogo text={props.text} />
-            <ProgressBar value={props.value || 0} max={props.max || 100} />
+            <ProgressBar value={props.value} max={props.max} />
         </Splash>
     )
 }
