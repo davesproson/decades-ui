@@ -84,9 +84,10 @@ const DecadesVista = () => {
       <ToastContainer />
     <SuspenseLoader text="Initializing..." >
       <Routes>
-        <Route path="/" element={<><Navbar /><Tutorial /></>} >
+        <Route path="/" element={<Navbar />} >
           <Route path="/" element={
             <SuspenseLoader>
+              <Tutorial />
               <When condition={tabbedPlots}>
                 <TabPanel />
               </When>
