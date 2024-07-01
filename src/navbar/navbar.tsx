@@ -10,7 +10,7 @@ import { useTephiAvailable, useTephiUrl } from "../tephigram/hooks"
 import { Outlet } from "react-router-dom"
 import { loadSavedView, setViewConfigTab } from "../redux/viewSlice"
 import { useNavigate } from "react-router-dom"
-import { presets, enableQuicklook, enableChat, enableMap } from "../settings"
+import { enableQuicklook, enableChat, enableMap } from "../settings"
 import { Button } from "../components/buttons"
 import PropTypes from "prop-types"
 import { ConfigPanel } from "../configPanel/config"
@@ -18,7 +18,7 @@ import { SuspenseLoader } from "../components/loader"
 import { LiveDataOnly } from "../quicklook"
 import { BleedingEdge } from "../components/bleeding"
 import { addTab } from "../redux/tabsSlice"
-import { useGeoCoords } from "../hooks"
+import { useGeoCoords, usePresets } from "../hooks"
 
 const VistaModeSelector = lazy(() => import('../modeSelect'))
 const QuicklookSelector = lazy(() => import('../quicklook'))
@@ -118,6 +118,7 @@ const NavTimeFrameSelector = () => {
  */
 const PresetSelector = () => {
     const dispatch = useDispatch()
+    const presets = usePresets()
     const [visible, setVisible] = useState(false)
     const toggleVisible = () => {
         setVisible(!visible)
@@ -564,8 +565,8 @@ const NavbarMenu = (props: NavbarMenuProps) => {
             <div className="navbar-start">
                 <ConfigPanel />
                 <NavTimeFrameSelector />
+                <PresetSelector />
                 <LiveDataOnly>
-                    <PresetSelector />
                     <ViewsSelector />
                     <MoreSelector />
                 </LiveDataOnly>
