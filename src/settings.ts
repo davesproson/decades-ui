@@ -93,6 +93,30 @@ export const presets = {
         "turb_probe_sideslip_diff"
     ]
 }
+export const presetsQuicklook = {
+    'True air temperatures (C)': [
+        'TAT_DI_R',
+        'TAT_ND_R'
+    ],
+    'Dew points (C)': [
+        'TDEW_GE',
+        'TDEWCR2C'
+    ],
+    'Tephigram': [
+        'TDEW_GE',
+        'TAT_DI_R'
+    ],
+    'Neph. SP (Mm-1)': [
+        'TSC_REDU',  
+        'TSC_GRNU',
+        'TSC_BLUU'
+    ],
+    'Turbulence Probe': [
+        'P0_S10',
+        'AOA',
+        'AOSS'
+    ]
+}
 
 // Default parameters to include in plot headers
 export const plotHeaderDefaults = [
