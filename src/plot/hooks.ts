@@ -238,7 +238,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                     size: 8,
                     color: darkMode ? "white" : "black"
                 },
-                bgcolor: darkMode ? darkBg : "white",
+                bgcolor: darkMode ? darkBg + 'cc' : "#ffffffcc",
                 // This is dispicable, sorry future me
                 x: options.swapxy 
                     ? 0 
