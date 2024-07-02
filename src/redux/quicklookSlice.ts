@@ -3,6 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 interface QuicklookState {
 	qcJob: string | null,
 	flightNumber: string | null,
+	baseTime: number | null,
+	dataTimeSpan: {start: number, end: number} | null,
 }
 
 export const quicklookSlice = createSlice({
@@ -10,6 +12,8 @@ export const quicklookSlice = createSlice({
 	initialState: {
 		qcJob: null,
 		flightNumber: null,
+		baseTime: null,
+		dataTimeSpan: null
 	} as QuicklookState,
 	reducers: {
 		setQcJob: (state, action) => {
@@ -18,11 +22,17 @@ export const quicklookSlice = createSlice({
 		setFlightNumber: (state, action) => {
 			state.flightNumber = action.payload;
 		},
+		setBasetime: (state, action) => {
+			state.baseTime = action.payload;
+		},
+		setDataTimeSpan: (state, action) => {
+			state.dataTimeSpan = action.payload;
+		}
 	},
 });   
 
 export const { 
-	setQcJob, setFlightNumber
+	setQcJob, setFlightNumber, setBasetime, setDataTimeSpan
 
 } = quicklookSlice.actions;
 

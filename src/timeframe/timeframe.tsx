@@ -8,6 +8,7 @@ import { Button } from '../components/buttons'
 import { FadeOut } from '../components/fadeout'
 import { FlightSummaryEntry, FlightSummaryEntryProps } from './timeframe.types'
 import { Container } from '../components/container'
+import { QuicklookOnly } from '../quicklook'
 
 
 const TimeframeTextBox = () => {
@@ -64,11 +65,12 @@ interface TimePickerProps {
     isOngoing?: boolean
 }
 const TimePicker = (props: TimePickerProps) => {
-
     const dispatch = useDispatch()
     const timeframes = useSelector(state => state.options.timeframes)
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
     const customTimeframe = useSelector(state => state.options.customTimeframe)
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
+    const quickLookBaseTime = useSelector(state => state.quicklook.baseTime)
     
     const [isOngoing, setIsOngoing] = useState(props.isOngoing)// || false)
 
@@ -102,7 +104,7 @@ const TimePicker = (props: TimePickerProps) => {
                 setIsOngoing(true)
             }
         }
-    }, [timeframes, useCustomTimeframe, setHours, setMinutes, setSeconds])
+    }, [timeframes, useCustomTimeframe, setHours, setMinutes, setSeconds, customTimeframe])
 
 
     const toggleOngoing = () => {
@@ -123,11 +125,21 @@ const TimePicker = (props: TimePickerProps) => {
     }
 
     const onApply = () => {
-        const time = new Date()
+        let time: Date
+        if(quickLookMode) {
+            if(!quickLookBaseTime) {
+                console.warn("Quicklook mode is on, but no base time is set.")
+                return
+            }
+            time = new Date(quickLookBaseTime)
+        } else {
+            time = new Date()
+        }
         time.setUTCHours(hours)
         time.setUTCMinutes(minutes)
         time.setUTCSeconds(seconds)
         time.setUTCMilliseconds(0)
+
         const retval = isOngoing ? null : time.getTime()
         dispatch(setCustomTimeframe({[props.boundary]: retval}))
     }
@@ -194,17 +206,30 @@ interface TimeFrameSelectorBoxProps {
     endOnGoing: boolean
 }
 const TimeFrameSelectorBox = (props: TimeFrameSelectorBoxProps) => {
+    const quicklookMode = useSelector(state => state.config.quickLookMode)
+    const dataTimeSpan = useSelector(state => state.quicklook.dataTimeSpan)
+    const dispatch = useDispatch()
+
+    const resetTimeframe = () => {
+        if(!quicklookMode) return
+        if(!dataTimeSpan) return
+        dispatch(setCustomTimeframe(dataTimeSpan))
+    }
+
     return (
         <nav className="panel mt-4 is-dark">
                 <p className="panel-heading">
                     Select a timeframe
                 </p>
+                <QuicklookOnly>
+                    <Button extraClasses='m-2' onClick={resetTimeframe}>Reset to entire dataset</Button>
+                </QuicklookOnly>
                 <div className="columns">
                     <div className="column is-6">
                         <TimePicker title="Start Time" time={props.startTime*1000} boundary="start"/>
                     </div>
                     <div className="column is-6">
-                        <TimePicker title="End Time" allowOngoing={true} isOngoing={props.endOnGoing} boundary="end"/>
+                        <TimePicker title="End Time" allowOngoing={true && !quicklookMode} isOngoing={props.endOnGoing} boundary="end"/>
                     </div>
                 </div>
             </nav>
@@ -286,6 +311,7 @@ const TimeframeSelector = () => {
     const timeframes = useSelector(state => state.options.timeframes)
     const usingCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
     const customTimeframe = useSelector(state => state.options.customTimeframe)
+    console.log('Rendering TimeframeSelector')
 
     let timeframe = timeframes.find(tf => tf.selected)
     let startTime, endTime

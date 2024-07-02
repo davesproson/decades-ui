@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { setParams, setParamsDispatched } from "./redux/parametersSlice";
-import { setCustomTimeframe, setServer } from "./redux/optionsSlice";
+import { setCustomTimeframe, setServer, setTimeframe } from "./redux/optionsSlice";
 import { apiEndpoints, geoCoords, geoCoordsQuicklook, presets, presetsQuicklook } from "./settings";
 import { useSelector, useDispatch } from "./redux/store";
 import { DecadesParameter } from "./redux/parametersSlice";
@@ -9,6 +9,7 @@ import vistaLight from '../assets/css/vista-light.css?inline'
 import vistaDark from '../assets/css/vista-dark.css?inline'
 import { QCCArg, QcParameter, QcResponse, isQCResponse } from "./types";
 import { useSearchParams } from "react-router-dom";
+import { setBasetime, setDataTimeSpan } from "./redux/quicklookSlice";
 
 
 
@@ -304,28 +305,43 @@ const useScrollInhibitor = (stopScroll: boolean) => {
  */
 const useQuickLookTimeframe = () => {
     const qcJob = useSelector(state => state.quicklook.qcJob)
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
     const dispatch = useDispatch()
 
-    // If there is no quicklook job, return early
-    if(!qcJob) return
+    useEffect(() => {
 
-    // Build the query URL
-    const dataURL = new URL(apiEndpoints.quicklook_data)
-    dataURL.searchParams.set('job', qcJob)
-    dataURL.searchParams.set('para', 'utc_time')
+        if(!quickLookMode) {
+            dispatch(setTimeframe({value: '30min'}))
+            return
+        }
 
-    // Fetch the data and set the custom timeframe
-    fetch(dataURL)
-      .then(response => response.json())
-      .then(data => {
-        const time = data.utc_time
-        const startTime = time[0] * 1000
-        const endTime = time[time.length - 1] * 1000
-        dispatch(setCustomTimeframe({start: startTime, end: endTime}))
-      })
-      .catch(e => {
-        console.error("Error fetching quicklook timeframe:", e)
-      })
+        // If there is no quicklook job, return early
+        if(!qcJob) return
+
+        // Build the query URL
+        const dataURL = new URL(apiEndpoints.quicklook_data)
+        dataURL.searchParams.set('job', qcJob)
+        dataURL.searchParams.set('para', 'utc_time')
+
+        // Fetch the data and set the custom timeframe
+        fetch(dataURL)
+        .then(response => response.json())
+        .then(data => {
+            const time = data.utc_time
+            const startTime = time[0] * 1000
+            const endTime = time[time.length - 1] * 1000
+            dispatch(setCustomTimeframe({start: startTime, end: endTime}))
+            dispatch(setDataTimeSpan({start: startTime, end: endTime}))
+
+            // Set the basetime to the start of the day on which the flight
+            // started
+            const baseTime = (time[0] - (time[0] % (24 * 3600))) * 1000
+            dispatch(setBasetime(baseTime))
+        })
+        .catch(e => {
+            console.error("Error fetching quicklook timeframe:", e)
+        })  
+    }, [qcJob, quickLookMode])
 }
 
 const useGeoCoords = () => {
