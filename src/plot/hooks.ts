@@ -90,6 +90,7 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
     const vars = useSelector(state => state.vars);
     const server = useSelector(state => state.options.server);
     const qcJob = useSelector(state => state.quicklook.qcJob);
+    const quickLookMode = useSelector(state => state.config.quickLookMode);
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe);
     
     // Get the parameters
@@ -128,7 +129,7 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
         let axes = getAxesArray(vars)
         
         // Update the plot URL whenever the plot options change
-        const optionSet = {
+        const optionSet: OptionsState = {
             timeframe: overridden("timeframe", timeframe),
             params: overridden("selectedParams", selectedParams),
             swapOrientation: overridden("swapxy", plotOptions.swapOrientation),
@@ -138,7 +139,12 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
             ordinateAxis: overridden("ordvar", plotOptions.ordinateAxis),
             server: overridden("server", server),
             axes: overridden("axes", axes),
-            job: overridden("job", qcJob)
+        }
+
+        // We don't want to unset qcJob if we're toggling between quicklook and
+        // live mode, so we only set it if we're in quicklook mode
+        if(quickLookMode) {
+            optionSet.job = overridden("job", qcJob)
         }
 
         setPlotUrl(getUrl(optionSet))

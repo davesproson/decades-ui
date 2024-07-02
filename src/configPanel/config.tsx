@@ -15,9 +15,9 @@ import { Option, OptionList } from "./components";
 import { ChatConfigSwitch } from "../chat/chat";
 import { BleedingEdge } from "../components/bleeding";
 
-import { enableChat, enableTabbedPlots } from "../settings";
+import { enableChat, enableQuicklook, enableTabbedPlots } from "../settings";
 import { useLocalStorage } from "usehooks-ts";
-import { toggleTabbedPlots } from "../redux/configSlice";
+import { setModeSelected, setQuickLookMode, toggleTabbedPlots } from "../redux/configSlice";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -54,6 +54,24 @@ const TabbedPlotsSwitch = () => {
         options={["On", "Off"]}
         toggle={toggleTabbedPlots}
         useStore={true}
+        small
+    />
+}
+
+const DataModeSwitch = () => {
+    const dispatch = useDispatch();
+    const quickLookMode = useSelector(state => state.config.quickLookMode);
+    return <OptionSwitch
+        value={quickLookMode ? "Quicklook" : "Live Data"}
+        options={["Live Data", "Quicklook"]}
+        toggle={() => {
+            dispatch(setQuickLookMode(!quickLookMode));
+            dispatch(setModeSelected(true));
+            dispatch(setParams([]))
+            dispatch(setParamsDispatched(false))
+            return { type: "quickLookMode", value: quickLookMode }
+        }}
+        useStore={false}
         small
     />
 }
@@ -136,6 +154,12 @@ const ConfigPanel = () => {
                         <Option title="Dark Mode">
                             <DarkModeSwitch />
                         </Option>
+
+                        <BleedingEdge show={enableQuicklook}>
+                            <Option title="Mode">
+                                <DataModeSwitch />
+                            </Option>
+                        </BleedingEdge>
 
                         <LiveDataOnly>
                             <Option title="Parameter Set">

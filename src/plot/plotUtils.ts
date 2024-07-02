@@ -235,12 +235,13 @@ function getXAxis(options: PlotURLOptions, param: string) {
 const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
     const server = options.server ? options.server : location.host
     const job = store.getState().quicklook.qcJob
+    const quicklookMode = store.getState().config.quickLookMode
 
-    let url = job
+    let url = (job && quicklookMode)
         ? new URL(`${apiEndpoints.quicklook_data}`)
         : new URL(`${serverProtocol}://${server}${apiEndpoints.data}`)
 
-    if(job) 
+    if(job && quicklookMode) 
         url.searchParams.set('job', job)
 
     // Allow the endpoint to include a query string
