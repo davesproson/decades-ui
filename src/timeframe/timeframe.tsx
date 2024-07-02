@@ -8,7 +8,7 @@ import { Button } from '../components/buttons'
 import { FadeOut } from '../components/fadeout'
 import { FlightSummaryEntry, FlightSummaryEntryProps } from './timeframe.types'
 import { Container } from '../components/container'
-import { QuicklookOnly } from '../quicklook'
+import { LiveDataOnly, QuicklookOnly } from '../quicklook'
 
 
 const TimeframeTextBox = () => {
@@ -311,7 +311,6 @@ const TimeframeSelector = () => {
     const timeframes = useSelector(state => state.options.timeframes)
     const usingCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
     const customTimeframe = useSelector(state => state.options.customTimeframe)
-    console.log('Rendering TimeframeSelector')
 
     let timeframe = timeframes.find(tf => tf.selected)
     let startTime, endTime
@@ -335,7 +334,9 @@ const TimeframeSelector = () => {
             <Container fixedNav>
                 <TimeframeTextBox />
                 <TimeFrameSelectorBox startTime={startTime} endOnGoing={endOnGoing}/>
-                <FlightSummarySelector />
+                <LiveDataOnly>
+                    <FlightSummarySelector />
+                </LiveDataOnly>
             </Container>
         </FadeOut>
     )
