@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "../redux/store"
 import { useState, lazy } from "react"
 import { setFilterText } from "../redux/filterSlice"
 import { Link, useLocation } from "react-router-dom"
-import { toggleParamSelected, unselectAllParams } from "../redux/parametersSlice"
+import { resetParams, toggleParamSelected, unselectAllParams } from "../redux/parametersSlice"
 import { setOrdinateAxis, setTimeframe } from "../redux/optionsSlice"
 import { usePlotInternalOptions, usePlotUrl } from "../plot/hooks"
 import { useDashboardUrl } from "../dashboard/hooks"
@@ -15,10 +15,11 @@ import { Button } from "../components/buttons"
 import PropTypes from "prop-types"
 import { ConfigPanel } from "../configPanel/config"
 import { SuspenseLoader } from "../components/loader"
-import { LiveDataOnly } from "../quicklook"
+import { LiveDataOnly, QuicklookOnly } from "../quicklook"
 import { BleedingEdge } from "../components/bleeding"
 import { addTab } from "../redux/tabsSlice"
 import { useGeoCoords, usePresets } from "../hooks"
+import { QuicklookJob, setFlightNumber, setQcJob } from "../redux/quicklookSlice"
 
 const VistaModeSelector = lazy(() => import('../modeSelect'))
 const QuicklookSelector = lazy(() => import('../quicklook'))
@@ -31,6 +32,43 @@ const ExternalLinkIcon = () => {
                 <path id="Vector" d="M10.0002 5H8.2002C7.08009 5 6.51962 5 6.0918 5.21799C5.71547 5.40973 5.40973 5.71547 5.21799 6.0918C5 6.51962 5 7.08009 5 8.2002V15.8002C5 16.9203 5 17.4801 5.21799 17.9079C5.40973 18.2842 5.71547 18.5905 6.0918 18.7822C6.5192 19 7.07899 19 8.19691 19H15.8031C16.921 19 17.48 19 17.9074 18.7822C18.2837 18.5905 18.5905 18.2839 18.7822 17.9076C19 17.4802 19 16.921 19 15.8031V14M20 9V4M20 4H15M20 4L13 11"  fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </g>
         </svg>
+    )
+}
+
+const FlightSelector = () => {
+    const [visible, setVisible] = useState(false)
+    const flight = useSelector(state => state.quicklook.flightNumber)
+    const qcJobs = useSelector(state => state.quicklook.qcJobs)
+    const dispatch = useDispatch()
+
+    const filteredQcJobs = qcJobs?.filter(x => x.flightNumber !== flight) || []
+
+    const visibleClass = visible ? "is-active" : ""
+
+    const dispatchQcJob = (qcJob: QuicklookJob) => {
+        console.log(qcJob)
+        dispatch(resetParams())
+        dispatch(setQcJob(qcJob.jobID))
+        dispatch(setFlightNumber(qcJob.flightNumber))
+    }
+
+    return (
+        <div className={`navbar-item has-dropdown ${visibleClass}`}>
+            <a id="views-navbar-item" className="navbar-link" onClick={()=>setVisible(x=>!x)}>
+                {flight}
+            </a>
+            <div className="navbar-dropdown" onClick={() => setVisible(false)} onMouseLeave={() => setVisible(false)}>
+            {
+                filteredQcJobs.map((x, i) => {
+                    return (
+                        <a className="navbar-item" key={i} onClick={()=>dispatchQcJob(x)}>
+                            {x.flightNumber} ({x.flightProject})
+                        </a>
+                    )
+                })
+            }
+            </div>
+        </div>
     )
 }
 
@@ -564,6 +602,9 @@ const NavbarMenu = (props: NavbarMenuProps) => {
         <div id="navbar" className={navbarClass}>
             <div className="navbar-start">
                 <ConfigPanel />
+                <QuicklookOnly>
+                    <FlightSelector />
+                </QuicklookOnly>
                 <NavTimeFrameSelector />
                 <PresetSelector />
                 <LiveDataOnly>

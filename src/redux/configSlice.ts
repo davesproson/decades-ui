@@ -24,6 +24,7 @@ export const configSlice = createSlice({
         },
 		setQuickLookMode: (state, action) => {
 			state.quickLookMode = action.payload;
+			state.modeSelected = true;
 		},
 		toggleQuickLookMode: (state) => {
 			state.quickLookMode = !state.quickLookMode;

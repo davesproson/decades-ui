@@ -86,11 +86,20 @@ export const paramSlice = createSlice({
         paramsDispatched: false
     } as ParamsState,
 	reducers: {
+        resetParams: (state) => {
+            state.params = [];
+            state.axes = [];
+            state.paramSet = '';
+            state.paramsDispatched = false;
+        },
         setParamsDispatched: (state, action: PayloadAction<boolean>) => {
             state.paramsDispatched = action.payload;
         },
         setParamSet: (state, action: PayloadAction<string>) => {
             state.paramSet = action.payload;
+            state.params = [];
+            state.axes = [];
+            state.paramsDispatched = false;
         },
 		addParam: (state, action: PayloadAction<Parameter>) => {
 			const param = {
@@ -202,7 +211,8 @@ export const paramSlice = createSlice({
 
 export const { 
     addParam, setParams, toggleParamSelected, unselectAllParams, addNewAxis,
-    selectAxis, setParamStatus, setParamSet, setParamsDispatched, setAxisScaling
+    selectAxis, setParamStatus, setParamSet, setParamsDispatched, setAxisScaling,
+    resetParams
 } = paramSlice.actions;
 
 export default paramSlice.reducer;

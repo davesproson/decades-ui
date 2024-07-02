@@ -3,7 +3,7 @@ import { DecadesBanner } from "./components/decades";
 import { apiEndpoints } from "./settings";
 import { Button } from "./components/buttons";
 import { Container } from "./components/container";
-import { setQcJob, setFlightNumber } from "./redux/quicklookSlice";
+import { setQcJob, setFlightNumber, setQcJobs } from "./redux/quicklookSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setParamsDispatched } from "./redux/parametersSlice";
@@ -55,6 +55,14 @@ const QuicklookSelector = () => {
                         jobID: a.url.split('/')[7]
                     }
                 }))
+                dispatch(setQcJobs(data.results.map(a => {
+                    return {
+                        flightNumber: a.flight_number,
+                        flightDate: a.flight_date,
+                        flightProject: a.flight_project,
+                        jobID: a.url.split('/')[7]
+                    }
+                })))
             })
             .then(() => setLoading(false))
             .catch(() => {

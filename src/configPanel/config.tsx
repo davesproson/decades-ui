@@ -5,9 +5,7 @@ import { useRef } from "react";
 import { useDarkMode } from "../hooks";
 import { useDispatch, useSelector } from "../redux/store"
 
-import { 
-    setParamSet, setParams, setParamsDispatched 
-} from "../redux/parametersSlice";
+import { resetParams, setParamSet } from "../redux/parametersSlice";
 
 import { Button } from "../components/buttons";
 import { LiveDataOnly } from "../quicklook";
@@ -17,7 +15,7 @@ import { BleedingEdge } from "../components/bleeding";
 
 import { enableChat, enableQuicklook, enableTabbedPlots } from "../settings";
 import { useLocalStorage } from "usehooks-ts";
-import { setModeSelected, setQuickLookMode, toggleTabbedPlots } from "../redux/configSlice";
+import { setQuickLookMode, toggleTabbedPlots } from "../redux/configSlice";
 
 // These should be pulled from the server.
 const PARAMETER_SETS = [{
@@ -66,9 +64,7 @@ const DataModeSwitch = () => {
         options={["Live Data", "Quicklook"]}
         toggle={() => {
             dispatch(setQuickLookMode(!quickLookMode));
-            dispatch(setModeSelected(true));
-            dispatch(setParams([]))
-            dispatch(setParamsDispatched(false))
+            dispatch(resetParams());
             return { type: "quickLookMode", value: quickLookMode }
         }}
         useStore={false}
@@ -96,9 +92,7 @@ const ParamSetSelector = () => {
     return <div className="control">
         <div className="select">
             <select onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                dispatch(setParams([]))
                 dispatch(setParamSet(e.target.value))
-                dispatch(setParamsDispatched(false))
             }} value={paramSet}>
                 {
                     PARAMETER_SETS.map((x, i) => {
