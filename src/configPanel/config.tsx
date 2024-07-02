@@ -138,6 +138,8 @@ const ConfigPanel = () => {
                     top: "64px",
                     bottom: 0,
                     width: "300px",
+                    overflowY: "auto",
+                    scrollbarWidth: "thin"
                 }}
                 className="slide-out config-panel">
                 <div className="m-2">
@@ -180,6 +182,16 @@ const ConfigPanel = () => {
                                 <TabbedPlotsSwitch />
                             </Option>
                         </BleedingEdge>
+
+                        {
+                            new Array(10).fill(0).map((_, i) => {
+                                return <Option key={i} title={`Option ${i}`}>
+                                    <Button.Dark fullWidth outlined>
+                                        Option {i}
+                                    </Button.Dark>
+                                </Option>
+                            })
+                        }
                     </OptionList>
                 </div>
             </div>
