@@ -182,16 +182,6 @@ const ConfigPanel = () => {
                                 <TabbedPlotsSwitch />
                             </Option>
                         </BleedingEdge>
-
-                        {
-                            new Array(10).fill(0).map((_, i) => {
-                                return <Option key={i} title={`Option ${i}`}>
-                                    <Button.Dark fullWidth outlined>
-                                        Option {i}
-                                    </Button.Dark>
-                                </Option>
-                            })
-                        }
                     </OptionList>
                 </div>
             </div>
