@@ -149,6 +149,7 @@ export const ChatRegistration = () => {
                 <input type="text" className="input" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
                 <Spacer size={5} />
                 <Button.Info fullWidth onClick={register}>Join Chat</Button.Info>
+                <Button fullWidth extraClasses="mt-2" onClick={actions.toggleChatEnabled}>Cancel</Button>
             </div>
         </Splash>
     )
