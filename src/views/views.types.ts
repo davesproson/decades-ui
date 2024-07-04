@@ -98,7 +98,8 @@ interface PlotViewConfig {
     scrolling: boolean,
     header: boolean,
     ordvar: string,
-    swapxy: boolean
+    swapxy: boolean,
+    job?: string,
 }
 
 type ViewConfig = (
