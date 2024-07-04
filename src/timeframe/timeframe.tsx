@@ -1,8 +1,6 @@
-import { useState } from 'react'
 import { useSelector, useDispatch } from '../redux/store'
 import { setCustomTimeframe } from '../redux/optionsSlice'
 import { getTimeLims } from '../plot/plotUtils'
-import { useEffect } from 'react'
 import { useFlightSummary } from './hooks'
 import { Button } from '../components/buttons'
 import { FadeOut } from '../components/fadeout'
@@ -59,154 +57,109 @@ const TimeframeTextBox = () => {
 
 interface TimePickerProps {
     title: string,
-    time?: number,
     boundary: "start" | "end",
     allowOngoing?: boolean,
-    isOngoing?: boolean
 }
 const TimePicker = (props: TimePickerProps) => {
     const dispatch = useDispatch()
     const timeframes = useSelector(state => state.options.timeframes)
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
     const customTimeframe = useSelector(state => state.options.customTimeframe)
-    const quickLookMode = useSelector(state => state.config.quickLookMode)
-    const quickLookBaseTime = useSelector(state => state.quicklook.baseTime)
-    
-    const [isOngoing, setIsOngoing] = useState(props.isOngoing)// || false)
 
-    let initHours = 0
-    let initMinutes = 0
-    let initSeconds = 0
-    if(props.time) {
-        initHours = new Date(props.time).getUTCHours()
-        initMinutes = new Date(props.time).getUTCMinutes()
-        initSeconds = new Date(props.time).getUTCSeconds()
-    }
-
-    const [hours, setHours] = useState(initHours)
-    const [minutes, setMinutes] = useState(initMinutes)
-    const [seconds, setSeconds] = useState(initSeconds)
-    
-    useEffect(() => {
-        if(useCustomTimeframe) {
-            const time = new Date(customTimeframe[props.boundary] || new Date())
-            setHours(time.getUTCHours())
-            setMinutes(time.getUTCMinutes())
-            setSeconds(time.getUTCSeconds())
-        } else {
-            const lims = getTimeLims(timeframes.find(x => x.selected)?.label || "30min")
-            const timeObj = {start: lims[0] * 1000, end: lims[1] * 1000}
-            const time = new Date(timeObj[props.boundary])
-            setHours(time.getUTCHours())
-            setMinutes(time.getUTCMinutes())
-            setSeconds(time.getUTCSeconds())
-            if(props.boundary === "end") {
-                setIsOngoing(true)
-            }
-        }
-    }, [timeframes, useCustomTimeframe, setHours, setMinutes, setSeconds, customTimeframe])
-
-
-    const toggleOngoing = () => {
-        const now = new Date()
-        now.setUTCMilliseconds(0)
-        const og = !isOngoing
-        setIsOngoing(x=>!x)
-
-        if (!og) {
-            console.log('setting ongoing time')
-            setHours(now.getUTCHours())
-            setMinutes(now.getUTCMinutes())
-            setSeconds(now.getUTCSeconds())
-            const retval = og ? null :  now.getTime()
-            dispatch(setCustomTimeframe({[props.boundary]: retval}))
-        } 
-
-        dispatch(setCustomTimeframe({[props.boundary]: null}))
-    }
-
-    const onApply = () => {
-        let time: Date
-        if(quickLookMode) {
-            if(!quickLookBaseTime) {
-                console.warn("Quicklook mode is on, but no base time is set.")
-                return
-            }
-            time = new Date(quickLookBaseTime)
-        } else {
-            time = new Date()
-        }
-        time.setUTCHours(hours)
-        time.setUTCMinutes(minutes)
-        time.setUTCSeconds(seconds)
-        time.setUTCMilliseconds(0)
-
-        const retval = isOngoing ? null : time.getTime()
-        dispatch(setCustomTimeframe({[props.boundary]: retval}))
-    }
-
-    const setAndPad = (setter: React.Dispatch<React.SetStateAction<number>>, event: React.ChangeEvent<HTMLInputElement>) => {
-        let val = parseInt(event.target.value)
-        setter(val)
-    }
-
+    const isOngoing = (!useCustomTimeframe) || customTimeframe.end === null
     
     const Btn = isOngoing ? Button.Primary : Button.Light
 
-    const ongoingButton = props.allowOngoing 
+    const toggleOngoing = () => {
+        if(customTimeframe.end === null) {
+            dispatch(setCustomTimeframe({end: new Date().getTime()}))
+        } else {
+            dispatch(setCustomTimeframe({end: null}))
+        }
+    }
+
+    const startTime = useCustomTimeframe
+        ? customTimeframe.start || new Date().getTime() - (60000 * 30)
+        : getTimeLims(timeframes.find(x=>x.selected)?.value || "30mins")[0] * 1000
+    
+    const endTime = useCustomTimeframe
+        ? customTimeframe.end || new Date().getTime()
+        : getTimeLims(timeframes.find(x=>x.selected)?.value || "30mins")[1] * 1000
+    
+    const time = props.boundary === "start" ? startTime : endTime
+
+    const ongoingButton = props.allowOngoing
         ? <Btn onClick={toggleOngoing}>Ongoing?</Btn>
         : null
 
-    const timeSelector = isOngoing ? null : (
+    const hours = props.boundary === "start"
+        ? new Date(startTime).getUTCHours()
+        : new Date(endTime).getUTCHours()
+
+    const minutes = props.boundary === "start"
+        ? new Date(startTime).getUTCMinutes()
+        : new Date(endTime).getUTCMinutes()
+
+    const seconds = props.boundary === "start"
+        ? new Date(startTime).getUTCSeconds()
+        : new Date(endTime).getUTCSeconds()
+
+    const setTime = (unit: 'Hours' | 'Minutes' | 'Seconds', value: string) => {
+        let sValue: string | number = value
+        if(sValue === "") sValue = "0"
+        const date = new Date(time)
+        date[`setUTC${unit}`](parseInt(sValue))
+        dispatch(setCustomTimeframe({
+            ...customTimeframe,
+            ...{[props.boundary]: date.getTime()}
+        }))
+    }
+
+    const padToTwo = (num: number) => num.toString().padStart(2, "0").slice(-2)
+
+    const timeSelector = (isOngoing && props.boundary === 'end') ? null : (
         <>
             <div className="control">
                 <input  className="input" type="number" style={{width: "5em"}} 
-                        value={hours?.toString()?.padStart(2, "0")} 
-                        onChange={(e)=>setAndPad(setHours, e)} min="0" max="23"/>
+                        value={padToTwo(hours)} 
+                        onChange={(e)=>{setTime('Hours', e.target.value)}} min="0" max="23"/>
             </div>
             <span className="mr-2 mt-2">:</span>
             <div className="control">
                 <input  className="input" type="number" style={{width: "5em"}}
-                        value={minutes?.toString()?.padStart(2, "0")}
-                        onChange={(e)=>setAndPad(setMinutes, e)} min="0" max="59"/>
+                        value={padToTwo(minutes)}
+                        onChange={(e)=>{setTime("Minutes", e.target.value)}} min="0" max="59"/>
                         
             </div>
             <span className="mr-2 mt-2">:</span>
             <div className="control">
                 <input className="input" type="number" style={{width: "5em"}} 
-                       value={seconds?.toString()?.padStart(2, "0")} 
-                       onChange={(e)=>setAndPad(setSeconds, e)} min="0" max="59"/>
+                       value={padToTwo(seconds)}
+                       onChange={(e)=>{setTime("Seconds", e.target.value)}} min="0" max="59"/>
             </div>
         </>
     )
-
 
     return (
         <>
-
-        <div className="card m-2 ">
-            <header className="card-header is-flex-grow-1">
-                <p className="card-header-title">
-                    {props.title}
-                </p>
-            </header>
-            <div className="card-content">
-                <div className="field is-grouped">
-                    {timeSelector}
-                    {ongoingButton}
+            <div className="card m-2 ">
+                <header className="card-header is-flex-grow-1">
+                    <p className="card-header-title">
+                        {props.title}
+                    </p>
+                </header>
+                <div className="card-content">
+                    <div className="field is-grouped">
+                        {timeSelector}
+                        {ongoingButton}
+                    </div>
                 </div>
-                <Button.Primary fullWidth onClick={onApply}>Apply</Button.Primary>
             </div>
-        </div>
         </>
     )
 }
 
-interface TimeFrameSelectorBoxProps {
-    startTime: number,
-    endOnGoing: boolean
-}
-const TimeFrameSelectorBox = (props: TimeFrameSelectorBoxProps) => {
+const TimeFrameSelectorBox = () => {
     const quicklookMode = useSelector(state => state.config.quickLookMode)
     const dataTimeSpan = useSelector(state => state.quicklook.dataTimeSpan)
     const dispatch = useDispatch()
@@ -227,10 +180,10 @@ const TimeFrameSelectorBox = (props: TimeFrameSelectorBoxProps) => {
                 </QuicklookOnly>
                 <div className="columns">
                     <div className="column is-6">
-                        <TimePicker title="Start Time" time={props.startTime*1000} boundary="start"/>
+                        <TimePicker title="Start Time" boundary="start"/>
                     </div>
                     <div className="column is-6">
-                        <TimePicker title="End Time" allowOngoing={true && !quicklookMode} isOngoing={props.endOnGoing} boundary="end"/>
+                        <TimePicker title="End Time" allowOngoing={true && !quicklookMode} boundary="end"/>
                     </div>
                 </div>
             </nav>
@@ -309,39 +262,17 @@ const FlightSummarySelector = () => {
 
 
 const TimeframeSelector = () => {
-    const timeframes = useSelector(state => state.options.timeframes)
-    const usingCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
-    const customTimeframe = useSelector(state => state.options.customTimeframe)
-
-    let timeframe = timeframes.find(tf => tf.selected)
-    let startTime, endTime
-    if(!usingCustomTimeframe) {
-        if(!timeframe) {
-            console.warn("Not using custom timeframe, but no timeframe selected.")
-            // TODO: This should probably be a default value in the store.
-            timeframe = {label: "30min", value: "30min", selected: true}
-        }
-        [startTime, endTime] = getTimeLims(timeframe.value)
-        endTime = null
-    } else {
-        startTime = customTimeframe.start || new Date().getTime()
-        endTime = customTimeframe.end
-    }
-
-    const endOnGoing = endTime === null
-
     return (
         <FadeOut>
             <Container fixedNav>
                 <TimeframeTextBox />
-                <TimeFrameSelectorBox startTime={startTime} endOnGoing={endOnGoing}/>
+                <TimeFrameSelectorBox />
                 <LiveDataOnly>
                     <FlightSummarySelector />
                 </LiveDataOnly>
             </Container>
         </FadeOut>
     )
-
 }
 
 export default TimeframeSelector
