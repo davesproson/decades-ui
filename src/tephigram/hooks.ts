@@ -1,5 +1,5 @@
 import { useSelector } from "../redux/store"
-import { base as siteBase } from "../settings"
+import { badData, base as siteBase } from "../settings"
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getData, getTimeLims, plotIsOngoing } from "../plot/plotUtils";
@@ -11,35 +11,49 @@ const useTephiUrl = () => {
     const params = useSelector(state => state.vars.params);
     const plotOptions = useSelector(state => state.options);
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe);
+    const customTimeframe = useSelector(state => state.options.customTimeframe);
+    const qcJob = useSelector(state => state.quicklook.qcJob)
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
 
     const origin = window.location.origin
     const selectedParams = params.filter(param => param.selected)
                                     .map(param => param.raw)
-    const server = plotOptions.server
     
     let timeframe = ""
     if(useCustomTimeframe) {
-        // TODO: custom timeframes?
+        let start = customTimeframe.start
+        let end = customTimeframe.end
+        if(start) start /= 1000
+        if(end) end /= 1000
+        timeframe = `${start},`
+        timeframe += end ? end : ""
     } else {
         timeframe = plotOptions.timeframes.find(x=>x.selected)?.value || "30min";
     }
     
-    // TODO: handle url construction better
-    return origin + `${siteBase}tephigram?params=${selectedParams.join(',')}&timeframe=${timeframe}&server=${server}`
+    const tephiUrl = new URL(`${siteBase}tephigram`, origin)
+    tephiUrl.searchParams.set("params", selectedParams.join(','))
+    tephiUrl.searchParams.set("timeframe", timeframe)
+    if(qcJob && quickLookMode) {
+        tephiUrl.searchParams.set("job", qcJob)
+    }
+
+    return tephiUrl.toString()
 }
 
 const useTephiAvailable = () => {
     const params = useSelector(state => state.vars.params);
     const selectedParams = params.filter(param => param.selected)
                                     .map(param => param.raw)
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
     
-    const required_temps = [
-        'deiced_true_air_temp_c', 'nondeiced_true_air_temp_c'
-    ]
+    const required_temps = quickLookMode
+        ? ['TAT_DI_R', 'TAT_ND_R']
+        : ['deiced_true_air_temp_c', 'nondeiced_true_air_temp_c']
 
-    const required_humids = [
-        'dew_point', 'buck_mirror_temp'
-    ]
+    const required_humids = quickLookMode
+        ? ['TDEW_GE', 'TDEWCR2C']
+        : ['dew_point', 'buck_mirror_temp']
 
     let has_required_temps = false
     let has_required_humids = false
@@ -59,6 +73,32 @@ const useTephiAvailable = () => {
     return has_required_temps && has_required_humids
 }
 
+/**
+ * Normalize the data from the server to a format that can be used by the 
+ * tephigram plot. When in quicklook mode, the static pressure data is
+ * stored in the PS_RVSM key, so we need to move it to the static_pressure
+ * key.
+ * 
+ * @param data The data from the server
+ * @returns The normalized data
+ */
+const normalizeTephiData = (data: TephigramData) => {
+    if('PS_RVSM' in data) {
+        data.static_pressure = [...data.PS_RVSM]
+        delete data.PS_RVSM
+    } else {
+        return data
+    }
+    for(const key in data) {
+        if(key === 'static_pressure' || key === 'utc_time') continue
+        data[key] = data[key].map(x=>{
+            if(x === badData) return x
+            return x - 273.15
+        })
+    }
+    return data
+}
+
 const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
 
     const [searchParams, _] = useSearchParams();
@@ -69,6 +109,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
     const servers = useServers()
     const [server, setServer] = useState<string|null>(null)
     const [darkMode, _setDarkMode] = useDarkMode()
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
 
     useEffect(() => {
         if(server) return
@@ -82,7 +123,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
         const options: TephigramOptions = {
             timeframe: timeframe,
             params: paramsArray,
-            ordvar: 'static_pressure',
+            ordvar: quickLookMode ? 'PS_RVSM' : 'static_pressure',
             server: server
         }
 
@@ -149,14 +190,16 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
         
         getData(options, ...getTimeLims(options.timeframe))
             .then(data=>{
-                populateTephigram(n, data as TephigramData, ref)
+                const normalizedData = normalizeTephiData(data as TephigramData)
+                populateTephigram(n, normalizedData, ref)
             })
             
         if(plotIsOngoing(options)) {
             const interval = setInterval(() => {
                 if(!(document.visibilityState === "visible")) return
                 getData(options).then(data=>{
-                    populateTephigram(n, data as TephigramData, ref)
+                    const normalizedData = normalizeTephiData(data as TephigramData)
+                    populateTephigram(n, normalizedData, ref)
                 })
             }, 1000);
 

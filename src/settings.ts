@@ -103,7 +103,7 @@ export const presetsQuicklook = {
         'TDEWCR2C'
     ],
     'Tephigram': [
-        'TDEW_GE',
+        'TDEWCR2C',
         'TAT_DI_R'
     ],
     'Neph. SP (Mm-1)': [

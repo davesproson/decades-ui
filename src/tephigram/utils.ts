@@ -1,3 +1,4 @@
+import { badData } from '../settings';
 import { 
     BackgroundTrace,
     LabelledBackgroundTrace,
@@ -40,8 +41,8 @@ const populateTephigram = (
         nbg: number, data: TephigramData, ref: React.RefObject<HTMLDivElement>
     ) => {
     
-    const xs: number[][] = [],
-          ys: number[][] = []
+    const xs: (number|null)[][] = [],
+          ys: (number|null)[][] = []
 
     const range: Array<number> = [];
 
@@ -51,8 +52,8 @@ const populateTephigram = (
             continue;
         }
         
-        const x: Array<number> = [],
-              y: Array<number> = [];
+        const x: Array<number|null> = [],
+              y: Array<number|null> = [];
 
         for(let i=0; i<data.static_pressure.length; i++) {
             let xy = tphiToXy(data.static_pressure[i], data[par][i]); 
@@ -119,7 +120,10 @@ const dSALR = 2.0,
  * Returns:
  *      a length-2 array containing x and y coordinates.
  *===================================================================*/
-const tphiToXy = (press: number, temp: number): [number, number] => {
+const tphiToXy = (press: number, temp: number): [number|null, number|null] => {
+    if(press === badData || temp === badData) {
+        return [null, null];
+    }
     const t = temp + KELV;
     const theta = t * (Math.pow((1000 / press), K));
     const phi = Math.log(theta);

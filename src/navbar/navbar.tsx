@@ -619,8 +619,8 @@ const NavbarMenu = (props: NavbarMenuProps) => {
                         <ClearButton />
                         <OptionsButton />
                         <PlotButton />
+                        <TephiButton />
                         <LiveDataOnly>
-                            <TephiButton />
                             <DashButton />
                         </LiveDataOnly>
                     </div>

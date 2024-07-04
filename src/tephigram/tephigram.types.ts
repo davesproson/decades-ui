@@ -4,7 +4,7 @@
 interface TephigramOptions {
     timeframe: string,
     params: Array<string>,
-    ordvar: 'static_pressure',
+    ordvar: 'static_pressure' | 'PS_RVSM',
     server: string | undefined,
     job?: string | null
 };
@@ -13,8 +13,8 @@ interface TephigramOptions {
  * The definition of a background trace (i.e. a line on the tephigram).
  */
 interface UnlabelledBackgroundTrace {
-    x: Array<number>,
-    y: Array<number>,
+    x: Array<number|null>,
+    y: Array<number|null>,
     showlegend: boolean,
     hoverinfo: string,
     mode: string,
