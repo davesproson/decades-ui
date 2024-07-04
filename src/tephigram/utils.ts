@@ -449,7 +449,7 @@ const getMassMixRatios = (darkMode: boolean) => {
  *      an array of trace objects which can be directly used with
  *      plotly.
  *===================================================================*/
-const getSatAdiabats = (_darkMode: boolean) => {
+const getSatAdiabats = (darkMode: boolean) => {
     const getAdiabatGradient = (
             p: number, t1: number, dp: number, nostop: boolean
         ) => {
@@ -509,7 +509,7 @@ const getSatAdiabats = (_darkMode: boolean) => {
             mode: 'lines',
             hoverinfo: 'none',
             line: {
-                color: '#000000',
+                color: darkMode ? '#bbbbbb' : '#000000',
                 width: .5,
             }
         });
