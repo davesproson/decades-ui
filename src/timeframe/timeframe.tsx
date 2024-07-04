@@ -17,7 +17,7 @@ const TimeframeTextBox = () => {
     const customTimeframe = useSelector(state => state.options.customTimeframe)
     const timeframes = useSelector(state => state.options.timeframes)
     const timeframe = timeframes.find(x => x.selected)
-
+    
     const padNum = (num: number) => {
         return num.toString().padStart(2, "0")
     }
@@ -119,9 +119,10 @@ const TimePicker = (props: TimePickerProps) => {
             setMinutes(now.getUTCMinutes())
             setSeconds(now.getUTCSeconds())
             const retval = og ? null :  now.getTime()
-            return dispatch(setCustomTimeframe({[props.boundary]: retval}))
-        }
-        return dispatch(setCustomTimeframe({[props.boundary]: null}))
+            dispatch(setCustomTimeframe({[props.boundary]: retval}))
+        } 
+
+        dispatch(setCustomTimeframe({[props.boundary]: null}))
     }
 
     const onApply = () => {
