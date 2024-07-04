@@ -497,8 +497,10 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 const usePlotOptions = (options: PlotInternalOptions | undefined) => {
     const [searchParams, _] = useSearchParams();
     if(!options) return undefined
+    
+    const job = options.job || searchParams.get("job") || null
 
-    return {
+    const opts: PlotURLOptions = {
         params: options.params 
             || (()=>{
                     const sparams = searchParams.get("params")
@@ -511,8 +513,12 @@ const usePlotOptions = (options: PlotInternalOptions | undefined) => {
         style: options.plotStyle || (searchParams.get("style") || "line"),
         header: options.data_header || searchParams.get("data_header") === "true",
         ordvar: options.ordvar || (searchParams.get("ordvar") || "utc_time"),
-        server: options.server || searchParams.get("server") || location.host
+        server: options.server || searchParams.get("server") || location.host,
     }
+
+    if(job) opts.job = job
+
+    return opts
 }
 
 const usePlotInternalOptions = () => {
@@ -520,22 +526,42 @@ const usePlotInternalOptions = () => {
     const plotOptions = useSelector(state => state.options);
     const axisOptions = useSelector(state => state.vars.axes);
     const params = useSelector(state => state.vars.params);
+    const quickLookMode = useSelector(state => state.config.quickLookMode);
+    const qcJob = useSelector(state => state.quicklook.qcJob)
+    const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe);
+
+    let job: string | null = null;
+    let timeframe: string | null = null;
+
+    if(quickLookMode) {
+        job = qcJob
+    }
+
+    if(useCustomTimeframe) {
+        let start = plotOptions.customTimeframe.start
+        let end = plotOptions.customTimeframe.end 
+        if(start) start = start / 1000
+        if(end) end = end / 1000
+        timeframe = `${start},${end}`
+    } else {
+        timeframe = plotOptions.timeframes.find(x=>x.selected)?.value || "30min"
+    }
     
     return {
-        timeframe: plotOptions.timeframes.find(x=>x.selected)?.value || "30min",
+        timeframe: timeframe,
         swapxy: plotOptions.swapOrientation,
         scrolling: plotOptions.scrollingWindow,
         style: plotOptions.plotStyle.value,
         header: plotOptions.dataHeader,
         ordvar: plotOptions.ordinateAxis,
-        server: '127.0.0.1',
         params: params.filter(x=>x.selected).map(x=>x.raw),
         axes: getAxesArray({
             params: params,
             axes: axisOptions,
             paramSet: 'default',
             paramsDispatched: true
-        })
+        }),
+        job: job
     }
 }
 
