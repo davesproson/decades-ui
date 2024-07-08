@@ -5,9 +5,13 @@ import { Button } from '../components/buttons';
 import { Tag } from '../components/tags';
 import { useChatResizer, useRegisterChatUser, useScrollIntoView } from './hooks';
 import { useScrollInhibitor } from '../hooks';
-import { ChatUser } from './types';
+import { ChatUser, ChatProps } from './types';
 import OptionSwitch from '../components/optionSwitch';
 
+/**
+ * A component to display a message when chat is selected but not enabled.
+ * 
+ */
 const ChatNotOn = () => {
     const { actions } = useContext(ChatContext);
 
@@ -21,16 +25,24 @@ const ChatNotOn = () => {
     )
 }
 
+/**
+ * A component to display the time of a chat message.
+ * 
+ * @param props - the component properties
+ * @param props.time - the time of the message in milliseconds since epoch
+ */
 const ChatTime = (props: { time: number }) => {
     const date = new Date(props.time)
     return <span>{date.toLocaleTimeString()}</span>
 }
 
-
-type ChatProps = {
-    embedded?: boolean
-}
-
+/**
+ * The main chat component.
+ * 
+ * @param props - the component properties
+ * @param props.embedded - whether the chat is embedded in a view
+ * @returns 
+ */
 const Chat = (props: ChatProps) => {
 
     const { state, actions } = useContext(ChatContext);
@@ -40,20 +52,31 @@ const Chat = (props: ChatProps) => {
     useRegisterChatUser()
     useScrollInhibitor(true)
     
+    // Send a chat message using the current message text, via an action
+    // on the chat context.
     const sendMessage = () => {
         if (!messageText) return
         actions.sendChat(messageText)
         setMessageText('')
     }
 
+    // Handle the enter key to send a message.
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             sendMessage()
         }
     }
 
+    // If chat is not active, return early with a component indicating
+    // that chat is not enabled.
     if (!state.config.chatActive) return <ChatNotOn />
 
+    // Styles for the chat container, depending on whether the chat is
+    // embedded or standalone.
+    // The standalone style is positioned absolutely to fill the screen,
+    // with a top margin for the header.
+    // The embedded style is positioned relatively to fit the parent
+    // container.
     const standaloneStyle: React.CSSProperties = {
         position: "absolute",
         inset: 0,
@@ -65,8 +88,12 @@ const Chat = (props: ChatProps) => {
         height: rect?.height,
     }
 
+    // The extra style to apply to the chat container, depending on whether
+    // the chat is embedded or standalone.
     const extraStyle = props.embedded ? embeddedStyle : standaloneStyle
 
+    // The chat container component, which displays the chat messages and
+    // input field.
     const ChatContainer = (
         <FlexCenter direction="column" extraStyle={extraStyle}>
             <div className="is-flex is-flex-grow-1 is-flex-direction-column" style={{ justifyContent: "left", width: "100%", padding: "20px", overflow: "auto" }}>
@@ -105,7 +132,8 @@ const Chat = (props: ChatProps) => {
         </FlexCenter >
     )
 
-
+    // Return the chat component with the chat container, or null if the
+    // chat is embedded and the container is not yet sized.
     return (
         <div ref={containerRef} style={extraStyle}>
             {(rect || !props.embedded) ? ChatContainer : null}
@@ -113,6 +141,14 @@ const Chat = (props: ChatProps) => {
     );
 }
 
+/**
+ * A component to display a message when chat registration fails.
+ * 
+ * @param props - the component properties
+ * @param props.user - the chat user
+ * 
+ * @returns the component
+ */
 const FailedRegistration = (props: { user: ChatUser }) => {
     if (props.user.regState !== null) return null
     return (
@@ -124,22 +160,32 @@ const FailedRegistration = (props: { user: ChatUser }) => {
     )
 }
 
+/**
+ * A component to display a message when chat registration is required.
+ * 
+ */
 export const ChatRegistration = () => {
     useScrollInhibitor(true)
     const { actions, state } = useContext(ChatContext);
     const [username, setUsername] = useState(state.user.username)
 
+    // A callback to register the chat user.
     const register = () => {
         if (!username) return
         if (username === state.user.username)
+            // We have a user, and a server provided id, so we can register
+            // an existing user assuming these match on the server.
             actions.register(username, state.user.id)
         else
+            // We have a user, but no server id, so we can register a new user.
             actions.register(username)
 
     }
 
+    // If chat is not active, return early with null.
     if (!state.config.chatActive) return null
 
+    // Return the chat registration component.
     return (
         <Splash>
             <div className="is-flex is-flex-direction-column is-align-items-center">
@@ -155,12 +201,32 @@ export const ChatRegistration = () => {
     )
 }
 
+/**
+ * A parent component which wraps displays its children only if chat is
+ * enabled and the user is registered, otherwise it displays the chat
+ * registration component.
+ *
+ * @param props - the component properties
+ * @param props.children - the children to display if chat is enabled and
+ *                         the user is registered
+ *
+ * @returns the component
+ */
 export const ChatDispatch = (props: { children: React.ReactNode }) => {
     const { state } = useContext(ChatContext);
     if (state.user.regState || !state.config.chatActive) return <>{props.children}</>
     return <ChatRegistration />
 }
 
+/**
+ * A component to display the chat configuration switch, used to enable or
+ * disable chat and to toggle chat notifications.
+ * 
+ * Chat notifications are toasts that appear when a new chat message is
+ * received and the user is not currently viewing the chat.
+ *
+ * @returns the component
+ */
 export const ChatConfigSwitch = () => {
     const { state, actions } = useContext(ChatContext);
 
@@ -189,6 +255,11 @@ export const ChatConfigSwitch = () => {
     )
 }
 
+/**
+ * A chat widget component, which displays the chat in an embedded view.
+ *
+ * @returns the component
+ */
 export const ChatWidget = () => {
     return <Chat embedded />
 }

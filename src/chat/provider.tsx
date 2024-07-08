@@ -1,3 +1,10 @@
+/**
+ * This module provides a provider for the chat context. The chat context
+ * wraps the majority of the application, providing a chat server connection
+ * and chat message handling. This allows chat notifications and messages
+ * to be displayed at any point in the application.
+ */
+
 import React, { createContext } from "react"
 import useWebSocket, { ReadyState } from "react-use-websocket"
 import { apiEndpoints } from "../settings";
@@ -6,7 +13,9 @@ import { ChatContextType, OutgoingChatMessage, RegisterMessage } from "./types";
 import { ChatDispatch } from "./chat";
 import { base } from "../settings";
 
-
+/**
+ * Create a context for chat.
+ */
 export const ChatContext = createContext<ChatContextType>({
     state: {
         messages: [],
@@ -21,6 +30,7 @@ export const ChatContext = createContext<ChatContextType>({
             chatNotify: false
         }
     },
+    // Placeholder action functions for the context
     actions: {
         sendChat: () => { },
         register: () => { },
@@ -30,7 +40,14 @@ export const ChatContext = createContext<ChatContextType>({
     }
 });
 
-
+/**
+ * Create a provider for the ChatContext.
+ * 
+ * @param props - the component properties
+ * @param props.children - the children to wrap in the provider
+ * 
+ * @returns the provider
+ */
 const ChatProvider = (props: { children: React.ReactNode }) => {
     const [user, setUser] = useChatUser({
         username: '',
@@ -39,34 +56,49 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
     })
     const [config, setConfig] = useChatConfig()
 
+    // Determine the websocket address
     const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
     const wsAddress = `${wsProtocol}://${window.location.host}${apiEndpoints.chat}`
 
+    // Create a websocket connection to the chat server.
     const { sendMessage, lastMessage, readyState } = useWebSocket(
-        wsAddress, {
-        retryOnError: true,
-        onError: (e) => console.error(e),
-        onOpen: () => {
-            sendMessage(JSON.stringify({ type: "history" }))
-            console.log('Connected to chat server')
-        },
-        onClose: (e) => {
-            console.log('Disconnected from chat server')
-            const code = e.code
-            if (code === 4001) {
-                if(state.config.chatActive) {
-                    actions.toggleChatEnabled()
+        wsAddress, 
+        {
+            retryOnError: true,
+            onError: (e) => console.error(e),
+            onOpen: () => {
+                // Request the chat history when the connection is opened
+                sendMessage(JSON.stringify({ type: "history" }))
+                console.log('Connected to chat server')
+            },
+            onClose: (e) => {
+                console.log('Disconnected from chat server')
+                if (e.code === 4001) {
+                    // The server closes the websocket connection with a 4001
+                    // status code when the user is not authenticated and the
+                    // server is configured to require authentication.
+                    // In this case, disable chat and redirect to the login page.
+                    if(state.config.chatActive) {
+                        actions.toggleChatEnabled()
+                    }
+                    window.location.href = `${apiEndpoints.login}?next=${base}`
                 }
-                window.location.href = `${apiEndpoints.login}?next=${base}`
             }
-        }
-    }, config.chatActive
+        },
+        config.chatActive
     );
-
-
 
     const messages = useMessageHandler(lastMessage)
 
+    /**
+     * Register a user with the chat server. 
+     * 
+     * @param username - the username to register
+     * @param id - the user id to register, if the user is already registered.
+     *             If a username and id are provided, the id must match the
+     *             server's id for the user.
+     * @returns 
+     */
     const register = (username: string, id?: string | null) => {
         if (!username) return
         let message: RegisterMessage = {
@@ -83,6 +115,11 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
         sendMessage(JSON.stringify(message))
     }
 
+    /**
+     * Send a chat message to the chat server.
+     * 
+     * @param message - the message to send
+     */
     const sendChat = (message: string) => {
         if (!message || !config.chatActive) return
 
@@ -97,6 +134,7 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
         sendMessage(JSON.stringify(messageObject))
     }
 
+    // Human readable connection status
     const connectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
         [ReadyState.OPEN]: 'Open',
@@ -105,6 +143,7 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
         [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
     }[readyState];
 
+    // Initialize the chat context state
     const state = {
         messages,
         connectionStatus,
@@ -112,6 +151,7 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
         config
     }
 
+    // Initialize the chat context actions
     const actions = {
         sendChat,
         register,

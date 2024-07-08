@@ -1,3 +1,7 @@
+export type ChatProps = {
+    embedded?: boolean
+}
+
 export type ChatUser = {
     username: string,
     id: string,
