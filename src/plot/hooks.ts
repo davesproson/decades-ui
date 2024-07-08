@@ -185,6 +185,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     // Custom hooks
     const params = useGetParameters();
     const servers = useServers()
+    const quicklookMode = useSelector(state => state.config.quickLookMode)
     const { state: chatState, actions: chatActions } = useContext(ChatContext)
 
     // Local state
@@ -470,7 +471,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             ]
         }
 
-        if(chatState.config.chatActive && chatState.connectionStatus === 'Open') {
+        if(chatState.config.chatActive && chatState.connectionStatus === 'Open' && !quicklookMode) {
             config.modeBarButtonsToAdd.push({
                 name: "Share plot",
                 icon: BellIcon as any,
