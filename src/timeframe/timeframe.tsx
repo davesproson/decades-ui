@@ -7,6 +7,7 @@ import { LiveDataOnly, QuicklookOnly } from '../quicklook'
 import { TimeframeInfoBox } from './timeframeInfoBox'
 import { TimePicker } from './timepicker'
 import { FlightSummarySelector } from './flightsummary'
+import { SelectorPlot } from './selectorPlot'
 
 
 const TimeFrameSelectorBox = () => {
@@ -40,11 +41,13 @@ const TimeFrameSelectorBox = () => {
     )
 }
 
+
 const TimeframeSelector = () => {
     return (
         <FadeOut>
             <Container fixedNav>
                 <TimeframeInfoBox />
+                <SelectorPlot />
                 <TimeFrameSelectorBox />
                 <LiveDataOnly>
                     <FlightSummarySelector />

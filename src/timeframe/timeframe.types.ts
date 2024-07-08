@@ -13,4 +13,9 @@ interface FlightSummaryEntryProps {
     entry: FlightSummaryEntry
 }
 
-export type { FlightSummaryEntryProps, FlightSummaryEntry }
+type PlotlyHTMLDivElement = HTMLDivElement & {
+    on: (cb: string, e:any)=>{},
+    removeAllListeners: (listener: string) => void,
+}
+
+export type { FlightSummaryEntryProps, FlightSummaryEntry, PlotlyHTMLDivElement }
