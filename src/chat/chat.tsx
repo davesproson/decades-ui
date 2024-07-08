@@ -99,6 +99,22 @@ const Chat = (props: ChatProps) => {
             <div className="is-flex is-flex-grow-1 is-flex-direction-column" style={{ justifyContent: "left", width: "100%", padding: "20px", overflow: "auto" }}>
                 {state.messages.map(message => {
 
+                    let messageText: string = message.message
+                    let messageUrl: string = ''
+                    const rex = /(https?:\/\/[^ ]*)/
+                    const matched = message.message.match(rex)
+                    if (matched) {
+                        const url = matched[0]
+                        messageUrl = url
+                        messageText = message.message.replace(url, '')
+                    }
+
+                    const MessageUrlComponent = () => {
+                        return (
+                            <a target='_blank' rel='noreferrer' href={messageUrl}>Link</a>
+                        )
+                    }
+
                     const tagText = message.username === state.user.username
                         ? 'You'
                         : message.username
@@ -111,7 +127,7 @@ const Chat = (props: ChatProps) => {
                         <div key={message.messageid}>
                             <span className="mr-2"><ChatTime time={message.time} /></span>
                             <Tag is={tagType} text={tagText} extraClasses='mr-2 mb-1' />
-                            {message.message}
+                            {messageText} <MessageUrlComponent />
                         </div>
                     )
                 })}

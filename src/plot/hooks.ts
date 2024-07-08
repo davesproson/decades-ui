@@ -1,6 +1,6 @@
 // TODO. There are some ts-ignore statements in here which need to be fixed.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useSelector } from "../redux/store"
 import { useSearchParams } from 'react-router-dom';
 import { useDarkMode, useGetParameters, useServers } from '../hooks';
@@ -8,7 +8,14 @@ import { base as siteBase } from '../settings';
 import { startData, paramFromRawName, getYAxis, getXAxis, 
          getTimeLims, plotIsOngoing, getAxesArray } from './plotUtils';
 import { PlotInternalOptions, PlotURLOptions } from './plot.types';
+import { ChatContext } from '../chat/provider';
 
+
+const BellIcon = {
+    'width': 500,
+    'height': 600,
+    'path': 'M224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64zm215.39-149.71c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71z'
+}
 
 // Options for dark mode. These are currently hard-coded, and disabled
 const darkBg = "#0a0a0a";
@@ -178,6 +185,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     // Custom hooks
     const params = useGetParameters();
     const servers = useServers()
+    const { state: chatState, actions: chatActions } = useContext(ChatContext)
 
     // Local state
     const [server, setServer] = useState(options?.server)
@@ -185,6 +193,8 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     const [loadDone, setLoadDone] = useState(false)
 
     const [darkMode, _setDarkMode] = useDarkMode()
+
+    let plotLoadedAt = Math.floor(new Date().getTime() / 1000)
     
     // This effect starts the plot data fetching process. It only runs once,
     // when the plot is first initialised, indicated by the initDone flag.
@@ -456,8 +466,22 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                             t.y = [t.y[t.y.length-1]];
                         }
                     }
-                } 
+                }
             ]
+        }
+
+        if(chatState.config.chatActive && chatState.connectionStatus === 'Open') {
+            config.modeBarButtonsToAdd.push({
+                name: "Share plot",
+                icon: BellIcon as any,
+                click: () => {
+                    const url = new URL(window.location.href)
+                    const [staticStart, now] = getTimeLims(options.timeframe)
+                    if(staticStart < plotLoadedAt) plotLoadedAt = staticStart
+                    url.searchParams.set("timeframe", `${plotLoadedAt},${now}`)
+                    chatActions.sendChat(`Shared a plot: ${url.toString()}`)
+                }
+            })
         }
         
         import('plotly.js-dist-min').then(Plotly => {
