@@ -5,6 +5,13 @@ import { useDarkMode } from "../hooks"
 
 import { useRollIndicator, useRollResizer } from "./hooks"
 
+// Assets
+import rollArcCenter from "../../assets/roll/roll-arc-centre.svg"
+import rollArc from "../../assets/roll/roll-arc.svg"
+import rollIndicator from "../../assets/roll/roll-indicator.svg"
+import gluxeFrontAspect from "../../assets/aircraft/gluxe-front.svg"
+import gluxeRearAspect from "../../assets/aircraft/gluxe-rear.svg"
+
 const RollIndicatorSvgText = ({ roll, widthOrHeight }: { roll: number | undefined, widthOrHeight: { [key: string]: number } }) => {
     const [darkMode, _setDarkMode] = useDarkMode()
 
@@ -65,13 +72,13 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
     const CenterIndicator = () => {
         if (props.roll === undefined) return <></>
         return Math.abs(props.roll) < 5
-            ? <img src="roll/roll-arc-centre.svg" style={{ ...getStyle(0) }}></img>
+            ? <img src={rollArcCenter} style={{ ...getStyle(0) }}></img>
             : <></>
     }
 
     const RollArc = () => {
         if (props.roll === undefined) return <></>
-        return <img src="roll/roll-arc.svg" style={{ ...getStyle(0), filter: filter }}></img>
+        return <img src={rollArc} style={{ ...getStyle(0), filter: filter }}></img>
     }
 
     const RollIndicator = () => {
@@ -80,7 +87,7 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
         if (!props.fwdAspect) {
             r = -r
         }
-        return <img src="roll/roll-indicator.svg" style={{ ...getStyle(r), filter: indicatorFilter() }}></img>
+        return <img src={rollIndicator} style={{ ...getStyle(r), filter: indicatorFilter() }}></img>
     }
 
     const GluxeImage = () => {
@@ -93,7 +100,7 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
             r = -r
         }
 
-        const image = props.fwdAspect ? "gluxe-front.svg" : "gluxe-rear.svg"
+        const image = props.fwdAspect ? gluxeFrontAspect : gluxeRearAspect
         return <img src={image} style={{ ...getStyle(r), filter: filter }}></img>
     }
 

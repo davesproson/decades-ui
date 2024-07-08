@@ -4,6 +4,9 @@ import { useDarkMode } from "../hooks"
 import { FlexCenter } from "../components/layout"
 import { usePitchIndicator } from "./hooks"
 
+// Assets
+import gluxeSideAspect from "../../assets/aircraft/gluxe-side.svg"
+
 const PitchIndicatorSvgText = ({ pitch }: { pitch: number | undefined }) => {
     const [darkMode, _setDarkMode] = useDarkMode()
 
@@ -69,7 +72,7 @@ const PitchIndicatorGraphic = (props: PitchIndicatorGraphicProps) => {
     const ProfileImage = () => {
         const castPitch = props.pitch === undefined ? 0 : props.pitch
         return (
-            <img src="gluxe-side.svg" style={{ ...getStyle(castPitch), filter: filter }}></img>
+            <img src={gluxeSideAspect} style={{ ...getStyle(castPitch), filter: filter }}></img>
         )
     }
 
