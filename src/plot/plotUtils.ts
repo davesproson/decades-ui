@@ -437,7 +437,7 @@ const getData = async (
         options: GetDataOptions, start?: number, end?: number
     ): Promise<DecadesDataResponse> => {
 
-    if(!start) start = nowSecs() - 5
+    if(start===undefined) start = nowSecs() - 5
 
     const url = getDataUrl(options, start, end)
 
