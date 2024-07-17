@@ -1,0 +1,12 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+    <style>
+        .arrow {
+            stroke-width: 3px;
+            stroke: #0a0;
+            fill: rgba(0, 100, 0, .5);
+        }
+    </style>
+    <path d="M190,5l20,0l0,20l10,0l-20,10l-20,-10l10,0l0,-20z" class="arrow"/>
+
+</svg>

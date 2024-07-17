@@ -1,34 +1,16 @@
-import { Suspense, useEffect, useState } from "react"
-import { Splash } from "./layout"
-import { BrandLogo } from "./branding"
+import { useEffect, useState } from 'react'
+import { PlaneIcon, Cog as ProgressIcon } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
 
-interface LoaderProps {
-    text: string,
-    value?: number,
-    max?: number
+const transformText = (text?: string) => {
+    if (!text) return ""
+    return text.toUpperCase().split('').join(" ")
 }
 
-interface SuspenseLoaderProps {
-    text?: string,
-    children: React.ReactNode
-}
+const ProgressBar = ({progressPercent}: {progressPercent?: number}) => (progressPercent !== undefined)
+    ? <Progress className="mt-6 w-[50%]" value={progressPercent} max={100} />
+    : null
 
-/**
- * Returns a progress bar with a value and max value
- * 
- * @param props
- * @param props.value - the current value of the progress bar
- * @param props.max - the maximum value of the progress bar
- *
- * @returns a progress bar
- */
-const ProgressBar = (props: { value?: number, max?: number }) => {
-    return (
-        <progress className="progress is-light" style={{
-            width: "50%"
-        }} value={props.value} max={props.max}>{props.value}</progress>
-    )
-}
 
 /**
  * Returns a loader with a brand logo and a progress bar
@@ -40,47 +22,51 @@ const ProgressBar = (props: { value?: number, max?: number }) => {
  *
  * @returns a loader
  */
-const Loader = (props: LoaderProps) => {
-    return (
-        <Splash>
-            <BrandLogo text={props.text} />
-            <ProgressBar value={props.value} max={props.max} />
-        </Splash>
-    )
-}
+const CogLoader = ({ text, progressPercent }: { text?: string, progressPercent?: number }) => {
 
-
-/**
- * Returns a suspense loader with a loader and a fallback. The fallback is a loader with a text prop
- * which defaults to "Loading..." and is displayed after 200ms
- * 
- * @param props
- * @param props.text - the text to display on the loader
- * @param props.children - the children to display
- * 
- * @returns a suspense loader
- */
-const SuspenseLoader = (props: SuspenseLoaderProps) => {
-    const [showLoader, setShowLoader] = useState(false)
-
-    // Show loader after 200ms. This is to prevent the loader from flashing 
-    // on the screen if the content loads quickly
+    const [value, setValue] = useState(0)
     useEffect(() => {
-        const timeout = setTimeout(() => setShowLoader(true), 200)
-        return () => clearTimeout(timeout)
-    }, [])
+        const interval = setInterval(() => {
+            setValue((prev) => (prev + 2))
+        }, 20)
+        return () => clearInterval(interval)
+    }, [setValue])
 
-    // If enough time has passed, show the loader, otherwise show nothing
-    const fallback = showLoader
-        ? <Loader text={props.text || "Loading..."} />
-        : null
 
-    // Show the children if they are ready, otherwise show the fallback
+
+
     return (
-        <Suspense fallback={fallback}>
-            {props.children}
-        </Suspense>
+        <div className="absolute flex flex-col inset-0 justify-center items-center">
+            <div className="flex flex-row">
+                <div style={{ transform: `rotate(${value}deg)` }}>
+                    <ProgressIcon size="6em" color="#252243" />
+                </div>
+                <div style={{ transform: `rotate(${-value + 45}deg)` }}>
+                    <ProgressIcon size="6em" color="#0abbef" />
+                </div>
+            </div>
+            <div className="mb-3 w-100 text-[2em]">D E C A D E S</div>
+            <div className="mt-3">{transformText(text) || "L O A D I N G"}</div>
+            <ProgressBar progressPercent={progressPercent}/>
+        </div>
     )
 }
 
-export { Loader, SuspenseLoader }
+const Loader = ({ text, progressPercent }: { text?: string, progressPercent?: number }) => {
+    return (
+        <div className="absolute flex flex-col inset-0 justify-center items-center">
+            <div className="flex justify-center w-[50%] animate-slider">
+                <PlaneIcon size="6em" color="#252243" style={{
+                    rotate: "45deg",
+                }} />
+            </div>
+            <div className="mb-3 w-100 text-[2em]">D E C A D E S</div>
+            <div className="mt-3">{transformText(text) || "L O A D I N G"}</div>
+            <ProgressBar progressPercent={progressPercent}/>
+        </div>
+    )
+}
+
+
+export default Loader
+export { CogLoader, Loader }

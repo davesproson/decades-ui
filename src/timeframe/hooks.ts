@@ -3,12 +3,13 @@ import { apiEndpoints, badData, geoCoords, geoCoordsQuicklook } from '../setting
 
 import * as Plotly from 'plotly.js-dist-min'
 
-import { FlightSummaryEntry, PlotlyHTMLDivElement } from '../timeframe/timeframe.types'
-import { useDarkMode } from '../hooks';
-import { useDispatch, useSelector } from '../redux/store';
-import { getData, getTimeLims } from '../plot/plotUtils';
-import { setCustomTimeframe } from '../redux/optionsSlice';
-import { DecadesDataResponse } from '../plot/plot.types';
+import { FlightSummaryEntry, PlotlyHTMLDivElement } from './types'
+import { useDarkMode } from '@/components/theme-provider';
+import { useDispatch, useSelector } from '@store';
+import { getTimeLims } from './utils';
+import { setCustomTimeframe } from '@/redux/optionsSlice';
+import { DecadesDataResponse } from '@/data/types.ts';
+import { getData } from '@/data/utils.ts';
 
 /**
  * This hook fetches the flight summary data from the API and updates the 
@@ -46,7 +47,7 @@ const useFlightSummary = () => {
  * @param ref - a reference to the Plotly div
 */
 const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
-    const [darkMode, _setDarkMode] = useDarkMode()
+    const darkMode = useDarkMode()
     const [xData, setXData] = useState<Array<number>>([])
     const [yData, setYData] = useState<Array<number>>([])
     const timeData = xData.map(x=>new Date(x*1000))

@@ -1,18 +1,19 @@
-import { useViewWidget } from './viewWidget';
-import { usePlotWidget } from './plotWidget';
-import { useDashWidget } from './dashWidget';
-import { useTephiWidget } from './tephigramWidget';
-import { useGaugeWidget } from './gaugeWidget';
-import { useHeadingWidget } from './headingWidget';
-import { useMapWidget } from './mapWidget';
-import { useAlarmsWidget } from './alarmsWidget';
-import { useTimersWidget } from './timersWidget';
-import { useRollWidget } from './rollWidget';
-import { usePitchWidget } from './pitchWidget';
-import { useClockWidget } from './clockWidget';
+import { useViewWidget } from './view-widget';
+import { usePlotWidget } from './plot-widget';
+import { useDashWidget } from './dash-widget';
+import { useTephiWidget } from './tephigram-widget';
+// import { useGaugeWidget } from './gaugeWidget';
+import { useHeadingWidget } from './heading-widget';
+import { useMapWidget } from './map-widget';
+import { useAlarmsWidget } from './alarm-widget';
+import { useTimersWidget } from './timers-widget';
+import { useRollWidget } from './roll-indicator-widget';
+import { usePitchWidget } from './pitch-indicator-widget';
+import { useClockWidget } from './clock-widget';
+import { useChatWidget } from './chat-widget';
+import { useFlightSummaryWidget } from './flight-summary-widget';
 
-import { RegistryType, WidgetConfiguration } from './widgets.types';
-import { useChatWidget } from './chatWidget';
+import type { RegistryType, WidgetConfiguration } from './types';
 
 /**
  * A utility class for registering widgets
@@ -41,7 +42,7 @@ const useWidgets = () => {
     usePlotWidget(registry)
     useDashWidget(registry)
     useTephiWidget(registry)
-    useGaugeWidget(registry)
+    // useGaugeWidget(registry)
     useHeadingWidget(registry)
     useMapWidget(registry)
     useAlarmsWidget(registry)
@@ -50,6 +51,7 @@ const useWidgets = () => {
     usePitchWidget(registry)
     useChatWidget(registry)
     useClockWidget(registry)
+    useFlightSummaryWidget(registry)
 
 
     return registry

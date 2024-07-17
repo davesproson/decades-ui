@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { Map as OlMap, View } from 'ol';
 import {fromLonLat} from 'ol/proj.js';
 import { defaults as controlDefaults} from 'ol/control/defaults';
-import { getData } from "../plot/plotUtils";
+import { getData } from "@/data/utils";
 import { badData } from "../settings";
 import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 

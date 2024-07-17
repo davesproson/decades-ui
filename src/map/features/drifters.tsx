@@ -7,7 +7,7 @@ import VectorSource from "ol/source/Vector"
 import { fromLonLat } from "ol/proj"
 import Style from "ol/style/Style"
 import Fill from "ol/style/Fill"
-import { getData } from "../../plot/plotUtils"
+import { getData } from "@/data/utils"
 import RegularShape from "ol/style/RegularShape"
 import { LineString } from "ol/geom"
 import Stroke from "ol/style/Stroke"
@@ -49,7 +49,7 @@ const Drifter = ({ lon, lat, time }: PositionWithTime) => {
         if (!layer) return
         let source = layer.getSource()
         if (!source) {
-            source = new VectorSource()
+            source = new VectorSource() 
             layer.setSource(source)
         }
 
@@ -65,7 +65,7 @@ const Drifter = ({ lon, lat, time }: PositionWithTime) => {
             }),
         })
         iconFeature.setStyle(style)
-        source.addFeature(iconFeature)
+        source && source.addFeature(iconFeature)
 
         const lineFeature = new Feature({
             geometry: new LineString([fromLonLat([lon, lat]), fromLonLat([lon, lat])]),

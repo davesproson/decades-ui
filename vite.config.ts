@@ -1,20 +1,27 @@
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+import path from "path"
+import react from "@vitejs/plugin-react"
 import checker from 'vite-plugin-checker'
+import { defineConfig, loadEnv } from "vite"
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 export default ({ mode }) => {
   const env = loadEnv(mode, '.');
 
   return defineConfig({
+
     plugins: [
       react(),
       checker({
-        typescript: true,
+        typescript: true
       }),
+      TanStackRouterVite()
     ],
     base: env.VITE_VISTA_BASE_URL,
-    build: {
-      sourcemap: env.VITE_VISTA_DEPLOYMENT_MODE === 'dev' ? 'inline' : false
-    }
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+        "@store": path.resolve(__dirname, "./src/redux/store.ts"),
+      },
+    },
   })
 }

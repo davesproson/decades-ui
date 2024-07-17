@@ -1,14 +1,22 @@
 // TODO. There are some ts-ignore statements in here which need to be fixed.
 
-import { useState, useEffect, useContext } from 'react';
-import { useSelector } from "../redux/store"
-import { useSearchParams } from 'react-router-dom';
-import { useDarkMode, useGetParameters, useServers } from '../hooks';
-import { base as siteBase } from '../settings';
-import { startData, paramFromRawName, getYAxis, getXAxis, 
-         getTimeLims, plotIsOngoing, getAxesArray } from './plotUtils';
-import { PlotInternalOptions, PlotURLOptions } from './plot.types';
-import { ChatContext } from '../chat/provider';
+import { useContext, useEffect, useState } from 'react';
+import { ChatContext } from '@/chat/provider';
+import { useSelector } from "@store";
+import { base as siteBase } from '@/settings';
+import { useDarkMode } from '@/components/theme-provider';
+import { PlotInternalOptions, PlotURLOptions } from './types';
+import {
+    getAxesArray,
+    getTimeLims,
+    getXAxis,
+    getYAxis,
+    paramFromRawName,
+    plotIsOngoing,
+    startData
+} from './utils';
+import { useGetParameters } from '@/parameters/hooks';
+import { PlotSearchParams, Route } from '@/routes/plot';
 
 
 const BellIcon = {
@@ -184,17 +192,16 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     
     // Custom hooks
     const params = useGetParameters();
-    const servers = useServers()
     const quicklookMode = useSelector(state => state.config.quickLookMode)
     const { state: chatState, actions: chatActions } = useContext(ChatContext)
 
     // Local state
-    const [server, setServer] = useState(options?.server)
     const [initDone, setInitDone] = useState(false)
     const [loadDone, setLoadDone] = useState(false)
 
-    const [darkMode, _setDarkMode] = useDarkMode()
+    const darkMode = useDarkMode()
 
+    const server = options?.server 
     let plotLoadedAt = Math.floor(new Date().getTime() / 1000)
     
     // This effect starts the plot data fetching process. It only runs once,
@@ -223,20 +230,11 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
  
     }, [initDone])
 
-    // Set the server to use. If a server is already set, do nothing, otherwise
-    // select a random server from the list of servers.
-    useEffect(() => {
-        if(server) return
-        const rServer = servers.sort(() => .5 - Math.random())[0]
-        setServer(rServer)
-    }, [setServer, server, servers])
-
     // This godforsaken effect is responsible for loading the plot. It runs
     useEffect(() => {
     
         // If params or server are not set, do nothing
         if(!params) return
-        if(!server) return
         if(!options) return
 
         // The number of axes to include in the plot
@@ -336,7 +334,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             // We add coordinate axes alternatively to the left and right, or bottom and
             // top is swapAxes is true.
             let _side = i % 2 ? (options.swapxy ? "top" : "right") : (options.swapxy ? "bottom" : "left");
-            let _overlaying = null;
+            let _overlaying: "x" | "y" | null = null;
 
             // If we're plotting more than two axes, we need to set the anchor and
             // position of the current axis. 
@@ -506,41 +504,46 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
  * Parse the URL to get the plot options and return them as an object. If 
  * any of the options are given as input, they will override the URL options.
  * 
- * @param {Object} options
- * @param {string[]} options.params - The parameters to plot
- * @param {string[]} options.axes - The axes to plot on
- * @param {string} options.timeframe - The timeframe to plot
- * @param {boolean} options.swapxy - Whether to swap the x and y axes
- * @param {boolean} options.scrolling - Whether to scroll the plot
- * @param {string} options.style - The plot style
- * @param {boolean} options.header - Whether to include the data header
- * @param {string} options.ordvar - The ordinate variable
- * @param {string} options.server - The server to plot from
+ * @param options
+ * @param options.params - The parameters to plot
+ * @param options.axes - The axes to plot on
+ * @param options.timeframe - The timeframe to plot
+ * @param options.swapxy - Whether to swap the x and y axes
+ * @param options.scrolling - Whether to scroll the plot
+ * @param options.style - The plot style
+ * @param options.header - Whether to include the data header
+ * @param options.ordvar - The ordinate variable
+ * @param options.server - The server to plot from
  * 
- * @returns {Object} The plot options
+ * @returns The plot options
  */
-const usePlotOptions = (options: PlotInternalOptions | undefined) => {
-    const [searchParams, _] = useSearchParams();
+const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
+    let searchParams: PlotSearchParams | null = null
+
+    try {
+        searchParams = Route.useSearch()
+    } catch(e) {
+        // We're not on the plot route, so we can't get the search params.
+        // In this case we expect the options to be passed in as an argument
+    }
     if(!options) return undefined
     
-    const job = options.job || searchParams.get("job") || null
+    const job = options.job || searchParams?.job || null
 
     const opts: PlotURLOptions = {
         params: options.params 
             || (()=>{
-                    const sparams = searchParams.get("params")
+                    const sparams: string | undefined = searchParams?.params
                     return sparams ? sparams.split(",") : []
                 })(),
-        axes: options.axes || searchParams.getAll("axis"),
-        timeframe: options.timeframe || (searchParams.get("timeframe") || "30min"),
-        swapxy: options.swapxy || searchParams.get("swapxy") === "true",
-        scrolling: options.scrolling || searchParams.get("scrolling") === "true",
-        style: options.plotStyle || (searchParams.get("style") || "line"),
-        header: options.data_header || searchParams.get("data_header") === "true",
-        ordvar: options.ordvar || (searchParams.get("ordvar") || "utc_time"),
-        server: options.server || searchParams.get("server") || location.host,
+        axes: options.axes || searchParams?.axis || [],
+        timeframe: options.timeframe || (searchParams?.timeframe || "30min"),
+        swapxy: options.swapxy || (searchParams?.swapxy ?? false),
+        scrolling: options.scrolling || (searchParams?.scrolling ?? false),
+        style: options.plotStyle || (searchParams?.style || "line"),
+        header: options.data_header || (searchParams?.data_header ?? false),
+        ordvar: options.ordvar || (searchParams?.ordvar || "utc_time"),
     }
-
     if(job) opts.job = job
 
     return opts
@@ -587,9 +590,9 @@ const usePlotInternalOptions = () => {
             paramsDispatched: true
         }),
         job: job
-    }
+    } satisfies PlotURLOptions
 }
 
 
 // Module exports
-export { usePlot, usePlotUrl, usePlotOptions, getUrl, usePlotInternalOptions }
+export { getUrl, usePlot, usePlotInternalOptions, usePlotOptions, usePlotUrl };

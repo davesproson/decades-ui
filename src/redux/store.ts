@@ -5,27 +5,27 @@ import {
   useSelector as useReduxSelector
 } from 'react-redux'
 
-import paramReducer from './parametersSlice'
 import paramFilterReducer from './filterSlice'
+import paramReducer from './parametersSlice'
 import optionsReducer from './optionsSlice'
 import viewReducer from './viewSlice'
 import tutorialReducer from './tutorialSlice'
 import configReducer from './configSlice'
-import gaugeReducer from './gaugeSlice'
+// import gaugeReducer from './gaugeSlice'
 import quicklookReducer from './quicklookSlice'
-import tabbedPlotsReducer from './tabsSlice'
+// import tabbedPlotsReducer from './tabsSlice'
 
 const store = configureStore({
   reducer: {
     vars: paramReducer,
     paramfilter: paramFilterReducer,
     options: optionsReducer,
-    gauges: gaugeReducer,
+    // gauges: gaugeReducer,
     view: viewReducer,
     tutorial: tutorialReducer,
     config: configReducer,
     quicklook: quicklookReducer,
-    tabs: tabbedPlotsReducer
+    // tabs: tabbedPlotsReducer
   }
 })
 

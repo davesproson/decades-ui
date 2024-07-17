@@ -13,7 +13,7 @@ type OverlayBoxProps = {
 const OverlayBox = (props: OverlayBoxProps) => {
     const style: React.CSSProperties = {
         zIndex: props.zIndex || 2,
-        position: 'absolute',
+        position: 'relative',
         right: props.right,
         bottom: props.bottom,
         left: props.left,
@@ -26,7 +26,7 @@ const OverlayBox = (props: OverlayBoxProps) => {
     }
 
     return (
-        <div className="has-background-light" style={style}>
+        <div className="bg-background" style={style}>
             {props.children}
         </div>
     );

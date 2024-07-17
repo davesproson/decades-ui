@@ -1,81 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <style>
-    .has-navbar-fixed-top {
-      padding-top: 3.5rem;
-    }
-
-    .loader {
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .ball {
-      background: #0abbef;
-      min-height: 20px;
-      min-width: 20px;
-      border-radius: 50%;
-      margin: 2px;
-      display: inline;
-    }
-
-    .ball1 {
-      animation: bounce .5s alternate infinite ease-in-out,
-        flash 2s alternate infinite ease-in-out;
-    }
-
-    .ball2 {
-      animation: bounce .5s .333s alternate infinite ease-in-out,
-        flash 2s 1s alternate infinite ease-in-out;
-    }
-
-    .ball3 {
-      animation: bounce .5s .666s alternate infinite ease-in-out,
-        flash 2s 2s alternate infinite ease-in-out;
-    }
-
-    @keyframes bounce {
-      from {
-        position: relative;
-        top: -.5vh;
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .loader {
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
-
-      to {
-        position: relative;
-        top: .5vh;
-      }
-    }
-
-    @keyframes flash {
-      from {
-        background: #252243;
-      }
-
-      to {
+  
+      .ball {
         background: #0abbef;
+        min-height: 20px;
+        min-width: 20px;
+        border-radius: 50%;
+        margin: 2px;
+        display: inline;
       }
-    }
-  </style>
-  <style id="vista-css" ></style>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DECADES</title>
-</head>
+  
+      .ball1 {
+        animation: bounce .5s alternate infinite ease-in-out,
+          flash 2s alternate infinite ease-in-out;
+      }
+  
+      .ball2 {
+        animation: bounce .5s .333s alternate infinite ease-in-out,
+          flash 2s 1s alternate infinite ease-in-out;
+      }
+  
+      .ball3 {
+        animation: bounce .5s .666s alternate infinite ease-in-out,
+          flash 2s 2s alternate infinite ease-in-out;
+      }
+  
+      @keyframes bounce {
+        from {
+          position: relative;
+          top: -.5vh;
+        }
+  
+        to {
+          position: relative;
+          top: .5vh;
+        }
+      }
+  
+      @keyframes flash {
+        from {
+          background: #252243;
+        }
+  
+        to {
+          background: #0abbef;
+        }
+      }
 
-<body>
-  <div id="root">
-    <div style="font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;"> 
-      <div class="loader">
-        <div class="ball ball1"></div>
-        <div class="ball ball2"></div>
-        <div class="ball ball3"></div>
+      .dark-init {
+        background-color: hsl(20 14.3% 4.1%);
+        color: #ffffff;
+      }
+
+      .light-init {
+        background-color: #ffffff;
+        color: #000000;
+      }
+    </style>
+    <title>DECADES UI</title>
+    
+  </head>
+  <body>
+    <div id="root">
+      <div id="decades-initialiser" style="font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; position: fixed; inset: 0"> 
+        <div class="loader">
+          <div class="ball ball1"></div>
+          <div class="ball ball2"></div>
+          <div class="ball ball3"></div>
+        </div>
+        <div style="position: fixed; margin-top: 80px" id="DECADES">D E C A D E S</div>
+        <div style="position: fixed; margin-top: 120px; color: gray; font-size: .8em;">FAAM Airborne Laboratory</div>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
-</body>
-
+    <script defer>
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark-init"
+          : "light-init"
+      document.getElementById("decades-initialiser").classList.add(systemTheme)
+    </script>
+  </body>
 </html>

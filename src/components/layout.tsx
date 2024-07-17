@@ -1,43 +1,23 @@
-interface FlexCenterProps {
+type FlexCenterProps = {
     children: React.ReactNode,
-    extraStyle?: React.CSSProperties,
-    direction?: "row" | "column"
+    direction?: "row" | "col" | "col-reverse" | "row-reverse",
+    style?: React.CSSProperties,
 }
 
-const FlexCenter = (props: FlexCenterProps) => {
-    const direction = props.direction || "row"
+export const FlexCenter = ({ children, direction, style }: FlexCenterProps) => {
+    const flexDirection = `flex-${direction || "row"}`
     return (
-        <div style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: direction,
-            ...props.extraStyle
-        }}
-        >
-            {props.children}
+        <div className={`flex items-center justify-center h-full w-full ${flexDirection}`} style={style}>
+            {children}
         </div>
     )
 }
 
-const Section = (props: { children: React.ReactNode }) => {
+export const Splash = ({ children, direction, style }: FlexCenterProps) => {
+    const flexDirection = `flex${direction || "row"}`
     return (
-        <section className="section">
-            {props.children}
-        </section>
+        <div className={`fixed flex inset-0 items-center justify-center h-full w-full ${flexDirection}`} style={style}>
+            {children}
+        </div>
     )
 }
-
-const Spacer = (props: { size: number }) => {
-    return <div style={{ height: props.size }} />
-}
-
-const Splash = (props: { children: React.ReactNode }) => {
-    return (
-        <FlexCenter direction="column" extraStyle={{top: "0px", left: "0px", right: "0px", bottom: "0px", position: "absolute"}}>
-            {props.children}
-        </FlexCenter>
-    )
-}
-
-export { FlexCenter, Section, Spacer, Splash }

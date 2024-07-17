@@ -4,7 +4,7 @@ import { MapContext } from "./context";
 type MapProps = {
     children: React.ReactNode,
     zoom?: number,
-    top?: number,
+    withMenu?: boolean,
     center?: {
         lat: number,
         lon: number
@@ -17,9 +17,11 @@ const OpenLayersMap = (props: MapProps) => {
         center: props.center || {lat: 0, lon: 0}
     })
 
+    const top = props.withMenu ? 40 : 0
+
     return (
         <MapContext.Provider value={{state, actions}}>
-            <div ref={mapRef} style={{position: "absolute", inset: 0, top: props.top || 0}}>
+            <div ref={mapRef} style={{position: "absolute", bottom: 0, left: 0, right: 0, top: top}}>
                 {props.children}
             </div>
         </MapContext.Provider>

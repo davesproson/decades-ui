@@ -1,5 +1,5 @@
 import { DataContext } from './context';
-import { OverlayBox } from './overlayBox';
+// import { OverlayBox } from './overlayBox';
 import { ddToDmm, metresToFeet, msToKnots, getFlightNumber } from '../utils';
 import { useContext, useEffect, useState } from 'react';
 
@@ -9,16 +9,22 @@ type HeaderElementProps = {
     unit?: string,
     hide?: "mobile" | "touch"
 }
-const HeaderElement = ({ title, value, unit, hide }: HeaderElementProps) => {
-    const TitleElement = () => title ? <p className="heading">{title}</p> : null
-    const UnitElement = () =>unit ? <p className="heading">{unit}</p> : null
-    const ValueElement = () => <p className="title">{value}</p>
 
-    const hiddenClass = hide ? `is-hidden-${hide}` : ''
+
+const HeaderElement = ({ title, value, unit, hide }: HeaderElementProps) => {
+    const TitleElement = () => title ? <p className="whitespace-nowrap overflow-hidden text-sm font-mono m-auto text-muted-foreground">{title.toUpperCase()}</p> : null
+    const UnitElement = () =>unit ? <p className="whitespace-nowrap overflow-hidden text-sm font-mono text-muted-foreground m-auto mot-[-5px]">{unit.toUpperCase()}</p> : null
+    const ValueElement = () => <p className="whitespace-nowrap overflow-hidden text-[2em] m-auto font-sans mot-[-8px]">{value}</p>
+
+    let hiddenClass = (hide === "mobile")
+        ? "hidden md:block"
+        : hide === "touch"
+            ? "hidden lg:block"
+            : ""
 
     return (
-        <div className={`level-item has-text-centered ${hiddenClass}`}>
-            <div>
+        <div className={hiddenClass}>
+            <div className='flex flex-col'>
                 <TitleElement />
                 <ValueElement />
                 <UnitElement />
@@ -48,17 +54,9 @@ const MapHeader = () => {
     const heading = Math.floor(aircraftData.heading || 0).toString().padStart(3, '0')
     const speed = msToKnots(aircraftData.groundSpeed || 0).toFixed(0)
 
-    const style = {
-        zIndex: 10,
-        top: 10,
-        left: 10,
-        right: 10,
-        height: 100,
-    }
-
     return (
-        <OverlayBox {...style}>
-            <div className="level is-mobile">
+        <div className="relative bg-background p-3 z-10 rounded-md h-[110px] m-4">
+            <div className="flex justify-around items-center">
                 <HeaderElement hide="mobile" title="Flight Number" value={flightNumber} />
                 <HeaderElement title="Latitude" value={lat.coord} unit={lat.hemisphere} />
                 <HeaderElement title="Longitude" value={lon.coord} unit={lon.hemisphere} />
@@ -66,7 +64,7 @@ const MapHeader = () => {
                 <HeaderElement hide="touch" title="Heading" value={heading} unit="Degrees" />
                 <HeaderElement hide="touch" title="Groundspeed" value={speed} unit="knots" />
             </div>
-        </OverlayBox>
+        </div>
     )
 }
 

@@ -1,0 +1,30 @@
+import PitchIndicator from "@/pitch-indicator/pitch-indicator"
+import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+
+const ConfigArea = () => {
+    return (
+        <div className="mt-2">
+            Add a pitch indicator to the view. There are no options
+            associated with this widget.
+        </div>
+    )
+}
+
+const usePitchWidget = (registry: RegistryType<WidgetConfiguration>) => {
+    registry.register({
+        name: "Pitch",
+        type: "pitch",
+        configComponent: <ConfigArea />,
+        save: (props: ConfigWidgetProps) => {
+            props.setData({
+                type: "pitch",
+            })
+            return true
+        },
+        icon: 'dashicons/roll.svg',
+        tooltip: 'Display an aircraft pitch indicator',
+        component: PitchIndicator
+    })
+}
+
+export { usePitchWidget }

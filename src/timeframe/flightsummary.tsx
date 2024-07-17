@@ -1,7 +1,10 @@
-import { setCustomTimeframe } from "../redux/optionsSlice"
-import { useDispatch } from "../redux/store"
-import { useFlightSummary } from "./hooks"
-import { FlightSummaryEntry, FlightSummaryEntryProps } from './timeframe.types'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useFlightSummary } from './hooks'
+import { FlightSummaryEntry, FlightSummaryEntryProps } from './types'
+import { useDispatch } from '@store'
+import { setCustomTimeframe } from '@/redux/optionsSlice'
+import { Button } from '@/components/ui/button'
+import { Circle, MoveRight, MoveUpRight } from 'lucide-react'
 
 const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
     const dispatch = useDispatch()
@@ -20,26 +23,40 @@ const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
     const from = formatTime(fromMs)
     const to = formatTime(toMs)
 
+    const isRun = props.entry.event.startsWith("Run")
+    const isProfile = props.entry.event.startsWith("Profile")
+    const isOrbit = props.entry.event.startsWith("Orbit")
+
     const tagStyle = (() => {
-        const evt = props.entry.event
-        if(evt.startsWith("Run")) {
-            return "is-success"
+        if(isRun) {
+            return "text-green-600"
         }
-        if(evt.startsWith("Profile")) {
-            return "is-warning"
+        if(isProfile) {
+            return "text-blue-400"
         }
-        if(evt.startsWith("Orbit")) {
-            return "is-info"
+        if(isOrbit) {
+            return "text-pink-600"
         }
-        return "is-light"
+        return ""
+    })()
+
+    const icon = (() => {
+        if(isOrbit) {
+            return <Circle size={16} className="mr-2"/>
+        }
+        if(isRun) {
+            return <MoveRight size={16} className="mr-2"/>
+        }
+        if(isProfile) {
+            return <MoveUpRight size={16} className="mr-2"/>
+        }
+        return null
     })()
 
     return (
-        <div className="mt-2">
-            <span className="is-size-5">
-                <a className="is-primary" onClick={()=>setTimeframe(fromMs, toMs)}><span className={`tag is-medium ${tagStyle} mr-2`}> {props.entry.event}</span> from {from} until {to}</a>
-            </span>
-        </div>
+        <Button variant="ghost" className={tagStyle} onClick={()=>setTimeframe(fromMs, toMs)}>
+           {icon} <strong className="mr-2">{props.entry.event}:</strong> from {from} until {to}
+        </Button>
     )
 }
 
@@ -56,23 +73,24 @@ const FlightSummarySelector = () => {
     }
 
     const filtered = filterFlightSummary(fs)
-    
 
     return (
-        <nav className="panel mt-4 is-dark">
-                <p className="panel-heading">
-                    Flight summary events
-                </p>
-                <div className="panel-block">
-                    <ul>
-                        {filtered.map((x, i) => (
-                            <li key={i}>
-                                <FlightSummaryEntrySelector id={i} entry={x}/>
-                            </li>)
-                        )}
-                    </ul>
-                </div>
-            </nav>
+        <Card className="mt-2">
+            <CardHeader>
+                <CardTitle>
+                    Flight Summary
+              </CardTitle>
+          </CardHeader>
+        <CardContent>
+            <ul>
+            {filtered.map((x, i) => (
+                <li key={i}>
+                    <FlightSummaryEntrySelector id={i} entry={x}/>
+                </li>)
+            )}
+            </ul>
+        </CardContent>
+    </Card>
     )
 }
 

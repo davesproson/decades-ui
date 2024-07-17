@@ -86,20 +86,11 @@ export const paramSlice = createSlice({
         paramsDispatched: false
     } as ParamsState,
 	reducers: {
-        resetParams: (state) => {
-            state.params = [];
-            state.axes = [];
-            state.paramSet = '';
-            state.paramsDispatched = false;
-        },
         setParamsDispatched: (state, action: PayloadAction<boolean>) => {
             state.paramsDispatched = action.payload;
         },
         setParamSet: (state, action: PayloadAction<string>) => {
             state.paramSet = action.payload;
-            state.params = [];
-            state.axes = [];
-            state.paramsDispatched = false;
         },
 		addParam: (state, action: PayloadAction<Parameter>) => {
 			const param = {
@@ -126,11 +117,9 @@ export const paramSlice = createSlice({
                 param.status = action.payload.status;
             }
         },
-        toggleParamSelected: (state, action: PayloadAction<{name: string}>) => {
-
-            const param = state.params.find(param => param.raw === action.payload.name);
-
-            if (param !== undefined) {
+        toggleParamSelected: (state, action: PayloadAction<{id: ParameterID}>) => {
+            const param = state.params.find(param => param.id === action.payload.id);
+            if (param) {
                 param.selected = !param.selected;
                 if(param.selected) {
                     const pAxis = state.axes.find(axis => axis.units === param.units)
@@ -162,6 +151,16 @@ export const paramSlice = createSlice({
         unselectAllParams: (state) => {
             state.params.forEach(param => param.selected = false);
             state.axes = []
+        },
+        selectParamsByRawName: (state, action: PayloadAction<Array<string>>) => {
+            state.params.forEach(param => param.selected = false);
+            state.axes = []
+            const rawNames = action.payload
+            state.params.forEach(param => {
+                if(rawNames.includes(param.raw)) {
+                    param.selected = true;
+                }
+            });
         },
         addNewAxis: (state, action: PayloadAction<{paramId: ParameterID}>) => {
             const paramId = action.payload.paramId;
@@ -204,6 +203,9 @@ export const paramSlice = createSlice({
                 return;
             }
             axis.scaling = scaling;
+        },
+        resetParameterStatuses: (state) => {
+            state.params.forEach(param => param.status = null);
         }
 	},
 });
@@ -212,7 +214,7 @@ export const paramSlice = createSlice({
 export const { 
     addParam, setParams, toggleParamSelected, unselectAllParams, addNewAxis,
     selectAxis, setParamStatus, setParamSet, setParamsDispatched, setAxisScaling,
-    resetParams
+    selectParamsByRawName, resetParameterStatuses
 } = paramSlice.actions;
 
 export default paramSlice.reducer;

@@ -53,7 +53,7 @@ const POIOverlay = (props: POIOverlayProps) => {
     const lonInfo = ddToDmm(props.lon, ['E', 'W'])
 
     return (
-        <div className="has-background-light p-2" style={{
+        <div className="p-2" style={{
             zIndex: 999, position: "absolute", top: props.y, left: props.x,
             pointerEvents: "none", borderRadius: "5px", transform: "translate(-50%, -110%)"
         }}>
@@ -64,7 +64,10 @@ const POIOverlay = (props: POIOverlayProps) => {
     )
 }
 
-const DecadesMap = () => {
+type DecadesMapProps = {
+    withMenu?: boolean
+}
+const DecadesMap = ({withMenu}: DecadesMapProps) => {
     const { aircraftData, aircraftHistory } = useAircraftData()
     const { state, actions } = useDecadesMapState()
 
@@ -90,7 +93,7 @@ const DecadesMap = () => {
                 <MapHeader />
             </Show>
 
-            <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}}>
+            <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}} withMenu={withMenu}>
 
                 <BaseLayer url={mapTilesUrl} />
 

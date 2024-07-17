@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { getData } from '../plot/plotUtils'
-import { badData } from '../settings'
+import { getData } from '@/data/utils'
+import { badData } from '@/settings'
 import { decode, encode } from 'base-64'
 import { evaluate } from 'mathjs'
-import { AlarmOptions, AlarmListProps, AlarmProps } from './alarm.types'
-import { DecadesDataResponse } from '../plot/plot.types'
+import { AlarmOptions, AlarmListProps, AlarmProps } from './types'
+import { DecadesDataResponse } from '@/data/types'
 
 
 const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListProps) => {
 
-    const [searchParams, setSearchParams] = useSearchParams()
+    const searchParams = new URLSearchParams(window.location.search)
+    const setSearchParams = (params: URLSearchParams) => {
+        const newUrl = new URL(window.location.href)
+        newUrl.search = params.toString()
+        window.history.pushState({}, "", newUrl.toString())
+    }
 
     useEffect(() => {
         try {
@@ -22,7 +26,7 @@ const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListPr
             console.log("Error parsing URL alarms")
             console.error(e)
         }
-    }, [searchParams, setSearchParams])
+    }, [])
 
 
     const removeAlarm = (id: any/*TODO ?*/) => {

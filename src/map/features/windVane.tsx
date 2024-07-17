@@ -8,8 +8,8 @@ import Feature from "ol/Feature"
 import Point from "ol/geom/Point"
 import Style from "ol/style/Style"
 import { DataContext } from "../context"
-import { getData } from "../../plot/plotUtils"
-import { badData } from "../../settings"
+import { getData } from "@/data/utils"
+import { badData } from "@/settings"
 
 const WindVane = () => {
     const { layer } = useContext(VectorLayerContext)

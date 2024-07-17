@@ -6,6 +6,7 @@ interface ImportMetaEnv {
     readonly VITE_VISTA_USE_WEBSOCKET_DATA: string | undefined
     readonly VITE_VISTA_ENABLE_TUTORIAL: string | undefined
     readonly VITE_VISTA_BAD_DATA: string | undefined
+    readonly VITE_VISTA_MAP_TILE_URL: string | undefined
 
     // Experimental features
     readonly VITE_VISTA_ENABLE_QUICKLOOK: string | undefined

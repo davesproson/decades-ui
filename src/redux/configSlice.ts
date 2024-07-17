@@ -4,12 +4,14 @@ interface ConfigState {
 	darkMode: boolean,
 	quickLookMode: boolean,
 	modeSelected: boolean,
-	tabbedPlots: boolean
+	tabbedPlots: boolean,
+	showOptionsDrawer: boolean
 }
 
 export const configSlice = createSlice({
 	name: 'config',
 	initialState: {
+		showOptionsDrawer: false,
 		darkMode: false,
 		quickLookMode: false,
 		modeSelected: false,
@@ -24,7 +26,6 @@ export const configSlice = createSlice({
         },
 		setQuickLookMode: (state, action) => {
 			state.quickLookMode = action.payload;
-			state.modeSelected = true;
 		},
 		toggleQuickLookMode: (state) => {
 			state.quickLookMode = !state.quickLookMode;
@@ -38,13 +39,20 @@ export const configSlice = createSlice({
 		toggleTabbedPlots: (state) => {
 			state.tabbedPlots = !state.tabbedPlots;
 		},
+		setShowOptionsDrawer: (state, action) => {
+			state.showOptionsDrawer = action.payload;
+		},
+		toggleOptionsDrawer: (state) => {
+			state.showOptionsDrawer = !state.showOptionsDrawer;
+		}
 	},
 });   
 
 export const { 
 	setDarkMode, toggleDarkMode,
 	setQuickLookMode, toggleQuickLookMode,
-	setModeSelected, setTabbedPlots, toggleTabbedPlots
+	setModeSelected, setTabbedPlots, toggleTabbedPlots,
+	setShowOptionsDrawer, toggleOptionsDrawer
 
 } = configSlice.actions;
 

@@ -16,8 +16,8 @@ export const wsProtocol = serverProtocol === "https" ? "wss" : "ws"
 // Flag to enable the use of websocket data for data fetching
 export const useWebSocketData = booleanEnv("VITE_VISTA_USE_WEBSOCKET_DATA", false)
 
-// The base URL of the application. Defaults to "/decades-vista/"
-export const base = import.meta.env.VITE_VISTA_BASE_URL || "/decades-vista/"
+// The base URL of the application. Defaults to "/"
+export const base = import.meta.env.VITE_VISTA_BASE_URL || "/"
 
 // The value to use to indicate bad or missing data. Defaults to -999.99
 export const badData = numberEnv("VITE_VISTA_BAD_DATA", -999.99)
@@ -65,11 +65,11 @@ export const geoCoordsQuicklook = {
 // The default parameters to plot when the user selects a preset.
 // TODO: These should be changed for quicklook mode/data.
 export const presets = {
-    'True air temperatures (C)': [
+    'True air temperatures (°C)': [
         'nondeiced_true_air_temp_c',
         'deiced_true_air_temp_c'
     ],
-    'Dew points (C)': [
+    'Dew points (°C)': [
         'dew_point',
         'buck_mirror_temp',
         'wvss2a_tdew'
@@ -82,23 +82,23 @@ export const presets = {
         "pressure_height_kft",
         "radar_height_kft"
     ],
-    'Neph. SP (Mm-1)': [
-        "aerack01_neph_total_blue",
-        "aerack01_neph_total_green",
-        "aerack01_neph_total_red"
+    'Neph. Total Scatter (Mm-1)': [
+        "neph_total_blue",
+        "neph_total_green",
+        "neph_total_red"
     ],
-    'Turbulence Probe': [
+    'Turbulence Probe (hPa)': [
         "turb_probe_pitot_static", 
         "turb_probe_attack_diff",
         "turb_probe_sideslip_diff"
     ]
 }
 export const presetsQuicklook = {
-    'True air temperatures (C)': [
+    'True air temperatures (°C)': [
         'TAT_DI_R',
         'TAT_ND_R'
     ],
-    'Dew points (C)': [
+    'Dew points (°C)': [
         'TDEW_GE',
         'TDEWCR2C'
     ],
@@ -106,12 +106,12 @@ export const presetsQuicklook = {
         'TDEWCR2C',
         'TAT_DI_R'
     ],
-    'Neph. SP (Mm-1)': [
+    'Neph. Total Scatter (Mm-1)': [
         'TSC_REDU',  
         'TSC_GRNU',
         'TSC_BLUU'
     ],
-    'Turbulence Probe': [
+    'Turbulence Probe (hPa)': [
         'P0_S10',
         'AOA',
         'AOSS'

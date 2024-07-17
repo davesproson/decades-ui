@@ -1,9 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { ChatConfig, IncomingChatMessage, ChatUser,  MessageResponse } from "./types"
 import { useLocalStorage } from "usehooks-ts"
-import { useDarkMode } from "../hooks"
 import { base } from "../settings"
-import { toast } from "react-toastify"
+import { useToast } from "@/components/ui/use-toast"
 import { ChatContext } from "./provider"
 
 /**
@@ -70,7 +69,7 @@ const buildMessage = (message: IncomingChatMessage) => {
 export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
     const [messages, setMessages] = useState<Array<IncomingChatMessage>>([])
     const [toastMessage, setToastMessage] = useState<string | null>(null)
-    const [darkMode, _setDarkMode] = useDarkMode()
+    const { toast } = useToast()
     const [_user, setUser] = useChatUser(null)
     const [config, _setConfig] = useChatConfig()
 
@@ -114,7 +113,7 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
      * is not hidden, a toast notification is shown.
      */
     useEffect(() => {
-
+        
         // If chatNotify is false, clear the toast message
         if(!config.chatNotify) {
             setToastMessage(null)
@@ -136,8 +135,11 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
         // If the chatNotify is true, the user is not on the chat page, and the
         // document is not hidden, show the toast message
         if (toastMessage !== null) {
-            toast(toastMessage, {
-                theme: darkMode ? 'dark' : 'light'
+            toast({
+                title: "New message",
+                description: toastMessage,
+                color: 'success',
+                duration: 5000,
             })
             setToastMessage(null)
         }

@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react"
 import { MapContext } from "../context"
 import { fromLonLat } from "ol/proj"
-import { badData } from "../../settings"
+import { badData } from "@/settings"
 
 
 

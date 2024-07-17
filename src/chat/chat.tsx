@@ -1,12 +1,14 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useScrollInhibitor } from '@/hooks';
 import { useContext, useState } from 'react';
-import { ChatContext } from './provider';
-import { FlexCenter, Spacer, Splash } from '../components/layout';
-import { Button } from '../components/buttons';
-import { Tag } from '../components/tags';
 import { useChatResizer, useRegisterChatUser, useScrollIntoView } from './hooks';
-import { useScrollInhibitor } from '../hooks';
-import { ChatUser, ChatProps } from './types';
-import OptionSwitch from '../components/optionSwitch';
+import { ChatContext } from './provider';
+import { ChatProps, ChatUser } from './types';
+import { Input } from '@/components/ui/input';
+import { FlexCenter, Splash } from '@/components/layout';
+import { CircleAlert, ExternalLink, SendHorizonal } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 /**
  * A component to display a message when chat is selected but not enabled.
@@ -16,12 +18,12 @@ const ChatNotOn = () => {
     const { actions } = useContext(ChatContext);
 
     return (
-        <Splash>
-            <div className="is-flex is-flex-direction-column is-align-items-center">
-                <h1 className="title">Enable Chat?</h1>
-                <Button.Info fullWidth onClick={actions.toggleChatEnabled}>Enable</Button.Info>
+        <div className="absolute flex justify-center items-center inset-0">
+            <div className="flex flex-col items-center">
+                <h1 className="text-3xl font-bold">Enable Chat?</h1>
+                <Button className="mt-2 w-full" onClick={actions.toggleChatEnabled}>Enable</Button>
             </div>
-        </Splash>
+        </div>
     )
 }
 
@@ -34,6 +36,36 @@ const ChatNotOn = () => {
 const ChatTime = (props: { time: number }) => {
     const date = new Date(props.time)
     return <span>{date.toLocaleTimeString()}</span>
+}
+
+const stripUrl = (message: string) => message.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '')
+
+const MessageUrlComponent = ({message}: {message: string}) => {
+    let messageUrl: string = ''
+    const rex = /(?:https?|ftp):\/\/([\n\S]+)\/([\n\S]+)/
+
+    const matched = message.match(rex)
+    if (matched) {
+        const proto = matched[0]
+        const host = matched[1]
+        const path = matched[2]
+
+        if(host !== location.host) {
+            messageUrl = `${proto}://${host}/${path}`
+        } else {
+            messageUrl = `/${path}`
+        }
+    }
+    if(!matched) return null
+    return (
+        <Button size="tiny" variant="outline" className="ml-2">
+            <a target='_blank' rel='noreferrer' href={messageUrl}>
+                <span className="flex"><ExternalLink size={16} className="mr-2"/>
+                Link
+                </span>
+            </a>
+        </Button>
+    )
 }
 
 /**
@@ -95,57 +127,43 @@ const Chat = (props: ChatProps) => {
     // The chat container component, which displays the chat messages and
     // input field.
     const ChatContainer = (
-        <FlexCenter direction="column" extraStyle={extraStyle}>
-            <div className="is-flex is-flex-grow-1 is-flex-direction-column" style={{ justifyContent: "left", width: "100%", padding: "20px", overflow: "auto" }}>
+        <FlexCenter direction="col" >
+            <div className="flex flex-1 flex-col justify-start w-full overflow-auto p-2">
                 {state.messages.map(message => {
 
-                    let messageText: string = message.message
-                    let messageUrl: string = ''
-                    const rex = /(https?:\/\/[^ ]*)/
-                    const matched = message.message.match(rex)
-                    if (matched) {
-                        const url = matched[0]
-                        messageUrl = url
-                        messageText = message.message.replace(url, '')
-                    }
-
-                    const MessageUrlComponent = () => {
-                        return (
-                            <a target='_blank' rel='noreferrer' href={messageUrl}>Link</a>
-                        )
-                    }
+                    let messageText: string = stripUrl(message.message)
 
                     const tagText = message.username === state.user.username
                         ? 'You'
                         : message.username
 
                     const tagType = message.username === state.user.username
-                        ? 'success'
-                        : 'info'
+                        ? ''
+                        : 'bg-blue-600'
 
                     return (
                         <div key={message.messageid}>
-                            <span className="mr-2"><ChatTime time={message.time} /></span>
-                            <Tag is={tagType} text={tagText} extraClasses='mr-2 mb-1' />
-                            {messageText} <MessageUrlComponent />
+                            <span className="mr-2 font-mono text-muted-foreground"><ChatTime time={message.time} /></span>
+                            <Badge className={'mr-2 mb-1 ' + tagType} >{tagText}</Badge>
+                            {messageText} <MessageUrlComponent message={message.message}/>
                         </div>
                     )
                 })}
                 <div ref={chatRef} />
             </div>
 
-            <div className="is-flex is-flex-direction-row" style={{ width: "100%", padding: "10px" }}>
-                <div className="is-flex is-flex-grow-1" >
-                    <input className="input is-secondary mr-1" type="text" style={{ width: "100%" }} value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={handleEnter} />
+            <div className="flex flex-row w-full p-[10px]">
+                <div className="flex flex-1" >
+                    <Input className="mr-1 w-full" type="text" value={messageText} onChange={(e) => setMessageText(e.target.value)} onKeyDown={handleEnter} />
                 </div>
 
-                <div className="is-flex">
-                    <Button.Secondary outlined onClick={sendMessage}>
-                        Send
-                    </Button.Secondary>
+                <div className="flex">
+                    <Button onClick={sendMessage}>
+                        <SendHorizonal className="mr-2"/> Send
+                    </Button>
                 </div>
             </div>
-        </FlexCenter >
+        </FlexCenter>
     )
 
     // Return the chat component with the chat container, or null if the
@@ -168,12 +186,17 @@ const Chat = (props: ChatProps) => {
 const FailedRegistration = (props: { user: ChatUser }) => {
     if (props.user.regState !== null) return null
     return (
-        <article className="message is-danger">
-            <div className="message-body">
-                Failed to register user, try with a different username
-            </div>
-        </article>
+        <Alert variant="destructive" className="mt-2 mb-2">
+        {/* <AlertTitle>Heads up!</AlertTitle> */}
+        <AlertDescription>
+        <div className="flex">
+        <CircleAlert className="h-8 w-8" />
+            <span className="mt-2 ml-2">Failed to register user {props.user.username}, try with a different username</span>
+        </div>
+        </AlertDescription>
+      </Alert>
     )
+    
 }
 
 /**
@@ -204,14 +227,13 @@ export const ChatRegistration = () => {
     // Return the chat registration component.
     return (
         <Splash>
-            <div className="is-flex is-flex-direction-column is-align-items-center">
-                <h1 className="title">Chat Registration</h1>
+            <div className="flex flex-col items-center">
+                <h1 className="text-3xl font-bold">Chat Registration</h1>
                 <FailedRegistration user={state.user} />
-                <p>Enter your username to join the chat</p>
-                <input type="text" className="input" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
-                <Spacer size={5} />
-                <Button.Info fullWidth onClick={register}>Join Chat</Button.Info>
-                <Button fullWidth extraClasses="mt-2" onClick={actions.toggleChatEnabled}>Cancel</Button>
+                <p className="text-muted-foreground">Enter your username to join the chat</p>
+                <Input type="text" className="mt-4" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
+                <Button className="w-full mt-2" onClick={register}>Join Chat</Button>
+                <Button variant="outline" className="w-full mt-2" onClick={actions.toggleChatEnabled}>Cancel</Button>
             </div>
         </Splash>
     )
@@ -234,42 +256,6 @@ export const ChatDispatch = (props: { children: React.ReactNode }) => {
     return <ChatRegistration />
 }
 
-/**
- * A component to display the chat configuration switch, used to enable or
- * disable chat and to toggle chat notifications.
- * 
- * Chat notifications are toasts that appear when a new chat message is
- * received and the user is not currently viewing the chat.
- *
- * @returns the component
- */
-export const ChatConfigSwitch = () => {
-    const { state, actions } = useContext(ChatContext);
-
-    const buttonType = state.config.chatNotify
-        ? "success"
-        : ''
-
-    const toggleNotify = () => {
-        actions.toggleChatNotify()
-    }
-
-    return (
-        <>
-            <OptionSwitch
-                value={state.config.chatActive ? "On" : "Off"}
-                options={["On", "Off"]}
-                toggle={() => {
-                    actions.toggleChatEnabled()
-                    return { type: "chatEnabled", value: null }
-                }}
-                useStore={false} 
-                small
-            />
-            <Button small kind={buttonType} onClick={toggleNotify}>Notify</Button>
-        </>
-    )
-}
 
 /**
  * A chat widget component, which displays the chat in an embedded view.

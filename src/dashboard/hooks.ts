@@ -1,22 +1,20 @@
-import { useSelector } from '../redux/store'
+import { useSelector } from '@store'
 import { useEffect, useState } from 'react'
-import { base as siteBase } from '../settings'
-import { getData } from '../plot/plotUtils';
-import { DashboardOptions } from './dashboard.types';
-import { DecadesDataResponse } from '../plot/plot.types';
-import { useLocalStorage } from 'usehooks-ts';
+import { base as siteBase } from '@/settings'
+import { getData } from '@/data/utils';
+import type { DashboardOptions } from './types';
+import type { DecadesDataResponse } from '@/data/types';
 
 const useDashboardUrl = () => {
     const params = useSelector(state => state.vars.params);
-    const options = useSelector(state => state.options);
-    const origin = window.location.origin
     const selectedParams = params.filter(param => param.selected)
-                                    .map(param => param.raw)
-    const server = options.server
-    const useNewDashboard = useLocalStorage<boolean>('useNewDashboard', false)[0]
+                                 .map(param => param.raw)
+    
+    const url = new URL(window.location.origin)
+    url.pathname = `${siteBase}dash`
+    url.searchParams.set('params', selectedParams.join(','))
 
-    const dashboard = useNewDashboard ? 'redash' : 'dashboard'
-    return origin + `${siteBase}${dashboard}?params=${selectedParams.join(',')}&server=${server}`
+    return url
 }
 
 const useDashboardData = (dataOptions: DashboardOptions) => {
@@ -36,5 +34,30 @@ const useDashboardData = (dataOptions: DashboardOptions) => {
 
     return data
 }
+
+// useDimensions.js
+
+import { useMemo, useSyncExternalStore } from "react"
+
+function subscribe(callback: () => void) {
+  window.addEventListener("resize", callback)
+  return () => {
+    window.removeEventListener("resize", callback)
+  }
+}
+
+function useDimensions(ref: React.RefObject<HTMLElement>) {
+  const dimensions = useSyncExternalStore(
+    subscribe,
+    () => JSON.stringify({
+      width: ref.current?.offsetWidth ?? 0, // 0 is default width
+      height: ref.current?.offsetHeight ?? 0, // 0 is default height
+    })
+  )
+  return useMemo(() => JSON.parse(dimensions), [dimensions])
+}
+
+export { useDimensions }
+
 
 export { useDashboardUrl, useDashboardData }

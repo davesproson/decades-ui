@@ -1,45 +1,56 @@
-import { useSearchParams } from 'react-router-dom'
-import { decode } from 'base-64';
-import { base } from '../settings'
+import { VistaErrorBoundary } from '@/components/errors'
+import { useEffect, useState } from 'react'
+import { libraryViews } from './library-entries'
 
-const View = () => {
-    const [searchParams, _] = useSearchParams();
-    const encodedUrls = searchParams.getAll('plot')
-    const urls = encodedUrls.map(url => decode(url)).filter(x=>x!=="#").map(x=>{
-        if (x.startsWith('http') || x.startsWith(base)) {
-            return x
+import { Version3LibraryView, Version3ViewElement } from "./types"
+import Loader  from "@/components/loader"
+import { _View } from "./widgets/view-widget"
+import { useScrollInhibitor } from '@/hooks'
+import { Route } from "@/routes/view"
+
+const ViewBuilder = () => {
+    const [config, setConfig] = useState<Version3ViewElement>()
+    useScrollInhibitor(true)
+    const { view: viewName } = Route.useSearch()
+
+    useEffect(()=>{
+        document.getElementsByTagName('html')[0].style.overflow = "hidden"
+    }, [])
+    
+    useEffect(()=>{
+        let config
+        
+        try {
+            config = JSON.parse(localStorage.getItem('viewConfig') || '') as Version3ViewElement
+        } catch(e) {
+            console.log('No view config found in local storage')
         }
-        return `${base}${x}`
-    })
 
-    const nRowsString = searchParams.get('nRows') || urls.length.toString()
-    const nRows = parseInt(nRowsString) || urls.length
+        if(viewName) {
+            const v3Views = libraryViews.filter(v => v.config.version === 3)
+            if(v3Views.length === 0) throw new Error("No views found")
 
-    const nColsString = searchParams.get('nCols') || "1"
-    const nCols = parseInt(nColsString) || 1
+            const v3View = v3Views.find(v => v.title === viewName) as Version3LibraryView
+            if(!v3View) throw new Error(`View ${viewName} not found`)
+            
+            config = v3View.config
+            if(!config.title) config.title = v3View.title
+
+            console.log(config)
+        }
+
+        setConfig(config)
+    }, [])
+
+    const view = config 
+        ? <_View {...config} top={true} /> 
+        : <Loader text={"Loading view..."} />
 
     return (
-        <div style={{ top: 0, left: 0, width: '100%', height: '100%', position: 'absolute' }}>
-            {urls.map((url, i) => {
-                const opts = new URLSearchParams(url.split('?')[1])
-
-                const viewWidth = parseFloat(
-                    opts.get('viewWidth') || (100 / nCols).toString()
-                )
-                const viewHeight = parseFloat(
-                    opts.get('viewHeight') || (100 / nRows).toString()
-                )
-                
-                const width = `${(viewWidth) - 1 / nCols}%`
-                const height = `${(viewHeight) - 1 / nRows}%`
-                
-                return (
-                    <iframe key={i} src={url}  width={width} frameBorder="0" scrolling="no"
-                        height={height} style={{border: "none", overflow: "hidden"}}/>
-                )
-            })}
-        </div>
+        <VistaErrorBoundary errorMessage={"View may be misconfigured"}>
+            {view}
+        </VistaErrorBoundary>
     )
 }
 
-export default View
+export default ViewBuilder

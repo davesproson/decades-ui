@@ -1,22 +1,40 @@
-/**
- * This is the main entry point for the Decades Vista application, 
- * which is mounted to the root element of the document.
- */
-
+import './index.css'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import DecadesVista from './vista'
-import store from './redux/store'
+import { ThemeProvider } from "@/components/theme-provider"
 import { Provider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
 import { base } from './settings'
+import store from './redux/store'
+import { Toaster } from "@/components/ui/toaster"
+import { RouterProvider, createRouter  } from '@tanstack/react-router'
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+// Import the generated route tree
+import { routeTree } from './routeTree.gen'
+import ChatProvider  from '@/chat/provider'
+
+// Create a new router instance
+const router = createRouter({ 
+  routeTree, 
+  basepath: base 
+})
+
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter basename={base}>
-        <DecadesVista />
-      </BrowserRouter>
+      <ChatProvider>
+        <ThemeProvider>
+          <Toaster />
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </ChatProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 )

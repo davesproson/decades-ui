@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
-import { DecadesBanner } from "./components/decades";
-import { apiEndpoints } from "./settings";
-import { Button } from "./components/buttons";
-import { Container } from "./components/container";
-import { setQcJob, setFlightNumber, setQcJobs } from "./redux/quicklookSlice";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { setParamsDispatched } from "./redux/parametersSlice";
-import { useSelector } from "./redux/store";
-import { FlexCenter } from "./components/layout";
-import { useScrollInhibitor } from "./hooks";
+import { DecadesBanner } from "@/components/decades";
+import { apiEndpoints } from "@/settings";
+import { setQcJob, setFlightNumber, setQcJobs } from "@/redux/quicklookSlice";
+import { useDispatch, useSelector } from "@store";
+import { setParamsDispatched } from "@/redux/parametersSlice";
+import { useScrollInhibitor } from "@/hooks";
 import { setModeSelected, setQuickLookMode } from "./redux/configSlice";
-import { Loader } from "./components/loader";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router"
 
 type QuicklookJob = {
     flightNumber: string,
@@ -37,9 +33,8 @@ const jobSortFn = (a: QuicklookJob, b: QuicklookJob) => {
 const QuicklookSelector = () => {
     const [jobs, setJobs] = useState<QuicklookJob[]>([])
     const [loading, setLoading] = useState(true)
-
+    const navigate = useNavigate()
     const dispatch = useDispatch()
-    const navigator = useNavigate()
 
     useScrollInhibitor(!jobs.length)
 
@@ -72,7 +67,7 @@ const QuicklookSelector = () => {
 
     if(loading) {
         return (
-            <Loader text="Loading quicklook jobs..." />
+            "Loading quicklook jobs..."
         )
     }
 
@@ -80,7 +75,7 @@ const QuicklookSelector = () => {
         dispatch(setParamsDispatched(false))
         dispatch(setQcJob(job.jobID))
         dispatch(setFlightNumber(job.flightNumber))
-        navigator("/")
+        navigate({to: "/"})
     }
 
     const reset = () => {
@@ -89,14 +84,14 @@ const QuicklookSelector = () => {
         dispatch(setParamsDispatched(false))
         dispatch(setQuickLookMode(false))
         dispatch(setModeSelected(false))
-        navigator("/")
+        navigate({to: "/"})
     }
 
     let content: React.ReactNode;
     if (jobs.length === 0) {
         content = (
             <div style={{ top: 0, bottom: 0, position: "fixed", left: 0, right: 0 }}>
-                <FlexCenter direction="column" extraStyle={{ height: "100%" }}>
+                {/* <FlexCenter direction="column" extraStyle={{ height: "100%" }}> */}
                     <h2 className="title">
                         No flights are currently available to view
                     </h2>
@@ -107,15 +102,15 @@ const QuicklookSelector = () => {
                     <Button onMouseDown={reset}>
                         Back
                     </Button>
-                </FlexCenter>
+                {/* </FlexCenter> */}
             </div>
         )
     } else {
         content = jobs.sort(jobSortFn).map(job => {
             return (
-                <Button.Dark key={job.flightNumber} fullWidth outlined extraClasses="m-1" onClick={() => jobSelected(job)}>
+                <Button key={job.flightNumber} className="m-1" onClick={() => jobSelected(job)}>
                     {job.flightNumber} ({job.flightProject}) {job.flightDate}
-                </Button.Dark>
+                </Button>
             )
         })
     }
@@ -123,9 +118,7 @@ const QuicklookSelector = () => {
     return (
         <>
             <DecadesBanner />
-            <Container>
-                {content}
-            </Container>
+            {content}
         </>
     )
 }

@@ -1,11 +1,14 @@
 import { useSelector } from "../redux/store"
 import { badData, base as siteBase } from "../settings"
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { getData, getTimeLims, plotIsOngoing } from "../plot/plotUtils";
-import { getTraces, populateTephigram } from "./utils";
-import { useServers, useDarkMode } from "../hooks";
-import { TephigramOptions, TephigramTrace, BackgroundTrace, TephigramData } from "./tephigram.types";
+import { useEffect } from "react";
+import { getData } from "@/data/utils";
+import { populateTephigram } from "./utils";
+import { getTraces } from "./traces";
+import { useDarkMode } from "@/components/theme-provider";
+import type { TephigramOptions, TephigramTrace, BackgroundTrace, TephigramData } from "./types";
+import { getTimeLims } from "@/timeframe/utils";
+import { plotIsOngoing } from "@/plot/utils";
+import { TephigramSearchParams } from "@/routes/tephigram";
 
 const useTephiUrl = () => {
     const params = useSelector(state => state.vars.params);
@@ -99,32 +102,23 @@ const normalizeTephiData = (data: TephigramData) => {
     return data
 }
 
-const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
+const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramSearchParams) => {
 
-    const [searchParams, _] = useSearchParams();
+    const searchParams = new URL(location.href).searchParams
 
-    const timeframe = searchParams.get('timeframe') || '30min'
-    const params = searchParams.get('params') || 'deiced_true_air_temp_c,dew_point'
+    const timeframe = searchParams.get('timeframe') || "30min"
+    const params = searchParams.get('params') || "deiced_true_air_temp_c,dew_point"
     const paramsArray = params.split(',')
-    const servers = useServers()
-    const [server, setServer] = useState<string|null>(null)
-    const [darkMode, _setDarkMode] = useDarkMode()
+    const darkMode = useDarkMode()
     const quickLookMode = useSelector(state => state.config.quickLookMode)
+    options
 
     useEffect(() => {
-        if(server) return
-        const rServer = servers.sort(() => .5 - Math.random())[0]
-        setServer(rServer)
-    }, [setServer, server, servers])
-
-    useEffect(() => {
-        if(!server) return
 
         const options: TephigramOptions = {
             timeframe: timeframe,
             params: paramsArray,
             ordvar: quickLookMode ? 'PS_RVSM' : 'static_pressure',
-            server: server
         }
 
         let plotTraces: Array<BackgroundTrace | TephigramTrace> = getTraces(darkMode ? true : false)
@@ -206,7 +200,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>) => {
             return () => clearInterval(interval)
         }
 
-    }, [server])
+    }, [])
 }
 
 export {

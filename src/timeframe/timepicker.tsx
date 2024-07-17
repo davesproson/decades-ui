@@ -1,7 +1,10 @@
-import { Button } from "../components/buttons"
-import { getTimeLims } from "../plot/plotUtils"
+import { useDispatch, useSelector } from "@store"
 import { setCustomTimeframe } from "../redux/optionsSlice"
-import { useDispatch, useSelector } from "../redux/store"
+
+import { Button } from "@/components/ui/button"
+import { getTimeLims } from "./utils"
+import { Input } from "@/components/ui/input"
+import { CardContent } from "@/components/ui/card"
 
 interface TimePickerProps {
     title: string,
@@ -16,7 +19,7 @@ const TimePicker = (props: TimePickerProps) => {
 
     const isOngoing = (!useCustomTimeframe) || customTimeframe.end === null
     
-    const Btn = isOngoing ? Button.Primary : Button.Light
+    const buttonVariant = isOngoing ? "default" : "outline"
 
     const toggleOngoing = () => {
         if(customTimeframe.end === null) {
@@ -37,7 +40,7 @@ const TimePicker = (props: TimePickerProps) => {
     const time = props.boundary === "start" ? startTime : endTime
 
     const ongoingButton = props.allowOngoing
-        ? <Btn onClick={toggleOngoing}>Ongoing?</Btn>
+        ? <Button variant={buttonVariant} className={"mt-2 " + (isOngoing ?  "" : "")} onClick={toggleOngoing}>Ongoing?</Button>
         : null
 
     const hours = props.boundary === "start"
@@ -66,43 +69,43 @@ const TimePicker = (props: TimePickerProps) => {
     const padToTwo = (num: number) => num.toString().padStart(2, "0").slice(-2)
 
     const timeSelector = (isOngoing && props.boundary === 'end') ? null : (
-        <>
-            <div className="control">
-                <input  className="input" type="number" style={{width: "5em"}} 
-                        value={padToTwo(hours)} 
-                        onChange={(e)=>{setTime('Hours', e.target.value)}} min="0" max="23"/>
-            </div>
-            <span className="mr-2 mt-2">:</span>
-            <div className="control">
-                <input  className="input" type="number" style={{width: "5em"}}
-                        value={padToTwo(minutes)}
-                        onChange={(e)=>{setTime("Minutes", e.target.value)}} min="0" max="59"/>
+        <div className="flex mt-2">
+            <Input  type="number" 
+                    className="w-[5em]"
+                    value={padToTwo(hours)} 
+                    onChange={(e)=>{setTime('Hours', e.target.value)}}
+                    min="0"
+                    max="23" />
+
+            <span className="m-2">:</span>
+
+            <Input  type="number"
+                    className="w-[5em]"
+                    value={padToTwo(minutes)}
+                    onChange={(e)=>{setTime("Minutes", e.target.value)}}
+                    min="0"
+                    max="59" />
                         
-            </div>
-            <span className="mr-2 mt-2">:</span>
-            <div className="control">
-                <input className="input" type="number" style={{width: "5em"}} 
-                       value={padToTwo(seconds)}
-                       onChange={(e)=>{setTime("Seconds", e.target.value)}} min="0" max="59"/>
-            </div>
-        </>
+            <span className="m-2">:</span>
+
+            <Input  type="number"
+                    className="w-[5em] mr-2"
+                    value={padToTwo(seconds)}
+                    onChange={(e)=>{setTime("Seconds", e.target.value)}}
+                    min="0"
+                    max="59" />
+        </div>
     )
 
     return (
         <>
-            <div className="card m-2 ">
-                <header className="card-header is-flex-grow-1">
-                    <p className="card-header-title">
-                        {props.title}
-                    </p>
-                </header>
-                <div className="card-content">
-                    <div className="field is-grouped">
-                        {timeSelector}
-                        {ongoingButton}
-                    </div>
-                </div>
-            </div>
+            <CardContent>
+            <p>{props.title}</p>
+            <span className="flex flex-col lg:flex-row">
+                {timeSelector}
+                {ongoingButton}
+            </span>
+            </CardContent>
         </>
     )
 }

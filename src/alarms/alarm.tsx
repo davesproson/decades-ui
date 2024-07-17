@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react'
 import { useAlarm, useAlarmUrl, useFlash } from './hooks'
-import { encode } from 'base-64'
-import { base as siteBase } from '../settings'
-import { Button } from '../components/buttons'
-import { JsonEditor } from '../components/jsonEditor'
-import { AlarmListProps, AlarmProps } from './alarm.types'
-import { FlexCenter } from '../components/layout'
+// import { encode } from 'base-64'
+// import { base as siteBase } from '@/settings'
+import { Button } from '@/components/ui/button'
+// import { JsonEditor } from '../components/jsonEditor'
+import { AlarmListProps, AlarmProps } from './types'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+// import { FlexCenter } from '@/components/layout'
 
 interface AlarmEditorProps {
     display: boolean
@@ -37,47 +38,48 @@ const AlarmEditor = (props: AlarmEditorProps) => {
     * @param {string} json - The json to check
     * @returns {boolean} Whether the json is valid
     */
-    const checkValid = (json: string) => {
-        try {
-            const parsed = JSON.parse(json)
-            
-            if (!Array.isArray(parsed)) return false
-            for (let alarm of parsed) {
-                if (!alarm.name) return false
-                if (!alarm.description) return false
-                if (!alarm.rule) return false
-                if (!alarm.parameters) return false
-            }
-            return true
-        } catch (e) {
-            return false
-        }
-    }
+    // const checkValid = (json: string) => {
+    //     try {
+    //         const parsed = JSON.parse(json)
+
+    //         if (!Array.isArray(parsed)) return false
+    //         for (let alarm of parsed) {
+    //             if (!alarm.name) return false
+    //             if (!alarm.description) return false
+    //             if (!alarm.rule) return false
+    //             if (!alarm.parameters) return false
+    //         }
+    //         return true
+    //     } catch (e) {
+    //         return false
+    //     }
+    // }
 
     /**
      * Get the url for the alarms according to the current configuration
      * 
      * @returns {string} The url for the alarms
      */
-    const getUrl = () => {
-        if (!checkValid(props.text)) return null
-        const urlPars = new URLSearchParams()
-        for (let alarm of JSON.parse(props.text)) {
-            urlPars.append("alarm", encode(JSON.stringify(alarm)))
-        }
+    // const getUrl = () => {
+    //     if (!checkValid(props.text)) return null
+    //     const urlPars = new URLSearchParams()
+    //     for (let alarm of JSON.parse(props.text)) {
+    //         urlPars.append("alarm", encode(JSON.stringify(alarm)))
+    //     }
 
-        return `${siteBase}alarms/?${urlPars.toString()}`
-    }
+    //     return `${siteBase}alarms/?${urlPars.toString()}`
+    // }
 
-    return (
-        <JsonEditor checkValid={checkValid} 
-                    display={props.display}
-                    openExternal={true}
-                    onEdit={props.onEdit}
-                    text={props.text}
-                    getUrl={getUrl}
-        />
-    )
+    return null
+    // (
+    //     <JsonEditor checkValid={checkValid} 
+    //                 display={props.display}
+    //                 openExternal={true}
+    //                 onEdit={props.onEdit}
+    //                 text={props.text}
+    //                 getUrl={getUrl}
+    //     />
+    // )
 }
 
 interface AlarmInfoProps {
@@ -85,7 +87,7 @@ interface AlarmInfoProps {
     hide: () => void
 }
 const AlarmInfo = (props: AlarmInfoProps) => {
-    
+
     if (!props.display) return null
 
     return (
@@ -153,7 +155,7 @@ interface UnloadedProps {
  */
 const Unloaded = (props: UnloadedProps) => {
     const ref = useRef<HTMLInputElement>(null)
-    
+
     const [showInfo, setShowInfo] = useState(true)
 
     const [alarmJson, setAlarmJson] = useState("")
@@ -173,9 +175,9 @@ const Unloaded = (props: UnloadedProps) => {
         const reader = new FileReader()
         reader.onload = (e: ProgressEvent<FileReader>) => {
             try {
-                const text = (()=>{
-                    if(!e.target || !e.target.result) throw new Error("No target")
-                    if(typeof e.target.result === "string") return e.target.result
+                const text = (() => {
+                    if (!e.target || !e.target.result) throw new Error("No target")
+                    if (typeof e.target.result === "string") return e.target.result
                     return e.target.result.toString()
                 })()
                 const json = JSON.parse(text)
@@ -190,7 +192,7 @@ const Unloaded = (props: UnloadedProps) => {
             }
         }
         reader.readAsText(selectedFile)
-        if(ref.current) ref.current.value = ""
+        if (ref.current) ref.current.value = ""
     }
 
     const newJson = () => {
@@ -204,12 +206,12 @@ const Unloaded = (props: UnloadedProps) => {
 
             <div className="section">
                 <AlarmEditor display={showEditor} text={alarmJson} onEdit={setAlarmJson} openExternal={props.openExternal} />
-                <AlarmInfo display={showInfo} hide={()=>setShowInfo(false)} />
-                <Button.Secondary outlined fullWidth onClick={newJson}>New </Button.Secondary>
-                <p style={{marginBottom: "0.5rem"}}></p>
-                <Button.Secondary outlined fullWidth onClick={showFileSelect}>
+                <AlarmInfo display={showInfo} hide={() => setShowInfo(false)} />
+                <Button variant="outline" className="w-full" onClick={newJson}>New </Button>
+                <p style={{ marginBottom: "0.5rem" }}></p>
+                <Button variant="outline" className="w-full" onClick={showFileSelect}>
                     Load <input ref={ref} type="file" style={{ display: "none" }} onChange={load} />
-                </Button.Secondary>
+                </Button>
 
             </div>
         </div>
@@ -232,8 +234,8 @@ const AlarmList = (props: AlarmListProps) => {
 
     const [alarms, setAlarms] = useState(props.alarms)
     const [removeAlarm, alarmParams] = useAlarmUrl(setAlarms, props)
-    
-    
+
+
     if (!alarms?.length) {
         if (props.alarms) {
             setAlarms(props.alarms.map(a => ({ ...a, id: a.name })))
@@ -243,37 +245,53 @@ const AlarmList = (props: AlarmListProps) => {
 
     const tryToRemove = (id: any/*TODO*/) => {
         try {
-            if(typeof removeAlarm === "function") removeAlarm(id)
+            if (typeof removeAlarm === "function") removeAlarm(id)
         } catch (e) {
             setAlarms(alarms.filter(alarm => alarm.id !== id))
         }
     }
 
     return (
-        <div style={{display: "grid", gridTemplateColumns: "1fr", gap: "3px"}}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3px" }}>
             {alarms.map(a => <Alarm key={a.id} {...a} {...alarmParams}
-                                            remove={()=>tryToRemove(a.id)} />)}
+                remove={() => tryToRemove(a.id)} />)}
         </div>
     )
 
+}
+
+const RuleHoverCard = ({ children, rule }: { children: React.ReactNode, rule: string }) => {
+    return (
+        <HoverCard>
+            <HoverCardTrigger asChild>
+                {children}
+            </HoverCardTrigger>
+            <HoverCardContent className="w-60">
+                <div className="flex justify-between space-x-4">
+                    <p className="text-sm font-mono">
+                        {rule}
+                    </p>
+                </div>
+            </HoverCardContent>
+        </HoverCard>
+    )
 }
 
 
 const Alarm = (props: AlarmProps) => {
 
     const passing = useAlarm(props)
-    const [showRule, setShowRule] = useState<boolean>(false)
     const flashActive = useFlash(600)
 
     const messageClass = passing
-        ? "has-background-success"
+        ? "bg-green-600"
         : passing === undefined
-            ? "is-secondary"
+            ? "bg-gray-200 dark:bg-gray-800"
             : flashActive
                 ? props.disableFlash
-                    ? "has-background-danger"
-                    : "has-background-danger-light"
-                : "has-background-danger"
+                    ? "bg-destructive"
+                    : "bg-red-700"
+                : "bg-destructive"
 
     const messageText = passing
         ? props.passingText || "PASS"
@@ -281,15 +299,11 @@ const Alarm = (props: AlarmProps) => {
             ? "UNKNOWN"
             : props.failingText || "FAIL"
 
-    const textClass = passing
-        ? "has-text-light"
-        : passing === undefined
-            ? "has-text-light"
-            : "has-text-dark"
-
-    const rule = showRule
-        ? <div className="block"><code>{props.rule}</code></div>
-        : null
+    const textClass = "" //passing
+    //     ? "has-text-light"
+    //     : passing === undefined
+    //         ? "has-text-light"
+    //         : "has-text-dark"
 
     if (props.display) {
         const tagSize = props.display === "compact" ? null : "is-large"
@@ -299,19 +313,20 @@ const Alarm = (props: AlarmProps) => {
     }
 
     return (
-        <article style={{borderRadius: "5px", display: "flex", justifyContent: 'space-between', padding: "10px", marginRight: "5px", marginBottom: "3px", fontSize: ".8em", height: "100%"}} className={messageClass}>
-            <FlexCenter extraStyle={{width: "100%", justifyContent: "space-between"}}>
-            <span className={textClass}>
-                <strong>
-                    <button className={textClass} style={{all: "unset", cursor: "pointer"}} onClick={()=>setShowRule(x=>!x)}>{props.name}</button>
-                </strong>
-            </span>
-            <span className={`ml-5 ${textClass}`}>{props.description}</span>
+        <article className={"rounded-md flex justify-between p-4 m-1 items-center text-sm h-full " + messageClass}>
+            <div className="flex justify-between w-full">
+                <span className={textClass}>
+                    <RuleHoverCard rule={props.rule}>
+                        <strong className="cursor-help">
+                            {props.name}
+                        </strong>
+                    </RuleHoverCard>
+                </span>
+                <span className={`ml-5 ${textClass}`}>{props.description}</span>
                 <span className={`mr-2 ml-2 ${textClass}`}>{messageText}</span>
-            {rule}
-            </FlexCenter>
+            </div>
         </article>
- 
+
     )
 }
 

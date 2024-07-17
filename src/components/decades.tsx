@@ -1,7 +1,9 @@
 
 const Spaced = (props: { children: React.ReactNode }) => {
     return (
-        <div className="decades-box-h pulsate"><h1>{props.children}</h1></div>
+        <div className="flex flex-row justify-between h-full m-auto">
+            <h1>{props.children}</h1>
+        </div>
     );
 }
 
@@ -10,11 +12,11 @@ const SpacedText = (props: { text: string }) => {
     
 }
 
-const DecadesBanner = () => {
+const DecadesBanner = ({text}: {text?: string}) => {
     return (
-        <div className="decades-header">
-            <div className="decades-header-container max800">
-                <SpacedText text="DECADES" />
+        <div className="flex flex-row gap-[10px] h-[100px] w-full justify-around items-center p-[0.5em]">
+            <div className="flex w-full justify-around fixed max-w-[80%]">
+                <SpacedText text={text || "DECADES"} />
             </div>
         </div>
     );
