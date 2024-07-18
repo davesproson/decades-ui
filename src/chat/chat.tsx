@@ -39,12 +39,15 @@ const ChatTime = (props: { time: number }) => {
 }
 
 const stripUrl = (message: string) => message.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '')
+                                             .replace(/(\/plot\?[\n\S]+)/g, '')
 
 const MessageUrlComponent = ({message}: {message: string}) => {
     let messageUrl: string = ''
     const rex = /(?:https?|ftp):\/\/([\n\S]+)\/([\n\S]+)/
+    const rex2 = /(\/plot\?[\n\S]+)/
 
     const matched = message.match(rex)
+    const matched2 = message.match(rex2)
     if (matched) {
         const proto = matched[0]
         const host = matched[1]
@@ -55,13 +58,19 @@ const MessageUrlComponent = ({message}: {message: string}) => {
         } else {
             messageUrl = `/${path}`
         }
+    } else {
+        if(matched2) {
+            const path = matched2[0]
+            messageUrl = path
+        }
     }
-    if(!matched) return null
+
+    if(!(matched || matched2)) return null
     return (
         <Button size="tiny" variant="outline" className="ml-2">
             <a target='_blank' rel='noreferrer' href={messageUrl}>
                 <span className="flex"><ExternalLink size={16} className="mr-2"/>
-                Link
+                View
                 </span>
             </a>
         </Button>
