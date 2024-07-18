@@ -15,7 +15,7 @@ import { toggleOptionsDrawer } from "@/redux/configSlice"
 import { setTimeframe } from "@/redux/optionsSlice"
 import { useNavigate } from "@tanstack/react-router"
 import { useGeoCoords, useParameterPresets } from "@/hooks"
-import { selectParamsByRawName } from "./redux/parametersSlice"
+import { selectParamsByRawName, unselectAllParams } from "./redux/parametersSlice"
 import { LiveDataOnly } from "./quicklook"
 import { loadSavedView } from "./redux/viewSlice"
 import { Home } from "lucide-react"
@@ -55,6 +55,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
     const outletClass = fixWidth ? "md:w-[80%] lg:w-[60%] min-w-[600px] m-auto mt-12" : "mt-12"
 
     const selectParameters = (rawNames: Array<string>) => {
+        dispatch(unselectAllParams())
         dispatch(selectParamsByRawName(rawNames))
     }
 
@@ -126,7 +127,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         <MenubarSeparator />
                         <MenubarItem>Alarms...</MenubarItem>
                         <MenubarItem>Timers...</MenubarItem>
-                        <MenubarItem>Gauges...</MenubarItem>
+                        <MenubarItem onClick={() => navigate({to: '/gauge-config'})}>Gauges...</MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
                 <MenubarMenu>
