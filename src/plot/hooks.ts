@@ -18,11 +18,10 @@ import {
 import { useGetParameters } from '@/parameters/hooks';
 import { PlotSearchParams, Route } from '@/routes/plot';
 
-
-const BellIcon = {
+const ShareIcon = {
     'width': 500,
     'height': 600,
-    'path': 'M224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64zm215.39-149.71c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71z'
+    'path': 'M395.72,0c-48.204,0-87.281,39.078-87.281,87.281c0,2.036,0.164,4.03,0.309,6.029l-161.233,75.674 c-15.668-14.971-36.852-24.215-60.231-24.215c-48.204,0.001-87.282,39.079-87.282,87.282c0,48.204,39.078,87.281,87.281,87.281 c15.206,0,29.501-3.907,41.948-10.741l69.789,58.806c-3.056,8.896-4.789,18.396-4.789,28.322c0,48.204,39.078,87.281,87.281,87.281 c48.205,0,87.281-39.078,87.281-87.281s-39.077-87.281-87.281-87.281c-15.205,0-29.5,3.908-41.949,10.74l-69.788-58.805 c3.057-8.891,4.789-18.396,4.789-28.322c0-2.035-0.164-4.024-0.308-6.029l161.232-75.674c15.668,14.971,36.852,24.215,60.23,24.215 c48.203,0,87.281-39.078,87.281-87.281C482.999,39.079,443.923,0,395.72,0z'
 }
 
 // Options for dark mode. These are currently hard-coded, and disabled
@@ -467,18 +466,18 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                     }
                 }
             ]
-        }
+        } 
 
         if(chatState.config.chatActive && chatState.connectionStatus === 'Open' && !quicklookMode) {
             config.modeBarButtonsToAdd.push({
                 name: "Share plot",
-                icon: BellIcon as any,
+                icon: ShareIcon as any,
                 click: () => {
                     const url = new URL(window.location.href)
                     const [staticStart, now] = getTimeLims(options.timeframe)
                     if(staticStart < plotLoadedAt) plotLoadedAt = staticStart
                     url.searchParams.set("timeframe", `${plotLoadedAt},${now}`)
-                    chatActions.sendChat(`Shared a plot: ${url.toString()}`)
+                    chatActions.sendChat(`Shared a plot: ${url.pathname}${url.search}`)
                 }
             })
         }
