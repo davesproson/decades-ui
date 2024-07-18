@@ -76,6 +76,34 @@ const paramFromDecadesParam = (param: DecadesParameter): Parameter => {
     }
 }
 
+const manageAxis = (param: Parameter, state: ParamsState) => {
+    if(param.selected) {
+        const pAxis = state.axes.find(axis => axis.units === param.units)
+        if(!pAxis) {
+            const newAxis = getNewAxis(
+                param.units, state.axes
+            );
+            state.axes.push(newAxis);
+            param.axisId = newAxis.id;
+        } else {
+            param.axisId = pAxis.id;
+        }
+    } else {
+        const axisId = param.axisId;
+        param.axisId = null;
+        const nParamsOnAxis = state.params.filter(param => param.axisId === axisId).length;
+        if(nParamsOnAxis === 0) {
+            const axisIndex = state.axes.findIndex(axis => axis.id === axisId);
+            state.axes.splice(axisIndex, 1);
+        }
+    }
+    const usedAxes = [...new Set(
+        state.params.filter(param => param.selected).map(param => param.axisId)
+    )];
+
+    state.axes = state.axes.filter(axis => usedAxes.includes(axis.id));
+}
+
 export const paramSlice = createSlice({
 
 	name: 'params',
@@ -121,31 +149,7 @@ export const paramSlice = createSlice({
             const param = state.params.find(param => param.id === action.payload.id);
             if (param) {
                 param.selected = !param.selected;
-                if(param.selected) {
-                    const pAxis = state.axes.find(axis => axis.units === param.units)
-                    if(!pAxis) {
-                        const newAxis = getNewAxis(
-                            param.units, state.axes
-                        );
-                        state.axes.push(newAxis);
-                        param.axisId = newAxis.id;
-                    } else {
-                        param.axisId = pAxis.id;
-                    }
-                } else {
-                    const axisId = param.axisId;
-                    param.axisId = null;
-                    const nParamsOnAxis = state.params.filter(param => param.axisId === axisId).length;
-                    if(nParamsOnAxis === 0) {
-                        const axisIndex = state.axes.findIndex(axis => axis.id === axisId);
-                        state.axes.splice(axisIndex, 1);
-                    }
-                }
-                const usedAxes = [...new Set(
-                    state.params.filter(param => param.selected).map(param => param.axisId)
-                )];
-    
-                state.axes = state.axes.filter(axis => usedAxes.includes(axis.id));
+                manageAxis(param, state);
             }
         },
         unselectAllParams: (state) => {
@@ -160,6 +164,7 @@ export const paramSlice = createSlice({
                 if(rawNames.includes(param.raw)) {
                     param.selected = true;
                 }
+                manageAxis(param, state);
             });
         },
         addNewAxis: (state, action: PayloadAction<{paramId: ParameterID}>) => {
