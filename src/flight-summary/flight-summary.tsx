@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import type { FlightSummaryEntry } from "./types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogTitle, AlertDialogContent, AlertDialogHeader } from "@/components/ui/alert-dialog";
+import { Show } from "@/components/flow";
 
 const Info = ({ entry, clearEntry }: { entry: FlightSummaryEntry | null, clearEntry: () => void }) => {
     if (!entry) return null
@@ -73,15 +74,17 @@ const FlightSummary = ({ hasNavbar }: { hasNavbar?: boolean }) => {
         <div className="absolute inset-0 flex justify-center items-center" >
             <div className="flex flex-col items-center">
                 <h3 className="text-2xl">No flight summary yet!</h3>
-                <Button asChild className="mt-4">
-                    <Link to="/">Home</Link>
-                </Button>
+                <Show when={!!hasNavbar}>
+                    <Button asChild className="mt-4">
+                        <Link to="/">Home</Link>
+                    </Button>
+                </Show>
             </div>
         </div>
     )
 
     return (
-        <div className={hasNavbar ? "mt-6 overflow-y-scroll" : "absolute inset-0 overflow-y-scroll"}>
+        <div className={hasNavbar ? "mt-6 overflow-y-auto" : "absolute inset-0 overflow-y-auto"}>
             <Info entry={detail} clearEntry={() => setDetail(null)} />
             <Table className="w-full">
                 <TableHeader>
