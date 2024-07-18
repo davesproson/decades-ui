@@ -127,6 +127,10 @@
       background: #848484;
     }
   }
+
+  .dm-filter {
+    filter: invert(63%) sepia(2%) saturate(13%) hue-rotate(331deg) brightness(86%) contrast(79%);
+  }
 }
 
 @layer base {
