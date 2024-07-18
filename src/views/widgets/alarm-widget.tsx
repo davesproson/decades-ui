@@ -1,6 +1,7 @@
 
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import AlarmList from "@/alarms/alarm"
+import alarmIcon from "@/assets/view-icons/alarm.svg"
 
 const AlarmsConfigArea = () => {
     return (
@@ -21,7 +22,7 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/alarm.svg',
+        icon: alarmIcon,
         tooltip: 'Be alerted when data are out of spec',
         component: AlarmList 
     })

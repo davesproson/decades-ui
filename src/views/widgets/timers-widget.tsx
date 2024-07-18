@@ -1,6 +1,7 @@
 import Timers from "@/timers/timers"
 import type { TimerConfig } from "@/timers/types"
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import timersIcon from "@/assets/view-icons/timer.svg"
 
 const TimersConfigArea = () => {
     return (
@@ -21,7 +22,7 @@ const useTimersWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/timer.svg',
+        icon: timersIcon,
         tooltip: 'Display a countdown timer or stopwatch',
         component: (props: { initialTimers: Array<TimerConfig> }) => Timers(props),
     })

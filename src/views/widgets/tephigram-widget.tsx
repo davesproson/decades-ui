@@ -2,6 +2,7 @@ import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import { containerStyle } from "./utils"
 import { TephigramOptions } from "@/tephigram/types"
 import Tephigram from "@/tephigram/tephigram"
+import tephigramIcon from "@/assets/view-icons/tephigram.svg"
 
 
 /**
@@ -29,7 +30,7 @@ const useTephiWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/tephi.svg',
+        icon: tephigramIcon,
         tooltip: 'Display a tephigram',
         component: (props: TephigramOptions) => Tephigram({ ...props, containerStyle: containerStyle }),
     })

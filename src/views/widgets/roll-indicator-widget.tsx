@@ -1,6 +1,7 @@
 
 import RollIndicator from "@/roll-indicator/roll-indicator"
 import type { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import rollIcon from "@/assets/view-icons/roll.svg"
 
 const ConfigRollArea = () => {
     return (
@@ -22,7 +23,7 @@ const useRollWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/roll.svg',
+        icon: rollIcon,
         tooltip: 'Display an aircraft roll indicator',
         component: RollIndicator
     })

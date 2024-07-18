@@ -1,5 +1,6 @@
 import type { RegistryType, WidgetConfiguration, ConfigWidgetProps } from "./types"
 import FlightSummary  from "@/flight-summary/flight-summary"
+import flightSummaryIcon from "@/assets/view-icons/flight-summary.svg"
 
 const FltSumConfig = () => {
     return (
@@ -21,9 +22,9 @@ const useFlightSummaryWidget = (registry: RegistryType<WidgetConfiguration>) => 
             })
             return true
         },
-        icon: 'dashicons/clock.svg',
+        icon: flightSummaryIcon,
         tooltip: 'Display the flight summary',
-        component: FlightSummary
+        component: () => <FlightSummary />
     })
 }
 

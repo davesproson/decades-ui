@@ -1,6 +1,7 @@
 import { ChatWidget } from "../../chat/chat"
 import { enableChat } from "../../settings"
 import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import chatIcon from "@/assets/view-icons/chat.svg"
 
 const ChatConfig = () => {
     return (
@@ -22,7 +23,7 @@ const useChatWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/plot.svg',
+        icon: chatIcon,
         tooltip: 'Display a chat window',
         component: ChatWidget
     })

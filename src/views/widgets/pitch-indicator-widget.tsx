@@ -1,5 +1,6 @@
 import PitchIndicator from "@/pitch-indicator/pitch-indicator"
-import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import type { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import rollIcon from "@/assets/view-icons/roll.svg"
 
 const ConfigArea = () => {
     return (
@@ -21,7 +22,7 @@ const usePitchWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/roll.svg',
+        icon: rollIcon,
         tooltip: 'Display an aircraft pitch indicator',
         component: PitchIndicator
     })

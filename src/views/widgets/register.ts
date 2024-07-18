@@ -2,7 +2,7 @@ import { useViewWidget } from './view-widget';
 import { usePlotWidget } from './plot-widget';
 import { useDashWidget } from './dash-widget';
 import { useTephiWidget } from './tephigram-widget';
-// import { useGaugeWidget } from './gaugeWidget';
+import { useGaugeWidget } from './gauge-widget';
 import { useHeadingWidget } from './heading-widget';
 import { useMapWidget } from './map-widget';
 import { useAlarmsWidget } from './alarm-widget';
@@ -42,7 +42,7 @@ const useWidgets = () => {
     usePlotWidget(registry)
     useDashWidget(registry)
     useTephiWidget(registry)
-    // useGaugeWidget(registry)
+    useGaugeWidget(registry)
     useHeadingWidget(registry)
     useMapWidget(registry)
     useAlarmsWidget(registry)

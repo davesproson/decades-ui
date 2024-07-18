@@ -1,5 +1,6 @@
 import HeadingIndicator from "@/heading-indicator/heading-indicator"
 import type { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import headingIcon from "@/assets/view-icons/heading.svg"
 
 const ConfigHeadingArea = () => {
     return (
@@ -21,7 +22,7 @@ const useHeadingWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/heading.svg',
+        icon: headingIcon,
         tooltip: 'Display an aircraft heading indicator',
         component: HeadingIndicator
     })

@@ -1,12 +1,9 @@
 import React, { useImperativeHandle } from 'react'
 import { useSelector } from '@store'
-// import { Tag } from '../../components/tags'
 import { Badge } from '@/components/ui/badge'
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './types'
 import { Redash } from '@/dashboard/dashboard'
-// import { DashboardProps } from '../../dashboard/dashboard.types'
-// import { Dashboard } from '../../dashboard/dashboard'
-// import { Redash } from '../../redash/redash'
+import dashboardIcon from '@/assets/view-icons/dashboard.svg'
 
 
 type ConfigDashboardData = {
@@ -69,7 +66,7 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/dashboard.svg',
+        icon: dashboardIcon,
         tooltip: 'Display a dashboard - realtime parameter values',
         component: (props: DashboardProps) => {
             return  <Redash {...props} useURL={false} />

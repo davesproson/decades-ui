@@ -1,5 +1,6 @@
-import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
-import DecadesMap from "../../map/decadesMap"
+import type { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import DecadesMap from "@/map/decadesMap"
+import mapIcon from "@/assets/view-icons/map.svg"
 
 const ConfigMapArea = () => {
     return (
@@ -20,7 +21,7 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/globe.svg',
+        icon: mapIcon,
         tooltip: 'Display a map of the aircraft position',
         component: DecadesMap
     })

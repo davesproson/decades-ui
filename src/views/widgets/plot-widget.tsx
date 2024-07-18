@@ -6,6 +6,7 @@ import { useSelector } from "@store"
 import { forwardRef, useImperativeHandle, useRef } from "react"
 import type { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import { containerStyle } from "./utils"
+import chartIcon  from "@/assets/view-icons/chart.svg"
 
 type ConfigPlotData = {
     params: string[],
@@ -95,7 +96,7 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
             })
             return true
         },
-        icon: 'dashicons/chart.svg',
+        icon: chartIcon,
         tooltip: 'Display a timeseries plot',
         component: (props: PlotURLOptions) => PlotDispatcher({ ...props, containerStyle: containerStyle }),
     }
