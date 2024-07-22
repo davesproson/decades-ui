@@ -10,6 +10,7 @@ import { apiEndpoints } from "@/settings"
 const ParameterFilter = memo(() => {
     const dispatch = useDispatch()
     const filterText = useSelector((state) => state.paramfilter.filterText)
+    const paramSet = useSelector((state) => state.vars.paramSet)
     const [spin, setSpin] = useState(false)
     const [lastUpdate, setLastUpdate] = useState(0)
     const [enabled, setEnabled] = useState(true)
@@ -36,7 +37,12 @@ const ParameterFilter = memo(() => {
         setEnabled(false)
         setSpin(true)
         dispatch(resetParameterStatuses())
-        fetch(apiEndpoints.parameter_availability).then((response) => {
+
+        const url = new URL(window.location.href)
+        url.pathname = apiEndpoints.parameter_availability
+        url.searchParams.set('params', paramSet)
+
+        fetch(url.toString()).then((response) => {
             if (response.ok) {
                 return response.json()
             }

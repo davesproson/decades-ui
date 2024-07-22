@@ -18,6 +18,7 @@ import { DecadesBreadCrumb } from '@/components/ui/breadcrumb';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { JsonEditor } from 'json-edit-react'
+import { ParameterDispatcher } from '@/parameters/parameter-dispatcher';
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -164,7 +165,7 @@ const JsonViewConfig = () => {
         <JsonEditor
             className="bg-background"
             data={config}
-            setData={(data)=>{
+            setData={(data) => {
                 dispatch(setAdvancedConfig(data as AdvancedConfig))
                 console.log(data)
             }}
@@ -405,7 +406,7 @@ const AdvancedViewConfig = () => {
 
     return (
         <TooltipProvider delayDuration={0} >
-            
+
             <Input
                 className="mb-3"
                 placeholder="View Title"
@@ -432,25 +433,27 @@ const AdvancedViewConfig = () => {
 const TabbedViewConfig = () => {
     return (
         <Navbar >
-            <DecadesBreadCrumb
-                crumbs={[
-                    { label: "View Configuration" }
-                ]}
-            />
-            <Tabs defaultValue='visual' className="">
-                <div className="w-full flex justify-center">
-                <TabsList >
-                    <TabsTrigger value="visual">Visual</TabsTrigger>
-                    <TabsTrigger value="json">JSON</TabsTrigger>
-                </TabsList>
-                </div>
-                <TabsContent value="visual">
-                    <AdvancedViewConfig />
-                </TabsContent>
-                <TabsContent value="json">
-                    <JsonViewConfig />
-                </TabsContent>
-            </Tabs>
+            <ParameterDispatcher>
+                <DecadesBreadCrumb
+                    crumbs={[
+                        { label: "View Configuration" }
+                    ]}
+                />
+                <Tabs defaultValue='visual' className="">
+                    <div className="w-full flex justify-center">
+                        <TabsList >
+                            <TabsTrigger value="visual">Visual</TabsTrigger>
+                            <TabsTrigger value="json">JSON</TabsTrigger>
+                        </TabsList>
+                    </div>
+                    <TabsContent value="visual">
+                        <AdvancedViewConfig />
+                    </TabsContent>
+                    <TabsContent value="json">
+                        <JsonViewConfig />
+                    </TabsContent>
+                </Tabs>
+            </ParameterDispatcher>
         </Navbar>
     )
 }

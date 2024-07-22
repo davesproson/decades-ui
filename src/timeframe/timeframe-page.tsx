@@ -6,6 +6,7 @@ import { Clock } from 'lucide-react'
 import { TimeframeSelectorPlot } from './timeframe-chart'
 import { TimeframeSelectCard } from './timeframe-select'
 import { FlightSummarySelector } from './flightsummary'
+import { ParameterDispatcher } from '@/parameters/parameter-dispatcher'
 
 const TimeframeInfoBox = () => {
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
@@ -62,14 +63,16 @@ function Timeframe() {
 
     return (
         <Navbar>
-            <DecadesBreadCrumb crumbs={[
-                { label: 'Timeframe' },
-            ]} />
+            <ParameterDispatcher>
+                <DecadesBreadCrumb crumbs={[
+                    { label: 'Timeframe' },
+                ]} />
 
-            <TimeframeInfoBox />
-            <TimeframeSelectorPlot />
-            <TimeframeSelectCard />
-            <FlightSummarySelector />
+                <TimeframeInfoBox />
+                <TimeframeSelectorPlot />
+                <TimeframeSelectCard />
+                <FlightSummarySelector />
+            </ParameterDispatcher>
         </Navbar>
     )
 }

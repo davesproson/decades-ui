@@ -1,7 +1,4 @@
 import { Button } from "@/components/ui/button"
-// import OptionSwitch from "../components/optionSwitch"
-// import { Panel } from "../components/panel"
-// import { OptionBlock } from "../options/plotOptions"
 import { toggleDirection } from "@/redux/gaugeSlice"
 import { useSelector, useDispatch } from "@store"
 import type { GaugeConfig, GaugePanelProps } from "./types"
@@ -13,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { DecadesBreadCrumb } from "@/components/ui/breadcrumb"
+import { ParameterDispatcher } from "@/parameters/parameter-dispatcher"
 
 /**
  * Define an object that contains the configuration for the gauge panel.
@@ -100,22 +98,22 @@ const GaugeConfigWidget = (props: GaugeConfig & { position: number }) => {
 
     return (
         <>
-        <div className="flex justify-between flex-col md:flex-row">
-            <Label className="mt-4">Minimum value to display</Label>
-            <Input type="number" className="m-1 w-[200px]" value={conf.min} onChange={conf.setMin} />
-        </div>
-        <div className="flex justify-between flex-col md:flex-row">
-            <Label className="mt-4">Maximum value to display</Label>
-            <Input type="number" className="m-1 w-[200px]" value={conf.max} onChange={conf.setMax} />
-        </div>
-        <div className="flex justify-between flex-col md:flex-row">
-            <Label className="mt-4">Warn when below</Label>
-            <Input type="number" className="m-1 w-[200px]" value={conf.dangerBelow} onChange={conf.setDangerBelow} />
-        </div>
-        <div className="flex justify-between flex-col md:flex-row">
-            <Label className="mt-4">Warn when above</Label>
-            <Input type="number" className="m-1 w-[200px]" value={conf.dangerAbove} onChange={conf.setDangerAbove} />
-        </div>
+            <div className="flex justify-between flex-col md:flex-row">
+                <Label className="mt-4">Minimum value to display</Label>
+                <Input type="number" className="m-1 w-[200px]" value={conf.min} onChange={conf.setMin} />
+            </div>
+            <div className="flex justify-between flex-col md:flex-row">
+                <Label className="mt-4">Maximum value to display</Label>
+                <Input type="number" className="m-1 w-[200px]" value={conf.max} onChange={conf.setMax} />
+            </div>
+            <div className="flex justify-between flex-col md:flex-row">
+                <Label className="mt-4">Warn when below</Label>
+                <Input type="number" className="m-1 w-[200px]" value={conf.dangerBelow} onChange={conf.setDangerBelow} />
+            </div>
+            <div className="flex justify-between flex-col md:flex-row">
+                <Label className="mt-4">Warn when above</Label>
+                <Input type="number" className="m-1 w-[200px]" value={conf.dangerAbove} onChange={conf.setDangerAbove} />
+            </div>
         </>
     )
 }
@@ -137,35 +135,37 @@ const GaugeConfigurator = () => {
     const params = useSelector(state => state.vars.params)
 
     return (
-        <div className="mb-2">
-            <DecadesBreadCrumb
-                crumbs={[
-                    { label: "Configure Gauges" },
-                ]} />
+        <ParameterDispatcher>
+            <div className="mb-2">
+                <DecadesBreadCrumb
+                    crumbs={[
+                        { label: "Configure Gauges" },
+                    ]} />
 
-            <GaugeGlobalOptions {...gaugeConfig} />
+                <GaugeGlobalOptions {...gaugeConfig} />
 
-            {gaugeConfig.configs.map((config, i) => {
-                const param = params.find(param => param.raw === config.parameter)
+                {gaugeConfig.configs.map((config, i) => {
+                    const param = params.find(param => param.raw === config.parameter)
 
-                const title = (() => {
-                    let name = param?.name || config.parameter
-                    if (param?.units) name += ` (${param.units})`
-                    return name
-                })()
+                    const title = (() => {
+                        let name = param?.name || config.parameter
+                        if (param?.units) name += ` (${param.units})`
+                        return name
+                    })()
 
-                return (
-                    <Card key={i} className="mt-2">
-                        <CardHeader>
-                            <CardTitle>{title}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <GaugeConfigWidget key={i} position={i} {...config} />
-                        </CardContent>
-                    </Card>
-                )
-            })}
-        </div>
+                    return (
+                        <Card key={i} className="mt-2">
+                            <CardHeader>
+                                <CardTitle>{title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <GaugeConfigWidget key={i} position={i} {...config} />
+                            </CardContent>
+                        </Card>
+                    )
+                })}
+            </div>
+        </ParameterDispatcher>
 
     )
 }
