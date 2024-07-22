@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 
 import type { TimerConfig } from "./types"
-
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from "@/components/ui/context-menu"
+
+import { genId } from "@/utils"
 
 type InitialMinutesArg = {
     initialMinutes: number
@@ -292,7 +293,8 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
         const newCountdown: TimerConfig = {
             type: "countdown",
             initialTime: initialTime,
-            name: "Countdown"
+            name: "Countdown",
+            id: genId()
         }
         setTimers([...timers, newCountdown])
     }
@@ -306,7 +308,8 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
         const newCountUp: TimerConfig = {
             type: "countup",
             initialTime: 0,
-            name: "Timer"
+            name: "Timer",
+            id: genId()
         }
         setTimers([...timers, newCountUp])
     }
@@ -327,13 +330,13 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
         const removeTimer = i < (initialTimers?.length || 0) ? undefined : () => removeNthTimer(i)
         if (t.type === "countdown") {
             return (
-                <TimerContextMenu key={i} {...staticContextHandlers} removeTimer={removeTimer}>
+                <TimerContextMenu key={t.id} {...staticContextHandlers} removeTimer={removeTimer}>
                     <CountDown {...t} />
                 </TimerContextMenu>
             )
         }
         return (
-            <TimerContextMenu key={i} {...staticContextHandlers} removeTimer={removeTimer}>
+            <TimerContextMenu key={t.id} {...staticContextHandlers} removeTimer={removeTimer}>
                 <CountUp {...t} />
             </TimerContextMenu>
         )

@@ -147,3 +147,12 @@ export const getFlightNumber = async () => {
     const data = await response.json()
     return data.flight_number as string
 }
+
+/**
+ * Generate a basic random ID.
+ * 
+ * @returns the ID
+ */
+export const genId = () => {
+    return Math.random().toString(36).substring(2)
+}
