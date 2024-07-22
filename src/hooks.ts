@@ -1,8 +1,7 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "@store"
-import { useLoaderData } from "@tanstack/react-router"
 
-import { geoCoords, geoCoordsQuicklook, presets, presetsQuicklook } from "@/settings"
+import { apiEndpoints, geoCoords, geoCoordsQuicklook, presets, presetsQuicklook } from "@/settings"
 import { setParams, setParamsDispatched } from "./redux/parametersSlice"
 
 export const useScrollInhibitor = (stopScroll: boolean) => {
@@ -24,14 +23,24 @@ export const useParameterPresets = (): {[key: string]: string[]} => {
 }
 
 export const useDispatchParameters = () => {
-    const data = useLoaderData({from: '/'})
     const dispatch = useDispatch()
     const dispatchDone = useSelector((state) => state.vars.paramsDispatched)
+    const paramSet = useSelector((state) => state.vars.paramSet)
+
     useEffect(() => {
         if (dispatchDone) return
-        dispatch(setParams(data))
-        dispatch(setParamsDispatched(true))
-    }, [dispatch, data, dispatchDone])
+        const url = new URL(window.location.href)
+        url.pathname = apiEndpoints.parameter_availability
+        url.searchParams.set('params', paramSet)
+        fetch(url.toString()).then(
+            response => response.json()
+        ).then(data => {
+            dispatch(setParams(data))
+            dispatch(setParamsDispatched(true))
+        })
+
+
+    }, [dispatch, dispatchDone])
 }
 
 export const useGeoCoords = () => {
