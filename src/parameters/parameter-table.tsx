@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from "@store"
 import { memo, useCallback, useMemo } from "react"
 import { Parameter, toggleParamSelected } from "@/redux/parametersSlice"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { useDispatchParameters } from "@/hooks"
 
 type AvailabiliyHoverCardProps = {
     children: React.ReactNode,
@@ -47,7 +46,7 @@ const AvailabiliyHoverCard = memo(({ children, available }: AvailabiliyHoverCard
 })
 
 const ParameterTable = memo(() => {
-    useDispatchParameters()
+    
     const dispatch = useDispatch()
     const parameters = useSelector((state) => state.vars.params)
     const filterText = useSelector((state) => state.paramfilter.filterText)

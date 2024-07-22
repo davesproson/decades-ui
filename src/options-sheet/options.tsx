@@ -10,6 +10,7 @@ import { toggleOptionsDrawer } from "@/redux/configSlice"
 import { ThemeSelect } from "./theme-select"
 import { ChatSwitch } from "./chat-enable"
 import { Separator } from "@/components/ui/separator"
+import { ParamSetSelector } from "./paramset-select"
 
 const OptionsSheet = () => {
     const isOpen = useSelector((state) => state.config.showOptionsDrawer)
@@ -25,6 +26,8 @@ const OptionsSheet = () => {
                 <ThemeSelect />
                 <Separator className="my-4"/>
                 <ChatSwitch />
+                <Separator className="my-4"/>
+                <ParamSetSelector />
                 </SheetHeader>
             </SheetContent>
         </Sheet>
