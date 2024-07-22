@@ -5,7 +5,65 @@ import type { TimerConfig } from "./types"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from "@/components/ui/context-menu"
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuTrigger } from "@/components/ui/context-menu"
+
+type InitialMinutesArg = {
+    initialMinutes: number
+}
+
+const TimerContextMenu = ({ addCountUp, addCountDown, removeTimer, direction, toggleDirection, children }: {
+    addCountUp: () => void,
+    addCountDown: (intialMinutes: InitialMinutesArg) => void,
+    removeTimer?: () => void,
+    direction?: DirectionInfo,
+    toggleDirection?: () => void,
+    children: React.ReactNode
+}) => {
+
+    return (
+        <ContextMenu >
+            <ContextMenuTrigger>
+                {children}
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+                <ContextMenuItem onClick={addCountUp}>
+                    Add Timer
+                </ContextMenuItem>
+
+                <ContextMenuSub>
+                    <ContextMenuSubTrigger>Add Countdown</ContextMenuSubTrigger>
+                    <ContextMenuSubContent>
+                        <ContextMenuItem onClick={() => addCountDown({ initialMinutes: 1 })}>1 Minute</ContextMenuItem>
+                        <ContextMenuItem onClick={() => addCountDown({ initialMinutes: 5 })}>5 Minutes</ContextMenuItem>
+                        <ContextMenuItem onClick={() => addCountDown({ initialMinutes: 10 })}>10 Minutes</ContextMenuItem>
+                        <ContextMenuItem onClick={() => addCountDown({ initialMinutes: 30 })}>30 Minutes</ContextMenuItem>
+                    </ContextMenuSubContent>
+                </ContextMenuSub>
+
+                {(removeTimer !== undefined) &&
+                    <>
+                        <ContextMenuSeparator />
+
+                        <ContextMenuItem onClick={removeTimer}>
+                            Remove Timer
+                        </ContextMenuItem>
+                    </>
+                }
+
+                {(toggleDirection !== undefined) &&
+                    <>
+                        <ContextMenuSeparator />
+                        <ContextMenuItem onClick={toggleDirection}>
+                            Switch to {direction?.switchText} Layout
+                        </ContextMenuItem>
+                    </>
+                }
+
+
+            </ContextMenuContent>
+        </ContextMenu>
+    )
+}
 
 /**
  * A simple compenent which displays an editable name.
@@ -106,7 +164,7 @@ const TimerContainer = (
                             size="sm" variant="ghost" onClick={b.onClick}>{b.text}</Button>)}
                     </div>
                 </div>
-                <span className="p-3 flex justify-center flex-1 text-4xl items-center h-full">
+                <span className="font-mono p-3 flex justify-center flex-1 text-4xl items-center h-full">
                     {formatTime(time)}
                 </span>
             </div>
@@ -184,6 +242,8 @@ const CountDown = ({ initialTime, name, warnBelow, alarmBelow }: {
     />
 }
 
+type DirectionInfo = { direction: "row", switchText: "Vertical" } | { direction: "col", switchText: "Horizontal" }
+
 /**
  * The timers component. This component displays a list of timers, which
  * can be either timers or countdowns, and a context menu to add new timers.
@@ -196,6 +256,10 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
 
     // Initialize the timers state
     const [timers, setTimers] = useState(initialTimers || [])
+    const [direction, setDirection] = useState<DirectionInfo>({
+        direction: "col",
+        switchText: "Horizontal"
+    })
 
     useEffect(() => {
         if (initialTimers) {
@@ -208,14 +272,14 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
         }
     }, [])
 
+    const toggleDirection = () => {
+        setDirection(d => d.direction === "row" 
+            ? { direction: "col", switchText: "Horizontal" } 
+            : { direction: "row", switchText: "Vertical" })
+    }
 
-    // Map an array of timer configurations to an array of timer components
-    const timerComponents = timers.map((t, i) => {
-        if (t.type === "countdown") {
-            return <CountDown key={i} {...t} />
-        }
-        return <CountUp key={i} {...t} />
-    })
+    const directionClass = direction.direction === "row" ? "flex-row" : "flex-col"
+
 
     /**
      * Add a countdown to the timers list, by modifying the timers state.
@@ -223,7 +287,7 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
      * @param {String} name - The name of the countdown
      * @param {number} initialTime - The initial time of the countdown in seconds
      */
-    const addCountdown = ({initialMinutes}: {initialMinutes?: number}) => {
+    const addCountdown = ({ initialMinutes }: { initialMinutes?: number }) => {
         const initialTime = initialMinutes ? initialMinutes * 60 : 60
         const newCountdown: TimerConfig = {
             type: "countdown",
@@ -247,44 +311,47 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
         setTimers([...timers, newCountUp])
     }
 
+    const removeNthTimer = (n: number) => {
+        setTimers(timers.filter((_, i) => i !== n))
+    }
+
+    const staticContextHandlers = {
+        addCountDown: addCountdown,
+        addCountUp: addCountUp,
+        direction: direction,
+        toggleDirection: toggleDirection
+    }
+
+    // Map an array of timer configurations to an array of timer components
+    const timerComponents = timers.map((t, i) => {
+        const removeTimer = i < (initialTimers?.length || 0) ? undefined : () => removeNthTimer(i)
+        if (t.type === "countdown") {
+            return (
+                <TimerContextMenu key={i} {...staticContextHandlers} removeTimer={removeTimer}>
+                    <CountDown {...t} />
+                </TimerContextMenu>
+            )
+        }
+        return (
+            <TimerContextMenu key={i} {...staticContextHandlers} removeTimer={removeTimer}>
+                <CountUp {...t} />
+            </TimerContextMenu>
+        )
+    })
+
     if (timerComponents.length === 0) {
         return (
-            <div className="flex flex-col">
-                <Button className="w-full" onClick={()=>addCountdown({initialMinutes: 1})}>Add countdown</Button>
-                <Button className="w-full" onClick={addCountUp}>Add timer</Button>
-            </div>
+            <TimerContextMenu addCountDown={addCountdown} addCountUp={addCountUp}>
+                <div className="absolute inset-0" />
+            </TimerContextMenu>
         )
     }
 
     // Render the timers component
     return (
-        <>
-            <ContextMenu>
-                <ContextMenuTrigger >
-                    <div className="flex flex-wrap h-full w-full">
-                        {timerComponents}
-                    </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem onClick={addCountUp}>
-                        Add Timer
-                    </ContextMenuItem>
-
-                    <ContextMenuSub>
-                        <ContextMenuSubTrigger>Add Countdown</ContextMenuSubTrigger>
-                        <ContextMenuSubContent>
-                            <ContextMenuItem onClick={()=>addCountdown({initialMinutes: 1})}>1 Minute</ContextMenuItem>
-                            <ContextMenuItem onClick={()=>addCountdown({initialMinutes: 5})}>5 Minutes</ContextMenuItem>
-                            <ContextMenuItem onClick={()=>addCountdown({initialMinutes: 10})}>10 Minutes</ContextMenuItem>
-                            <ContextMenuItem onClick={()=>addCountdown({initialMinutes: 30})}>30 Minutes</ContextMenuItem>
-                        </ContextMenuSubContent>
-                    </ContextMenuSub>
-
-
-                </ContextMenuContent>
-            </ContextMenu>
-
-        </>
+        <div className={"absolute inset-1 overflow-y-auto h-full w-full flex " + directionClass}>
+            {timerComponents}
+        </div>
     )
 }
 
