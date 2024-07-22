@@ -39,6 +39,7 @@
     /* Track */
     ::-webkit-scrollbar-track {
       background: #a0a0a0;
+      border-radius: 5px;
     }
 
     /* Handle */
