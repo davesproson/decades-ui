@@ -219,7 +219,7 @@ const Redash = (props: RedashProps) => {
                 <ContextMenuSub>
                     <ContextMenuSubTrigger>Set font size</ContextMenuSubTrigger>
                     <ContextMenuSubContent>
-                        {[12, 24, 36, 48].map((size) => {
+                        {[12, 24, 36, 48, 60].map((size) => {
                             return (
                                 <ContextMenuCheckboxItem checked={size === fontSize} onClick={() => setFontSize(size)}>
                                     {size} px
