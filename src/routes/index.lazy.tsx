@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch } from '@store'
+import { useDispatch, useSelector } from '@store'
 import { setParamSet } from '@/redux/parametersSlice'
 import { setQcJob } from '@/redux/quicklookSlice'
 import { setQuickLookMode } from '@/redux/configSlice'
@@ -9,15 +9,19 @@ import { ParameterPage } from '@/parameters/parameter-page'
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { IndexSearch } from '.'
 import  Loader  from '@/components/loader'
+import { ModeSelector } from "@/modeSelect"
+import QuicklookSelector from '@/quicklook'
 
 export const Route = createLazyFileRoute('/')({
   component: () => <Index />,
   pendingComponent: () => <Loader />,
-  
 })
 
 function Index() {
   const { job, darkMode, paramset } = Route.useSearch<IndexSearch>()
+  const modeSelected = useSelector((state) => state.config.modeSelected)
+  const quickLookMode = useSelector((state) => state.config.quickLookMode)
+  const qcJob = useSelector((state) => state.quicklook.qcJob)
   const dispatch = useDispatch()
   const { setTheme } = useTheme()
 
@@ -40,6 +44,14 @@ function Index() {
     if (darkMode)
       setTheme('dark')
   }, [darkMode, setTheme])
+
+  if(!modeSelected) {
+    return <ModeSelector />
+  }
+
+  if(modeSelected && quickLookMode && !qcJob) {
+    return <QuicklookSelector />
+  }
 
   return (
     <Navbar>

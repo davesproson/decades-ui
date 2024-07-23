@@ -132,7 +132,11 @@ export const paramSlice = createSlice({
 			state.params.push(param);
 		},
         setParams: (state, action: PayloadAction<Array<DecadesParameter>>) => {
-            const params = action.payload;
+            let params = action.payload;
+            if(!(params instanceof Array)) {
+                console.error("Expected array of parameters");
+                params = []
+            }
             state.params = new Array();
             for(const param of params) {
                 const paramToAdd = paramFromDecadesParam(param)

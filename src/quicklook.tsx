@@ -8,6 +8,7 @@ import { useScrollInhibitor } from "@/hooks";
 import { setModeSelected, setQuickLookMode } from "./redux/configSlice";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router"
+import Loader from "./components/loader";
 
 type QuicklookJob = {
     flightNumber: string,
@@ -63,11 +64,11 @@ const QuicklookSelector = () => {
             .catch(() => {
                 throw new Error("Failed to fetch quicklook jobs")
             })
-        }, [])
+    }, [])
 
-    if(loading) {
+    if (loading) {
         return (
-            "Loading quicklook jobs..."
+            <Loader text="Loading flights..." />
         )
     }
 
@@ -75,7 +76,7 @@ const QuicklookSelector = () => {
         dispatch(setParamsDispatched(false))
         dispatch(setQcJob(job.jobID))
         dispatch(setFlightNumber(job.flightNumber))
-        navigate({to: "/"})
+        navigate({ to: "/" })
     }
 
     const reset = () => {
@@ -84,31 +85,31 @@ const QuicklookSelector = () => {
         dispatch(setParamsDispatched(false))
         dispatch(setQuickLookMode(false))
         dispatch(setModeSelected(false))
-        navigate({to: "/"})
+        navigate({ to: "/" })
     }
 
     let content: React.ReactNode;
     if (jobs.length === 0) {
         content = (
-            <div style={{ top: 0, bottom: 0, position: "fixed", left: 0, right: 0 }}>
-                {/* <FlexCenter direction="column" extraStyle={{ height: "100%" }}> */}
-                    <h2 className="title">
+            <div className="fixed inset-0">
+                <div className="flex flex-col items-center justify-center h-full">
+                    <h2 className="text-3xl font-medium">
                         No flights are currently available to view
                     </h2>
-                    <h3 className="subtitle">
+                    <h3 className="text-muted-foreground">
                         Flight data typically becomes available within 24 hours of a flight,
                         and is available for viewing for approximately 2 weeks.
                     </h3>
-                    <Button onMouseDown={reset}>
+                    <Button className="mt-4" onMouseDown={reset}>
                         Back
                     </Button>
-                {/* </FlexCenter> */}
+                </div>
             </div>
         )
     } else {
         content = jobs.sort(jobSortFn).map(job => {
             return (
-                <Button key={job.flightNumber} className="m-1" onClick={() => jobSelected(job)}>
+                <Button key={job.flightNumber} className="m-1 w-[300px]" onClick={() => jobSelected(job)}>
                     {job.flightNumber} ({job.flightProject}) {job.flightDate}
                 </Button>
             )
@@ -118,7 +119,9 @@ const QuicklookSelector = () => {
     return (
         <>
             <DecadesBanner />
-            {content}
+            <div className="fixed inset-0 items-center justify-center flex flex-col">
+                {content}
+            </div>
         </>
     )
 }
