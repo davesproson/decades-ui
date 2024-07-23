@@ -1,24 +1,45 @@
-
-import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import type { AlarmProps } from "@/alarms/types"
+import type { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import AlarmList from "@/alarms/alarm"
 import alarmIcon from "@/assets/view-icons/alarm.svg"
+import { useSelector } from "@store"
+import { forwardRef, useImperativeHandle, useRef } from "react"
 
-const AlarmsConfigArea = () => {
+const AlarmsConfigArea = forwardRef<ConfigHandle<Array<AlarmProps>>, {}>((_props, ref) => {
+    const alarms = useSelector(state => state.alarms)
+    console.log(alarms)
+
+    useImperativeHandle(ref, () => {
+        return {
+            getData: () => {
+                return Object.values(alarms.alarms)
+            }
+        }
+    }, [alarms])
+
     return (
-        <div>
-            <h1>Not yet implemented - configure in JSON</h1>
-        </div>
+        <>
+            These alarms will be added:
+            <ul>
+                {Object.values(alarms.alarms).map((alarm) => (
+                    <li key={alarm.id}>{alarm.name}</li>
+                ))}
+            
+            </ul>
+        </>
     )
-}
+})
 
 const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
+    const ref = useRef<ConfigHandle<Array<AlarmProps>>>(null)
     registry.register({
         name: "Alarms",
         type: "alarms",
-        configComponent: <AlarmsConfigArea />,
+        configComponent: <AlarmsConfigArea ref={ref} />,
         save: (props: ConfigWidgetProps) => {
             props.setData({
                 type: "alarms",
+                alarms: ref.current?.getData()
             })
             return true
         },

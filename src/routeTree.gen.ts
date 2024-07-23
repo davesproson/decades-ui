@@ -24,6 +24,7 @@ import { Route as GaugeConfigImport } from './routes/gauge-config'
 import { Route as FlightSummaryImport } from './routes/flight-summary'
 import { Route as DashImport } from './routes/dash'
 import { Route as ChatImport } from './routes/chat'
+import { Route as AlarmConfigImport } from './routes/alarm-config'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -95,6 +96,11 @@ const ChatRoute = ChatImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AlarmConfigRoute = AlarmConfigImport.update({
+  path: '/alarm-config',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
@@ -109,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/alarm-config': {
+      id: '/alarm-config'
+      path: '/alarm-config'
+      fullPath: '/alarm-config'
+      preLoaderRoute: typeof AlarmConfigImport
       parentRoute: typeof rootRoute
     }
     '/chat': {
@@ -209,6 +222,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
+  AlarmConfigRoute,
   ChatRoute,
   DashRoute,
   FlightSummaryRoute,
@@ -233,6 +247,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/alarm-config",
         "/chat",
         "/dash",
         "/flight-summary",
@@ -250,6 +265,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/alarm-config": {
+      "filePath": "alarm-config.tsx"
     },
     "/chat": {
       "filePath": "chat.tsx"

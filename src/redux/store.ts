@@ -13,6 +13,7 @@ import tutorialReducer from './tutorialSlice'
 import configReducer from './configSlice'
 import gaugeReducer from './gaugeSlice'
 import quicklookReducer from './quicklookSlice'
+import alarmReducer from './alarmSlice'
 // import tabbedPlotsReducer from './tabsSlice'
 
 const store = configureStore({
@@ -25,6 +26,7 @@ const store = configureStore({
     tutorial: tutorialReducer,
     config: configReducer,
     quicklook: quicklookReducer,
+    alarms: alarmReducer
     // tabs: tabbedPlotsReducer
   }
 })

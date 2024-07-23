@@ -164,7 +164,20 @@
     opacity: 0;
   }
 }
-  
+
+@keyframes rot180 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+ 
+.animate-rot180 {
+  animation: rot180 0.5s linear forwards;
+}
+
 .animate-slider {
   animation: slider 1.5s linear infinite;
 }

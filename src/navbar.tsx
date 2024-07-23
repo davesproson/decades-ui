@@ -125,8 +125,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                             Chat...
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem>Alarms...</MenubarItem>
-                        <MenubarItem>Timers...</MenubarItem>
+                        <MenubarItem onClick={() => navigate({to: '/alarm-config'})}>Alarms...</MenubarItem>
                         <MenubarItem onClick={() => navigate({to: '/gauge-config'})}>Gauges...</MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>

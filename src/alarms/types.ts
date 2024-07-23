@@ -6,9 +6,9 @@ interface AlarmProps {
     rule: string,
     passingText?: string,
     failingText?: string,
-    display?: string,
+    display?: "compact",
     disableFlash?: boolean,
-    remove?: () => void,
+    // remove?: () => void,
     interval?: number,
     failOnNoData?: boolean,
 }
