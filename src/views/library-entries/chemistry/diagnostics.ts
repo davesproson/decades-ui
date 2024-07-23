@@ -120,7 +120,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "chfgga02_V1 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     },
                                     {
                                         "name": "V2",
@@ -131,7 +132,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "chfgga02_V2 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     },
                                     {
                                         "name": "V3",
@@ -142,7 +144,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "chfgga02_V3 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     },
                                     {
                                         "name": "V4",
@@ -153,7 +156,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "chfgga02_V4 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     },
                                     {
                                         "name": "V6",
@@ -164,7 +168,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "twbozo01_V6 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     },
                                     {
                                         "name": "V7",
@@ -175,7 +180,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "chtsoo02_V7 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     },
                                     {
                                         "name": "V10",
@@ -186,7 +192,8 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "chfgga02_V10 == 1",
                                         "disableFlash": true,
                                         "passingText": "ON",
-                                        "failingText": "OFF"
+                                        "failingText": "OFF",
+                                        "muteOnFail": true
                                     }
                                 ]
                             }
