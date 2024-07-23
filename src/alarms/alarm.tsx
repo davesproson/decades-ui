@@ -63,11 +63,13 @@ const Alarm = (props: AlarmProps) => {
         ? "bg-green-600"
         : passing === undefined
             ? "bg-gray-200 dark:bg-gray-800"
-            : flashActive
-                ? props.disableFlash
-                    ? "bg-destructive"
-                    : "bg-red-700"
-                : "bg-destructive"
+            : props.muteOnFail
+                ? "bg-background"
+                :   flashActive
+                    ? props.disableFlash
+                        ? "bg-destructive"
+                        : "bg-red-700"
+                    : "bg-destructive"
 
     const messageText = passing
         ? props.passingText || "PASS"

@@ -36,6 +36,7 @@ interface AlarmConfig {
     failingText?: string,
     interval?: number,
     failOnNoData?: boolean
+    muteOnFail?: boolean
 }
 
 interface AlarmViewConfig {

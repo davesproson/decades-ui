@@ -8,9 +8,9 @@ interface AlarmProps {
     failingText?: string,
     display?: "compact",
     disableFlash?: boolean,
-    // remove?: () => void,
     interval?: number,
     failOnNoData?: boolean,
+    muteOnFail?: boolean,
 }
 
 
