@@ -59,10 +59,15 @@ const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListPr
 
 const useAlarm = (props: AlarmProps) => {
 
-    // const [passing, setPassing] = useState(props.passing)
     const [passing, setPassing] = useState<boolean | undefined>(undefined)
+    const [muted, setMuted] = useState(false)
 
     useEffect(() => {
+        if(muted) {
+            setPassing(undefined)
+            return
+        }
+
         const runAlarms = async () => {
                 
             const end = Math.floor(new Date().getTime() / 1000)
@@ -114,9 +119,9 @@ const useAlarm = (props: AlarmProps) => {
         
         const interval = setInterval(runAlarms, props.interval ? props.interval * 1000 : 5000)
         return () => clearInterval(interval)
-    }, [setPassing])
+    }, [setPassing, muted])
 
-    return passing
+    return {passing, muted, setMuted }
 }
 
 const useFlash = (delay: number) => {

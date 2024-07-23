@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAlarm, useAlarmUrl, useFlash } from './hooks'
 import type { AlarmListProps, AlarmProps } from './types'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { ContextMenu, ContextMenuCheckboxItem, ContextMenuContent, ContextMenuTrigger } from '@/components/ui/context-menu'
 
 
 /**
@@ -55,10 +56,10 @@ const RuleHoverCard = ({ children, rule }: { children: React.ReactNode, rule: st
 
 const Alarm = (props: AlarmProps) => {
 
-    const passing = useAlarm(props)
+    const {passing, muted, setMuted}  = useAlarm(props)
     const flashActive = useFlash(600)
 
-    const messageClass = passing
+    let messageClass = passing
         ? "bg-green-600"
         : passing === undefined
             ? "bg-gray-200 dark:bg-gray-800"
@@ -82,20 +83,28 @@ const Alarm = (props: AlarmProps) => {
     }
 
     return (
-        <article className={"rounded-md flex justify-between p-4 m-1 items-center text-sm " + messageClass}>
-            <div className="flex justify-between w-full">
-                <span>
-                    <RuleHoverCard rule={props.rule}>
-                        <strong className="cursor-help">
-                            {props.name}
-                        </strong>
-                    </RuleHoverCard>
-                </span>
-                <span className="ml-5">{props.description}</span>
-                <span className="mr-2 ml-2">{messageText}</span>
-            </div>
-        </article>
-
+        <ContextMenu>
+            <ContextMenuTrigger>
+                <article className={"rounded-md flex justify-between p-4 m-1 items-center text-sm h-[95%] " + messageClass}>
+                    <div className="flex justify-between w-full">
+                        <span>
+                            <RuleHoverCard rule={props.rule}>
+                                <strong className="cursor-help">
+                                    {props.name}
+                                </strong>
+                            </RuleHoverCard>
+                        </span>
+                        <span className="ml-5">{props.description}</span>
+                        <span className="mr-2 ml-2">{messageText}</span>
+                    </div>
+                </article>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+                <ContextMenuCheckboxItem checked={muted} onCheckedChange={() => {setMuted(x=>!x) }} >
+                    Muted
+                </ContextMenuCheckboxItem>
+            </ContextMenuContent>
+        </ContextMenu>
     )
 }
 
