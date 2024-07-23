@@ -11,6 +11,18 @@ const ProgressBar = ({progressPercent}: {progressPercent?: number}) => (progress
     ? <Progress className="mt-6 w-[50%]" value={progressPercent} max={100} />
     : null
 
+    const LoaderText = ({text}: {text: string}) => {
+        const words = text.split(' ')
+        console.log(text)
+        console.log(words)
+        return (
+            <div className="flex">
+                {words.map((x, i)=>{
+                    return <span key={i} className="mr-2 ml-2">{transformText(x)}</span>
+                })}
+            </div>
+        )
+    }
 
 /**
  * Returns a loader with a brand logo and a progress bar
@@ -32,9 +44,6 @@ const CogLoader = ({ text, progressPercent }: { text?: string, progressPercent?:
         return () => clearInterval(interval)
     }, [setValue])
 
-
-
-
     return (
         <div className="absolute flex flex-col inset-0 justify-center items-center">
             <div className="flex flex-row">
@@ -46,7 +55,7 @@ const CogLoader = ({ text, progressPercent }: { text?: string, progressPercent?:
                 </div>
             </div>
             <div className="mb-3 w-100 text-[2em]">D E C A D E S</div>
-            <div className="mt-3">{transformText(text) || "L O A D I N G"}</div>
+            <LoaderText text={text || "LOADING"}/>
             <ProgressBar progressPercent={progressPercent}/>
         </div>
     )
@@ -61,7 +70,7 @@ const Loader = ({ text, progressPercent }: { text?: string, progressPercent?: nu
                 }} />
             </div>
             <div className="mb-3 w-100 text-[2em]">D E C A D E S</div>
-            <div className="mt-3">{transformText(text) || "L O A D I N G"}</div>
+            <LoaderText text={text || "LOADING"} />
             <ProgressBar progressPercent={progressPercent}/>
         </div>
     )
