@@ -1,8 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import GaugeConfigurator from '@/gauges/gauge-config'
 import Navbar from '@/navbar'
+import { createLazyFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/gauge-config')({
+export const Route = createLazyFileRoute('/gauges/config')({
   component: () => <Navbar><GaugeConfigurator /></Navbar>,
-  beforeLoad: () => {}
 })

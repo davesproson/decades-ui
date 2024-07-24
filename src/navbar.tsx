@@ -65,7 +65,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
 
     const openViewAtConfig = (id: string) => {
         dispatch(loadSavedView({ id: id }))
-        navigate({ to: "/view-config" })
+        navigate({ to: "/view/config" })
     }
 
     return (
@@ -129,8 +129,8 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                     <MenubarMenu>
                         <MenubarTrigger>Views</MenubarTrigger>
                         <MenubarContent>
-                            <MenubarItem onClick={() => navigate({ to: "/view-config" })}>Configure...</MenubarItem>
-                            <MenubarItem onClick={() => navigate({ to: '/view-library' })}>Library...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: "/view/config" })}>Configure...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: '/view/library' })}>Library...</MenubarItem>
                             {savedViews.length > 0 && <MenubarSeparator />}
                             {savedViews.map((x, i) => {
                                 return (
@@ -154,8 +154,8 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                                 Chat...
                             </MenubarItem>
                             <MenubarSeparator />
-                            <MenubarItem onClick={() => navigate({ to: '/alarm-config' })}>Alarms...</MenubarItem>
-                            <MenubarItem onClick={() => navigate({ to: '/gauge-config' })}>Gauges...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: '/alarms/config' })}>Alarms...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: '/gauges/config' })}>Gauges...</MenubarItem>
                         </MenubarContent>
                     </MenubarMenu>
                 </LiveDataOnly>
@@ -163,7 +163,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                 <MenubarMenu>
                     <MenubarTrigger>Options</MenubarTrigger>
                     <MenubarContent>
-                        <MenubarItem onClick={() => navigate({ to: '/plot-options' })}>Plot Options...</MenubarItem>
+                        <MenubarItem onClick={() => navigate({ to: '/plot/options' })}>Plot Options...</MenubarItem>
                         <MenubarItem onClick={() => dispatch(toggleOptionsDrawer())}>
                             Global Options...
                         </MenubarItem>

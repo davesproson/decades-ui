@@ -1,13 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Tephigram  from '@/tephigram/tephigram'
 
 export type TephigramSearchParams = {
   timeframe: string,
   params: string,
 }
 
-export const Route = createFileRoute('/tephigram')({
-  component: () => <Tephigram />,
+export const Route = createFileRoute('/tephigram/')({
   beforeLoad: () => {}
   // validateSearch: (search: Record<string, unknown>): TephigramSearchParams => {
   //   return {

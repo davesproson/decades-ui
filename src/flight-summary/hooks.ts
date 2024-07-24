@@ -29,7 +29,7 @@ const useFlightSummary = () => {
     const [data, setData] = useState<FlightSummary>()
     let loaderData: FlightSummary | undefined
     try {
-       loaderData = useLoaderData({from: '/flight-summary'}) satisfies FlightSummary
+       loaderData = useLoaderData({from: '/flight-summary/'}) satisfies FlightSummary
     } catch {
         loaderData = undefined
     }

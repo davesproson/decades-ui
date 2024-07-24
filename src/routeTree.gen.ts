@@ -11,93 +11,26 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ViewLibraryImport } from './routes/view-library'
-import { Route as ViewConfigImport } from './routes/view-config'
-import { Route as ViewImport } from './routes/view'
-import { Route as TimeframeImport } from './routes/timeframe'
-import { Route as TephigramImport } from './routes/tephigram'
 import { Route as RollImport } from './routes/roll'
-import { Route as PlotOptionsImport } from './routes/plot-options'
-import { Route as PlotImport } from './routes/plot'
-import { Route as MapImport } from './routes/map'
-import { Route as GaugeConfigImport } from './routes/gauge-config'
-import { Route as FlightSummaryImport } from './routes/flight-summary'
-import { Route as DashImport } from './routes/dash'
-import { Route as ChatImport } from './routes/chat'
-import { Route as AlarmConfigImport } from './routes/alarm-config'
 import { Route as IndexImport } from './routes/index'
+import { Route as ViewIndexImport } from './routes/view/index'
+import { Route as TimeframeIndexImport } from './routes/timeframe/index'
+import { Route as TephigramIndexImport } from './routes/tephigram/index'
+import { Route as PlotIndexImport } from './routes/plot/index'
+import { Route as MapIndexImport } from './routes/map/index'
+import { Route as FlightSummaryIndexImport } from './routes/flight-summary/index'
+import { Route as DashIndexImport } from './routes/dash/index'
+import { Route as ChatIndexImport } from './routes/chat/index'
+import { Route as ViewLibraryImport } from './routes/view/library'
+import { Route as ViewConfigImport } from './routes/view/config'
+import { Route as PlotOptionsImport } from './routes/plot/options'
+import { Route as GaugesConfigImport } from './routes/gauges/config'
+import { Route as AlarmsConfigImport } from './routes/alarms/config'
 
 // Create/Update Routes
 
-const ViewLibraryRoute = ViewLibraryImport.update({
-  path: '/view-library',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ViewConfigRoute = ViewConfigImport.update({
-  path: '/view-config',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ViewRoute = ViewImport.update({
-  path: '/view',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TimeframeRoute = TimeframeImport.update({
-  path: '/timeframe',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/timeframe.lazy').then((d) => d.Route))
-
-const TephigramRoute = TephigramImport.update({
-  path: '/tephigram',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const RollRoute = RollImport.update({
   path: '/roll',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const PlotOptionsRoute = PlotOptionsImport.update({
-  path: '/plot-options',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/plot-options.lazy').then((d) => d.Route))
-
-const PlotRoute = PlotImport.update({
-  path: '/plot',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MapRoute = MapImport.update({
-  path: '/map',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/map.lazy').then((d) => d.Route))
-
-const GaugeConfigRoute = GaugeConfigImport.update({
-  path: '/gauge-config',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const FlightSummaryRoute = FlightSummaryImport.update({
-  path: '/flight-summary',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/flight-summary.lazy').then((d) => d.Route),
-)
-
-const DashRoute = DashImport.update({
-  path: '/dash',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ChatRoute = ChatImport.update({
-  path: '/chat',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AlarmConfigRoute = AlarmConfigImport.update({
-  path: '/alarm-config',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -105,6 +38,77 @@ const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const ViewIndexRoute = ViewIndexImport.update({
+  path: '/view/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/view/index.lazy').then((d) => d.Route))
+
+const TimeframeIndexRoute = TimeframeIndexImport.update({
+  path: '/timeframe/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/timeframe/index.lazy').then((d) => d.Route),
+)
+
+const TephigramIndexRoute = TephigramIndexImport.update({
+  path: '/tephigram/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/tephigram/index.lazy').then((d) => d.Route),
+)
+
+const PlotIndexRoute = PlotIndexImport.update({
+  path: '/plot/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/plot/index.lazy').then((d) => d.Route))
+
+const MapIndexRoute = MapIndexImport.update({
+  path: '/map/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/map/index.lazy').then((d) => d.Route))
+
+const FlightSummaryIndexRoute = FlightSummaryIndexImport.update({
+  path: '/flight-summary/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/flight-summary/index.lazy').then((d) => d.Route),
+)
+
+const DashIndexRoute = DashIndexImport.update({
+  path: '/dash/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/dash/index.lazy').then((d) => d.Route))
+
+const ChatIndexRoute = ChatIndexImport.update({
+  path: '/chat/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/chat/index.lazy').then((d) => d.Route))
+
+const ViewLibraryRoute = ViewLibraryImport.update({
+  path: '/view/library',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/view/library.lazy').then((d) => d.Route))
+
+const ViewConfigRoute = ViewConfigImport.update({
+  path: '/view/config',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/view/config.lazy').then((d) => d.Route))
+
+const PlotOptionsRoute = PlotOptionsImport.update({
+  path: '/plot/options',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/plot/options.lazy').then((d) => d.Route))
+
+const GaugesConfigRoute = GaugesConfigImport.update({
+  path: '/gauges/config',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/gauges/config.lazy').then((d) => d.Route))
+
+const AlarmsConfigRoute = AlarmsConfigImport.update({
+  path: '/alarms/config',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/alarms/config.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -117,62 +121,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/alarm-config': {
-      id: '/alarm-config'
-      path: '/alarm-config'
-      fullPath: '/alarm-config'
-      preLoaderRoute: typeof AlarmConfigImport
-      parentRoute: typeof rootRoute
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatImport
-      parentRoute: typeof rootRoute
-    }
-    '/dash': {
-      id: '/dash'
-      path: '/dash'
-      fullPath: '/dash'
-      preLoaderRoute: typeof DashImport
-      parentRoute: typeof rootRoute
-    }
-    '/flight-summary': {
-      id: '/flight-summary'
-      path: '/flight-summary'
-      fullPath: '/flight-summary'
-      preLoaderRoute: typeof FlightSummaryImport
-      parentRoute: typeof rootRoute
-    }
-    '/gauge-config': {
-      id: '/gauge-config'
-      path: '/gauge-config'
-      fullPath: '/gauge-config'
-      preLoaderRoute: typeof GaugeConfigImport
-      parentRoute: typeof rootRoute
-    }
-    '/map': {
-      id: '/map'
-      path: '/map'
-      fullPath: '/map'
-      preLoaderRoute: typeof MapImport
-      parentRoute: typeof rootRoute
-    }
-    '/plot': {
-      id: '/plot'
-      path: '/plot'
-      fullPath: '/plot'
-      preLoaderRoute: typeof PlotImport
-      parentRoute: typeof rootRoute
-    }
-    '/plot-options': {
-      id: '/plot-options'
-      path: '/plot-options'
-      fullPath: '/plot-options'
-      preLoaderRoute: typeof PlotOptionsImport
-      parentRoute: typeof rootRoute
-    }
     '/roll': {
       id: '/roll'
       path: '/roll'
@@ -180,39 +128,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RollImport
       parentRoute: typeof rootRoute
     }
-    '/tephigram': {
-      id: '/tephigram'
-      path: '/tephigram'
-      fullPath: '/tephigram'
-      preLoaderRoute: typeof TephigramImport
+    '/alarms/config': {
+      id: '/alarms/config'
+      path: '/alarms/config'
+      fullPath: '/alarms/config'
+      preLoaderRoute: typeof AlarmsConfigImport
       parentRoute: typeof rootRoute
     }
-    '/timeframe': {
-      id: '/timeframe'
-      path: '/timeframe'
-      fullPath: '/timeframe'
-      preLoaderRoute: typeof TimeframeImport
+    '/gauges/config': {
+      id: '/gauges/config'
+      path: '/gauges/config'
+      fullPath: '/gauges/config'
+      preLoaderRoute: typeof GaugesConfigImport
       parentRoute: typeof rootRoute
     }
-    '/view': {
-      id: '/view'
-      path: '/view'
-      fullPath: '/view'
-      preLoaderRoute: typeof ViewImport
+    '/plot/options': {
+      id: '/plot/options'
+      path: '/plot/options'
+      fullPath: '/plot/options'
+      preLoaderRoute: typeof PlotOptionsImport
       parentRoute: typeof rootRoute
     }
-    '/view-config': {
-      id: '/view-config'
-      path: '/view-config'
-      fullPath: '/view-config'
+    '/view/config': {
+      id: '/view/config'
+      path: '/view/config'
+      fullPath: '/view/config'
       preLoaderRoute: typeof ViewConfigImport
       parentRoute: typeof rootRoute
     }
-    '/view-library': {
-      id: '/view-library'
-      path: '/view-library'
-      fullPath: '/view-library'
+    '/view/library': {
+      id: '/view/library'
+      path: '/view/library'
+      fullPath: '/view/library'
       preLoaderRoute: typeof ViewLibraryImport
+      parentRoute: typeof rootRoute
+    }
+    '/chat/': {
+      id: '/chat/'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/dash/': {
+      id: '/dash/'
+      path: '/dash'
+      fullPath: '/dash'
+      preLoaderRoute: typeof DashIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/flight-summary/': {
+      id: '/flight-summary/'
+      path: '/flight-summary'
+      fullPath: '/flight-summary'
+      preLoaderRoute: typeof FlightSummaryIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/map/': {
+      id: '/map/'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/plot/': {
+      id: '/plot/'
+      path: '/plot'
+      fullPath: '/plot'
+      preLoaderRoute: typeof PlotIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tephigram/': {
+      id: '/tephigram/'
+      path: '/tephigram'
+      fullPath: '/tephigram'
+      preLoaderRoute: typeof TephigramIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/timeframe/': {
+      id: '/timeframe/'
+      path: '/timeframe'
+      fullPath: '/timeframe'
+      preLoaderRoute: typeof TimeframeIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/view/': {
+      id: '/view/'
+      path: '/view'
+      fullPath: '/view'
+      preLoaderRoute: typeof ViewIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -222,20 +226,20 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
-  AlarmConfigRoute,
-  ChatRoute,
-  DashRoute,
-  FlightSummaryRoute,
-  GaugeConfigRoute,
-  MapRoute,
-  PlotRoute,
-  PlotOptionsRoute,
   RollRoute,
-  TephigramRoute,
-  TimeframeRoute,
-  ViewRoute,
+  AlarmsConfigRoute,
+  GaugesConfigRoute,
+  PlotOptionsRoute,
   ViewConfigRoute,
   ViewLibraryRoute,
+  ChatIndexRoute,
+  DashIndexRoute,
+  FlightSummaryIndexRoute,
+  MapIndexRoute,
+  PlotIndexRoute,
+  TephigramIndexRoute,
+  TimeframeIndexRoute,
+  ViewIndexRoute,
 })
 
 /* prettier-ignore-end */
@@ -247,66 +251,66 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/alarm-config",
-        "/chat",
-        "/dash",
-        "/flight-summary",
-        "/gauge-config",
-        "/map",
-        "/plot",
-        "/plot-options",
         "/roll",
-        "/tephigram",
-        "/timeframe",
-        "/view",
-        "/view-config",
-        "/view-library"
+        "/alarms/config",
+        "/gauges/config",
+        "/plot/options",
+        "/view/config",
+        "/view/library",
+        "/chat/",
+        "/dash/",
+        "/flight-summary/",
+        "/map/",
+        "/plot/",
+        "/tephigram/",
+        "/timeframe/",
+        "/view/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/alarm-config": {
-      "filePath": "alarm-config.tsx"
-    },
-    "/chat": {
-      "filePath": "chat.tsx"
-    },
-    "/dash": {
-      "filePath": "dash.tsx"
-    },
-    "/flight-summary": {
-      "filePath": "flight-summary.tsx"
-    },
-    "/gauge-config": {
-      "filePath": "gauge-config.tsx"
-    },
-    "/map": {
-      "filePath": "map.tsx"
-    },
-    "/plot": {
-      "filePath": "plot.tsx"
-    },
-    "/plot-options": {
-      "filePath": "plot-options.tsx"
-    },
     "/roll": {
       "filePath": "roll.tsx"
     },
-    "/tephigram": {
-      "filePath": "tephigram.tsx"
+    "/alarms/config": {
+      "filePath": "alarms/config.tsx"
     },
-    "/timeframe": {
-      "filePath": "timeframe.tsx"
+    "/gauges/config": {
+      "filePath": "gauges/config.tsx"
     },
-    "/view": {
-      "filePath": "view.tsx"
+    "/plot/options": {
+      "filePath": "plot/options.tsx"
     },
-    "/view-config": {
-      "filePath": "view-config.tsx"
+    "/view/config": {
+      "filePath": "view/config.tsx"
     },
-    "/view-library": {
-      "filePath": "view-library.tsx"
+    "/view/library": {
+      "filePath": "view/library.tsx"
+    },
+    "/chat/": {
+      "filePath": "chat/index.tsx"
+    },
+    "/dash/": {
+      "filePath": "dash/index.tsx"
+    },
+    "/flight-summary/": {
+      "filePath": "flight-summary/index.tsx"
+    },
+    "/map/": {
+      "filePath": "map/index.tsx"
+    },
+    "/plot/": {
+      "filePath": "plot/index.tsx"
+    },
+    "/tephigram/": {
+      "filePath": "tephigram/index.tsx"
+    },
+    "/timeframe/": {
+      "filePath": "timeframe/index.tsx"
+    },
+    "/view/": {
+      "filePath": "view/index.tsx"
     }
   }
 }

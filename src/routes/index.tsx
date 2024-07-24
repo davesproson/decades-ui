@@ -1,4 +1,3 @@
-import Loader from '@/components/loader'
 import { createFileRoute } from '@tanstack/react-router'
 
 export type IndexSearch = {
@@ -10,6 +9,5 @@ export type IndexSearch = {
 export const Route = createFileRoute('/')({
   staleTime: Infinity,
   beforeLoad: () => {},
-  pendingComponent: () => <Loader />,
 })
 

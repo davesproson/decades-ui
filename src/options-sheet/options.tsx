@@ -32,7 +32,6 @@ const OptionsSheet = () => {
                     <Separator className="my-4" />
                     <QuicklookSwitch />
 
-                    
                     <LiveDataOnly>
                         <Separator className="my-4" />
                         <ChatSwitch />

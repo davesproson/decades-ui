@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import PlotDispatcher from '@/plot/plot'
-
 export type PlotSearchParams = {
   timeframe: string,
   ordvar: string,
@@ -14,7 +12,7 @@ export type PlotSearchParams = {
   job?: number | null,
 }
 
-export const Route = createFileRoute('/plot')({
+export const Route = createFileRoute('/plot/')({
   validateSearch: (search: Record<string, unknown>): PlotSearchParams => {
     return {
       timeframe: String(search.timeframe || '30min'),
@@ -28,6 +26,6 @@ export const Route = createFileRoute('/plot')({
       job: search.job ? Number(search.job) : null,
     }
   },
-  component: () => <PlotDispatcher />,
+
   beforeLoad: () => {}
 })
