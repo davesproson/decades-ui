@@ -37,7 +37,7 @@ interface OptionsState {
     ordinateAxis: string,
     server: string | undefined,
     axes: string[],
-    job?: string | null
+    job?: number | null
 }
 
 /**
@@ -73,7 +73,7 @@ const getUrl = (options: OptionsState) => {
     url.searchParams.set("style", options.plotStyle)
     url.searchParams.set("ordvar", options.ordinateAxis)
     if(options.server) url.searchParams.set("server", options.server)
-    if(options.job) url.searchParams.set("job", options.job)
+    if(options.job) url.searchParams.set("job", options.job.toString())
     // url.searchParams.set("server", options.server)
     for(const axStr of axisStrings) {
         url.searchParams.append("axis", axStr)
@@ -557,7 +557,7 @@ const usePlotInternalOptions = () => {
     const qcJob = useSelector(state => state.quicklook.qcJob)
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe);
 
-    let job: string | null = null;
+    let job: number | null = null;
     let timeframe: string | null = null;
 
     if(quickLookMode) {

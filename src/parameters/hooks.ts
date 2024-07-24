@@ -13,7 +13,7 @@ import { quickLookCompatability } from "@/quicklook/utils";
  * 
  * @returns The correct endpoint for parameter availability.
  */
-const useParameterEndpoint = (withAvailability: boolean) => {
+export const useParameterEndpoint = (withAvailability: boolean) => {
     const paramSet = useSelector(state => state.vars.paramSet);
     const quickLookMode = useSelector(state => state.config.quickLookMode);
     const quickLookJob = useSelector(state => state.quicklook.qcJob);
@@ -60,7 +60,7 @@ export const useGetParameters = () => {
             .catch((e) => {
                 console.log("Error fetching parameters:", e)
             })
-    }, [setParams, paramSet])
+    }, [setParams, paramSet, quickLookMode, endPoint, quickLookCompatability])
 
     return params
 }

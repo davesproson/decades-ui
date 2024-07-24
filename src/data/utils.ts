@@ -34,7 +34,7 @@ return await response.json()
  * @param end - The end time
  * @returns The data url
  */
-const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
+export const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
     const server = options.server ? options.server : location.host
     const job = store.getState().quicklook.qcJob
     const quicklookMode = store.getState().config.quickLookMode
@@ -44,7 +44,7 @@ const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
         : new URL(`${serverProtocol}://${server}${apiEndpoints.data}`)
 
     if(job && quicklookMode)
-        url.searchParams.set('job', job)
+        url.searchParams.set('job', job.toString())
 
     // Allow the endpoint to include a query string
     url.searchParams.set('frm', start.toString())

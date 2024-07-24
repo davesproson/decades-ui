@@ -15,8 +15,8 @@ import { toggleOptionsDrawer } from "@/redux/configSlice"
 import { setTimeframe } from "@/redux/optionsSlice"
 import { useNavigate } from "@tanstack/react-router"
 import { useGeoCoords, useParameterPresets } from "@/hooks"
-import { selectParamsByRawName, unselectAllParams } from "./redux/parametersSlice"
-import { LiveDataOnly } from "./quicklook"
+import { selectParamsByRawName, setParamsDispatched, unselectAllParams } from "./redux/parametersSlice"
+import { LiveDataOnly, QuicklookOnly } from "./quicklook"
 import { loadSavedView } from "./redux/viewSlice"
 import { Home } from "lucide-react"
 import { cn } from "./lib/utils"
@@ -24,6 +24,7 @@ import { useTephiAvailable, useTephiUrl } from "./tephigram/hooks"
 import { usePlotUrl } from "./plot/hooks"
 import { memo } from "react"
 import { useDashboardUrl } from "./dashboard/hooks"
+import { setQcJob } from "./redux/quicklookSlice"
 
 const launch = (url: string | undefined) => {
     if (url === undefined) return
@@ -49,6 +50,9 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
     const latUrl = usePlotUrl({ "ordvar": geoCoords.latitude, swapxy: true })
     const lonUrl = usePlotUrl({ "ordvar": geoCoords.longitude })
     const heightUrl = usePlotUrl({ "ordvar": geoCoords.altitude, swapxy: true })
+    const qcJobs = useSelector((state) => state.quicklook.qcJobs)
+    const qcJob = useSelector((state) => state.quicklook.qcJob)
+    const currentFlightNumber = qcJobs?.filter(x => x.jobID === qcJob)[0]?.flightNumber
 
 
     const fixWidth = (fixedWidth) || (fixedWidth === undefined)
@@ -72,6 +76,26 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         <Home />
                     </MenubarTrigger>
                 </MenubarMenu>
+
+                <QuicklookOnly>
+                    <MenubarMenu>
+                        <MenubarTrigger>
+                            {currentFlightNumber || "Flight"}
+                        </MenubarTrigger>
+                        <MenubarContent>
+                            {qcJobs?.map((job) => (
+                                <MenubarItem key={job.jobID} onClick={() => {
+                                    dispatch(setQcJob(job.jobID))
+                                    dispatch(setParamsDispatched(false))
+                                }}>
+                                    {job.flightNumber} ({job.flightProject}) - {job.flightDate}
+                                </MenubarItem>
+                            ))}
+                        </MenubarContent>
+                    </MenubarMenu>
+                </QuicklookOnly>
+
+
                 <MenubarMenu>
                     <MenubarTrigger>Timeframe</MenubarTrigger>
                     <MenubarContent>
@@ -100,35 +124,42 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         })}
                     </MenubarContent>
                 </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>Views</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem onClick={() => navigate({ to: "/view-config" })}>Configure...</MenubarItem>
-                        <MenubarItem onClick={() => navigate({ to: '/view-library' })}>Library...</MenubarItem>
-                        {savedViews.length > 0 && <MenubarSeparator />}
-                        {savedViews.map((x, i) => {
-                            return (
-                                <MenubarItem key={i} onClick={() => openViewAtConfig(x.id as string)}>
-                                    {x.name}
-                                </MenubarItem>
-                            )
-                        })}
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>More</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem onClick={() => navigate({ to: "/map" })}>Map...</MenubarItem>
-                        <MenubarItem onClick={() => navigate({ to: "/flight-summary" })}>Flight Summary...</MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem onClick={() => navigate({ to: "/chat" })}>
-                            Chat...
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem onClick={() => navigate({to: '/alarm-config'})}>Alarms...</MenubarItem>
-                        <MenubarItem onClick={() => navigate({to: '/gauge-config'})}>Gauges...</MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
+
+                <LiveDataOnly>
+                    <MenubarMenu>
+                        <MenubarTrigger>Views</MenubarTrigger>
+                        <MenubarContent>
+                            <MenubarItem onClick={() => navigate({ to: "/view-config" })}>Configure...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: '/view-library' })}>Library...</MenubarItem>
+                            {savedViews.length > 0 && <MenubarSeparator />}
+                            {savedViews.map((x, i) => {
+                                return (
+                                    <MenubarItem key={i} onClick={() => openViewAtConfig(x.id as string)}>
+                                        {x.name}
+                                    </MenubarItem>
+                                )
+                            })}
+                        </MenubarContent>
+                    </MenubarMenu>
+                </LiveDataOnly>
+
+                <LiveDataOnly>
+                    <MenubarMenu>
+                        <MenubarTrigger>More</MenubarTrigger>
+                        <MenubarContent>
+                            <MenubarItem onClick={() => navigate({ to: "/map" })}>Map...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: "/flight-summary" })}>Flight Summary...</MenubarItem>
+                            <MenubarSeparator />
+                            <MenubarItem onClick={() => navigate({ to: "/chat" })}>
+                                Chat...
+                            </MenubarItem>
+                            <MenubarSeparator />
+                            <MenubarItem onClick={() => navigate({ to: '/alarm-config' })}>Alarms...</MenubarItem>
+                            <MenubarItem onClick={() => navigate({ to: '/gauge-config' })}>Gauges...</MenubarItem>
+                        </MenubarContent>
+                    </MenubarMenu>
+                </LiveDataOnly>
+
                 <MenubarMenu>
                     <MenubarTrigger>Options</MenubarTrigger>
                     <MenubarContent>
@@ -138,6 +169,8 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
+
+
                 <MenubarMenu>
                     <MenubarTrigger className="text-green-600 focus:text-green-700 focus:bg-accent data-[state=open]:bg-accent data-[state=open]:text-green-700">
                         Launch!
@@ -158,8 +191,11 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         <MenubarItem disabled={!tephiAvailable} onClick={() => launch(tephiUrl)}>
                             Tephigram
                         </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem disabled={!nSelectedParams} onClick={() => launch(dashUrl.toString())}>Dashboard</MenubarItem>
+
+                        <LiveDataOnly>
+                            <MenubarSeparator />
+                            <MenubarItem disabled={!nSelectedParams} onClick={() => launch(dashUrl.toString())}>Dashboard</MenubarItem>
+                        </LiveDataOnly>
                     </MenubarContent>
                 </MenubarMenu>
             </Menubar>

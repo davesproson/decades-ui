@@ -10,12 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router"
 import Loader from "./components/loader";
 
-type QuicklookJob = {
-    flightNumber: string,
-    flightDate: string,
-    flightProject: string,
-    jobID: string
-}
+import type { QuicklookJob } from "@/redux/quicklookSlice";
 
 type QuicklookJobResponseElement = {
     flight_number: string,
@@ -48,7 +43,9 @@ const QuicklookSelector = () => {
                         flightNumber: a.flight_number,
                         flightDate: a.flight_date,
                         flightProject: a.flight_project,
-                        jobID: a.url.split('/')[7]
+                        // TODO: This is a hack to get the jobID from the URL
+                        // This should be fixed in the API
+                        jobID: parseInt(a.url.split('/')[7])
                     }
                 }))
                 dispatch(setQcJobs(data.results.map(a => {
@@ -56,7 +53,7 @@ const QuicklookSelector = () => {
                         flightNumber: a.flight_number,
                         flightDate: a.flight_date,
                         flightProject: a.flight_project,
-                        jobID: a.url.split('/')[7]
+                        jobID: parseInt(a.url.split('/')[7])
                     }
                 })))
             })

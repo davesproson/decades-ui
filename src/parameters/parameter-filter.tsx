@@ -5,12 +5,15 @@ import { resetParameterStatuses, setParams, unselectAllParams } from "@/redux/pa
 import { useDispatch, useSelector } from "@/redux/store"
 import { memo, useCallback, useEffect, useState } from "react"
 import { RefreshCw } from 'lucide-react'
-import { apiEndpoints } from "@/settings"
+import { useParameterEndpoint } from "./hooks"
+import { quickLookCompatability } from "@/quicklook/utils"
+import { authFetch as fetch } from "@/utils"
 
 const ParameterFilter = memo(() => {
     const dispatch = useDispatch()
     const filterText = useSelector((state) => state.paramfilter.filterText)
-    const paramSet = useSelector((state) => state.vars.paramSet)
+    const parameterEndpoint = useParameterEndpoint(true)
+    const quicklookMode = useSelector((state) => state.config.quickLookMode)
     const [spin, setSpin] = useState(false)
     const [lastUpdate, setLastUpdate] = useState(0)
     const [enabled, setEnabled] = useState(true)
@@ -38,24 +41,21 @@ const ParameterFilter = memo(() => {
         setSpin(true)
         dispatch(resetParameterStatuses())
 
-        const url = new URL(window.location.href)
-        url.pathname = apiEndpoints.parameter_availability
-        url.searchParams.set('params', paramSet)
-
-        fetch(url.toString()).then((response) => {
+        fetch(parameterEndpoint).then((response) => {
             if (response.ok) {
                 return response.json()
             }
             
             throw new Error("Failed to fetch parameter availability")
         }).then((data) => {
-            dispatch(setParams(data))
+            const cData = quickLookCompatability(quicklookMode)(data)
+            dispatch(setParams(cData))
         }).catch((error) => {
             console.error(error)
         }).finally(() => {
             setSpin(false)
         })
-    }, [dispatch, setParams, apiEndpoints.parameter_availability])
+    }, [dispatch, setParams, parameterEndpoint, quicklookMode, resetParameterStatuses, quickLookCompatability, setSpin, setLastUpdate, setEnabled])
 
     return (
         <div className="flex">

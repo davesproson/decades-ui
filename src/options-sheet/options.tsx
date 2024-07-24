@@ -11,6 +11,8 @@ import { ThemeSelect } from "./theme-select"
 import { ChatSwitch } from "./chat-enable"
 import { Separator } from "@/components/ui/separator"
 import { ParamSetSelector } from "./paramset-select"
+import { LiveDataOnly } from "@/quicklook"
+import { QuicklookSwitch } from "./quicklook-select"
 
 const OptionsSheet = () => {
     const isOpen = useSelector((state) => state.config.showOptionsDrawer)
@@ -21,14 +23,27 @@ const OptionsSheet = () => {
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetContent>
-                <SheetHeader>
+                <SheetHeader className="mb-4">
                     <SheetTitle> Global Options</SheetTitle>
-                <ThemeSelect />
-                <Separator className="my-4"/>
-                <ChatSwitch />
-                <Separator className="my-4"/>
-                <ParamSetSelector />
                 </SheetHeader>
+
+                    <ThemeSelect />
+
+                    <Separator className="my-4" />
+                    <QuicklookSwitch />
+
+                    
+                    <LiveDataOnly>
+                        <Separator className="my-4" />
+                        <ChatSwitch />
+                    </LiveDataOnly>
+
+                    <LiveDataOnly>
+                        <Separator className="my-4" />
+                        <ParamSetSelector />
+                    </LiveDataOnly>
+
+
             </SheetContent>
         </Sheet>
     )

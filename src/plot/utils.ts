@@ -1,13 +1,13 @@
-import { GetDataOptions, GetDataPlotOptions } from "@/data/types"
+import type { GetDataOptions, GetDataPlotOptions } from "@/data/types"
 import { 
-    serverProtocol, wsProtocol, apiEndpoints, badData, useWebSocketData 
-} from '../settings'
+    wsProtocol, apiEndpoints, badData, useWebSocketData 
+} from '@/settings'
 
-import { PlotURLOptions } from './types'
-import { DecadesDataResponse } from "@/data/types"
-import { DecadesParameter, ParamsState } from '../redux/parametersSlice'
-import { authFetch as fetch } from '../utils'
-import store from '../redux/store'
+import type { PlotURLOptions } from './types'
+import type { DecadesDataResponse } from "@/data/types"
+import { DecadesParameter, ParamsState } from '@/redux/parametersSlice'
+import { authFetch as fetch } from '@/utils'
+import { getDataUrl } from "@/data/utils"
 
 
 /**
@@ -218,42 +218,6 @@ function getXAxis(options: PlotURLOptions, param: string) {
             return i ? 'x' + (i+1) : 'x'
         }
     }
-}
-
-/**
- * Get the data url for a given set of options and start and end times
- * 
- * @param options - The plot options object
- * @param start - The start time
- * @param end - The end time
- * @returns The data url
- */
-const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
-    const server = options.server ? options.server : location.host
-    const job = store.getState().quicklook.qcJob
-    const quicklookMode = store.getState().config.quickLookMode
-
-    let url = (job && quicklookMode)
-        ? new URL(`${apiEndpoints.quicklook_data}`)
-        : new URL(`${serverProtocol}://${server}${apiEndpoints.data}`)
-
-    if(job && quicklookMode) 
-        url.searchParams.set('job', job)
-
-    // Allow the endpoint to include a query string
-    url.searchParams.set('frm', start.toString())
-
-    // If the end time is defined, add it to the url
-    if(end) url.searchParams.set('to', end.toString())
-
-    for (const para of options.params) {
-        url.searchParams.append('para', para)
-    }
-
-    if(options.ordvar)
-        url.searchParams.append('para' ,options.ordvar)
-    
-    return url.toString()
 }
 
 /**

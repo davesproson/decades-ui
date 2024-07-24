@@ -38,7 +38,7 @@ const useTephiUrl = () => {
     tephiUrl.searchParams.set("params", selectedParams.join(','))
     tephiUrl.searchParams.set("timeframe", timeframe)
     if(qcJob && quickLookMode) {
-        tephiUrl.searchParams.set("job", qcJob)
+        tephiUrl.searchParams.set("job", qcJob.toString())
     }
 
     return tephiUrl.toString()
@@ -106,12 +106,11 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
 
     const searchParams = new URL(location.href).searchParams
 
-    const timeframe = searchParams.get('timeframe') || "30min"
-    const params = searchParams.get('params') || "deiced_true_air_temp_c,dew_point"
+    const timeframe = searchParams.get('timeframe') || options?.timeframe || "30min"
+    const params = searchParams.get('params') || options?.params || "deiced_true_air_temp_c,dew_point"
     const paramsArray = params.split(',')
     const darkMode = useDarkMode()
     const quickLookMode = useSelector(state => state.config.quickLookMode)
-    options
 
     useEffect(() => {
 
@@ -200,7 +199,8 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
             return () => clearInterval(interval)
         }
 
-    }, [])
+
+    }, [quickLookMode])
 }
 
 export {

@@ -1,9 +1,12 @@
-import { useRef, forwardRef } from 'react'
+import { useRef, forwardRef, useEffect } from 'react'
 import { usePlot, usePlotOptions } from './hooks'
 // import { Dashboard } from '../dashboard/dashboard'
 // import { plotHeaderDefaults } from '../settings'
 import  Loader from '../components/loader'
 import { PlotURLOptions } from "./types"
+import { useDispatch } from 'react-redux'
+import { setQcJob } from '@/redux/quicklookSlice'
+import { setQuickLookMode } from '@/redux/configSlice'
 
 interface PlotProps {
     parameters: string[] | null,
@@ -82,6 +85,17 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
     const ref = useRef<HTMLDivElement>(null)
     const options = usePlotOptions(props);
     const loadDone = usePlot(options, ref)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        const job = options?.job
+        if(!job) {
+            dispatch(setQuickLookMode(false))
+            return
+        }
+        dispatch(setQcJob(job))
+        dispatch(setQuickLookMode(true))
+    }, [options?.job, dispatch, setQcJob, setQuickLookMode])
 
     if(!options) return <></>
     if(!props) return <></>

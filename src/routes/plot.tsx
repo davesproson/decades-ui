@@ -11,7 +11,7 @@ export type PlotSearchParams = {
   scrolling: boolean,
   data_header: boolean,
   style?: string,
-  job?: string,
+  job?: number | null,
 }
 
 export const Route = createFileRoute('/plot')({
@@ -25,6 +25,7 @@ export const Route = createFileRoute('/plot')({
       scrolling: Boolean(search.scrolling || true),
       data_header: Boolean(search.header || false),
       style: String(search.style || 'line'),
+      job: search.job ? Number(search.job) : null,
     }
   },
   component: () => <PlotDispatcher />,

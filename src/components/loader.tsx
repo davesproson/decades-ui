@@ -13,8 +13,6 @@ const ProgressBar = ({progressPercent}: {progressPercent?: number}) => (progress
 
     const LoaderText = ({text}: {text: string}) => {
         const words = text.split(' ')
-        console.log(text)
-        console.log(words)
         return (
             <div className="flex">
                 {words.map((x, i)=>{

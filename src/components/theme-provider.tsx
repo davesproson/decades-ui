@@ -79,7 +79,7 @@ export const useDarkMode = () => {
     throw new Error("useDarkMode must be used within a ThemeProvider")
 
   const theme = context.theme
-  if(theme !== "system") return theme === "dark"
+  if (theme !== "system") return theme === "dark"
   return window.matchMedia("(prefers-color-scheme: dark)").matches
 
 }
