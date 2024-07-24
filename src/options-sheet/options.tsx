@@ -13,6 +13,8 @@ import { Separator } from "@/components/ui/separator"
 import { ParamSetSelector } from "./paramset-select"
 import { LiveDataOnly } from "@/quicklook"
 import { QuicklookSwitch } from "./quicklook-select"
+import { enableChat } from "@/settings"
+import { When } from "@/components/flow"
 
 const OptionsSheet = () => {
     const isOpen = useSelector((state) => state.config.showOptionsDrawer)
@@ -33,8 +35,10 @@ const OptionsSheet = () => {
                     <QuicklookSwitch />
 
                     <LiveDataOnly>
-                        <Separator className="my-4" />
-                        <ChatSwitch />
+                        <When condition={enableChat}>
+                            <Separator className="my-4" />
+                            <ChatSwitch />
+                        </When>
                     </LiveDataOnly>
 
                     <LiveDataOnly>
