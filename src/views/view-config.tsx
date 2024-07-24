@@ -19,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { JsonEditor } from 'json-edit-react'
 import { ParameterDispatcher } from '@/parameters/parameter-dispatcher';
+import { base } from '@/settings';
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -401,7 +402,9 @@ const AdvancedViewConfig = () => {
     // Launch the view in a new tab
     const launch = () => {
         localStorage.setItem("viewConfig", JSON.stringify(currentConfig))
-        window.open("view", "_blank")
+        const url = new URL(window.location.href)
+        url.pathname = base + "view"
+        window.open(url, "_blank")
     }
 
     return (
