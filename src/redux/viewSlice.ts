@@ -16,7 +16,7 @@ interface AdvancedConfig  {
     title?: string,
 }
 
-interface ViewState {
+export interface ViewState {
     nRows: number,
     nCols: number,
     plots: Array<string>,

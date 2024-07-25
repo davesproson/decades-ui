@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface ServerState {
+export interface ServerState {
     // servers: Array<Server>,
     selectedServer: string | null
 }

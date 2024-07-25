@@ -7,7 +7,7 @@ export type QuicklookJob = {
 	jobID: number
 }
 
-interface QuicklookState {
+export interface QuicklookState {
 	qcJob: number | null,
 	qcJobs: QuicklookJob[] | null,
 	flightNumber: string | null,

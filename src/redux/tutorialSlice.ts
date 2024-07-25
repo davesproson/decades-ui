@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface TutorialState {
+export interface TutorialState {
     position: number,
     show: boolean
 }

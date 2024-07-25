@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-interface ConfigState {
+export interface ConfigState {
 	darkMode: boolean,
 	quickLookMode: boolean,
 	modeSelected: boolean,

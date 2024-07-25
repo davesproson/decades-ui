@@ -4,7 +4,7 @@ interface CustomTimeframe {
     start: number | null,
     end: number | null
 };
-interface CustomTimeframeSetter {
+export interface CustomTimeframeSetter {
     start?: number | null,
     end?: number | null
 }
@@ -15,7 +15,7 @@ interface Timeframe {
     label: string
 };
 
-type OptionsState = {
+export type OptionsState = {
     swapOrientation: boolean,
     plotStyle: {
         options: string[],
@@ -131,5 +131,3 @@ export const {
 } = optionsSlice.actions;
 
 export default optionsSlice.reducer;
-
-export type { OptionsState }

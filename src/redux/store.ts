@@ -16,6 +16,7 @@ import quicklookReducer from './quicklookSlice'
 import alarmReducer from './alarmSlice'
 import tabbedPlotsReducer from './tabsSlice'
 
+
 const store = configureStore({
   reducer: {
     vars: paramReducer,

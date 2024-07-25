@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { AlarmProps } from '@/alarms/types';
 import { genId } from '@/utils';
 
-type AlarmID = {
+export type AlarmID = {
     id: string
 }
 

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface ParamFilterState {
+export interface ParamFilterState {
 	filterText: string
 }
 
