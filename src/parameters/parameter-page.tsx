@@ -32,8 +32,8 @@ const TabTitle = ({ tabIndex }: { tabIndex: number }) => {
 
     return (
         <span onDoubleClick={() => setEditMode(true)} className="flex items-center">
-            {tab.name}  
-            <X size={14} className="ml-2" onClick={() => dispatch(removeTab(tabIndex))}/>
+            {tab.name}
+            <X size={14} className="ml-2" onClick={() => dispatch(removeTab(tabIndex))} />
         </span>
     )
 }
@@ -46,16 +46,18 @@ const TabbedContent = () => {
 
     return (
         <Tabs value={selectedTab} onValueChange={(value) => { dispatch(selectTab(value)) }} className="w-full z-50">
-            <TabsList>
-                <TabsTrigger value="param-list">Param List</TabsTrigger>
-                {
-                    tabs.map((tab, index) => (
-                        <TabsTrigger key={index} value={tab.id}>
-                            <TabTitle tabIndex={index} />
-                        </TabsTrigger>
-                    ))
-                }
-            </TabsList>
+            <div className="flex w-full justify-center m-auto">
+                <TabsList>
+                    <TabsTrigger value="param-list">Param List</TabsTrigger>
+                    {
+                        tabs.map((tab, index) => (
+                            <TabsTrigger key={index} value={tab.id}>
+                                <TabTitle tabIndex={index} />
+                            </TabsTrigger>
+                        ))
+                    }
+                </TabsList>
+            </div>
             <TabsContent value="param-list">
                 <ParameterFilter />
                 <ParameterTable />
@@ -64,7 +66,7 @@ const TabbedContent = () => {
                 tabs.map((tab, index) => (
                     <TabsContent key={index} value={tab.id}>
                         <div>
-                            <PlotDispatcher {...tab} containerStyle={{ position:"fixed", top: 90, bottom: 0, left: 0, right: 0 }} />
+                            <PlotDispatcher {...tab} containerStyle={{ position: "fixed", top: 90, bottom: 0, left: 0, right: 0 }} />
                         </div>
                     </TabsContent>
                 ))
@@ -75,8 +77,9 @@ const TabbedContent = () => {
 
 const TabbbedParameterPage = () => {
     const nTabs = useSelector(state => state.tabs.tabs).length
+    const tabbedPlots = useSelector(state => state.config.tabbedPlots)
 
-    if(!nTabs) {
+    if (!nTabs || !tabbedPlots) {
         return (
             <ParameterDispatcher>
                 <ParameterFilter />
