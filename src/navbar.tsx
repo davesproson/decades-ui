@@ -21,10 +21,12 @@ import { loadSavedView } from "./redux/viewSlice"
 import { Home } from "lucide-react"
 import { cn } from "./lib/utils"
 import { useTephiAvailable, useTephiUrl } from "./tephigram/hooks"
-import { usePlotUrl } from "./plot/hooks"
+import { usePlotInternalOptions, usePlotUrl } from "./plot/hooks"
 import { memo } from "react"
 import { useDashboardUrl } from "./dashboard/hooks"
 import { setQcJob } from "./redux/quicklookSlice"
+import { addTab } from "./redux/tabsSlice"
+import { PlotURLOptions } from "./plot/types"
 
 const launch = (url: string | undefined) => {
     if (url === undefined) return
@@ -39,6 +41,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
     const savedViews = useSelector((state) => state.view.savedViews)
     const useCustomTimeframe = useSelector((state) => state.options.useCustomTimeframe)
     const nSelectedParams = useSelector((state) => state.vars.params).filter((param) => param.selected).length
+    const tabbedPlots = useSelector((state) => state.config.tabbedPlots)
 
     const presets = useParameterPresets()
     const navigate = useNavigate()
@@ -46,6 +49,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
     const tephiAvailable = useTephiAvailable()
     const tephiUrl = useTephiUrl()
     const plotUrl = usePlotUrl()
+    const plotOptions = usePlotInternalOptions()
     const dashUrl = useDashboardUrl()
     const latUrl = usePlotUrl({ "ordvar": geoCoords.latitude, swapxy: true })
     const lonUrl = usePlotUrl({ "ordvar": geoCoords.longitude })
@@ -66,6 +70,14 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
     const openViewAtConfig = (id: string) => {
         dispatch(loadSavedView({ id: id }))
         navigate({ to: "/view/config" })
+    }
+
+    const launchPlot = (url: string | undefined, overrides?: Partial<PlotURLOptions>) => {
+        if (tabbedPlots) {
+            dispatch(addTab({ ...plotOptions, ...overrides }))
+            return
+        }
+        launch(url)
     }
 
     return (
@@ -176,15 +188,15 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         Launch!
                     </MenubarTrigger>
                     <MenubarContent>
-                        <MenubarItem disabled={!nSelectedParams} onClick={() => launch(plotUrl?.toString())}>
+                        <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(plotUrl?.toString())}>
                             Plot
                         </MenubarItem>
                         <MenubarSub>
                             <MenubarSubTrigger>Earth coordinates</MenubarSubTrigger>
                             <MenubarSubContent>
-                                <MenubarItem disabled={!nSelectedParams} onClick={() => launch(latUrl?.toString())}>vs latitude</MenubarItem>
-                                <MenubarItem disabled={!nSelectedParams} onClick={() => launch(lonUrl?.toString())}>vs longitude</MenubarItem>
-                                <MenubarItem disabled={!nSelectedParams} onClick={() => launch(heightUrl?.toString())}>vs altitude</MenubarItem>
+                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(latUrl?.toString(), {ordvar: geoCoords.latitude, swapxy: true})}>vs latitude</MenubarItem>
+                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(lonUrl?.toString(), {ordvar: geoCoords.longitude})}>vs longitude</MenubarItem>
+                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(heightUrl?.toString(), {ordvar: geoCoords.altitude, swapxy: true})}>vs altitude</MenubarItem>
                             </MenubarSubContent>
                         </MenubarSub>
                         <MenubarSeparator />

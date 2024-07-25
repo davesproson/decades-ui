@@ -15,6 +15,7 @@ import { LiveDataOnly } from "@/quicklook"
 import { QuicklookSwitch } from "./quicklook-select"
 import { enableChat } from "@/settings"
 import { When } from "@/components/flow"
+import { TabbedPlotsSwitch } from "./tabbed-plots-select"
 
 const OptionsSheet = () => {
     const isOpen = useSelector((state) => state.config.showOptionsDrawer)
@@ -40,6 +41,9 @@ const OptionsSheet = () => {
                             <ChatSwitch />
                         </When>
                     </LiveDataOnly>
+
+                    <Separator className="my-4" />
+                    <TabbedPlotsSwitch />
 
                     <LiveDataOnly>
                         <Separator className="my-4" />

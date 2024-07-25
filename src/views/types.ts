@@ -100,7 +100,7 @@ interface PlotViewConfig {
     header: boolean,
     ordvar: string,
     swapxy: boolean,
-    job?: string,
+    job?: number | null,
 }
 
 type ViewConfig = (
