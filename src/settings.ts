@@ -1,4 +1,40 @@
-import { booleanEnv, numberEnv } from "./utils"
+// import { booleanEnv, numberEnv } from "./utils"
+/**
+ * Get an environment variable as a boolean. If the variable is not set, 
+ * return the default value.
+ * 
+ * @param key - the key of the environment variable
+ * @param defaultValue - the default value to return if the variable is not set
+ * @returns the value of the environment variable as a boolean
+ */
+export const booleanEnv = (key: string, defaultValue: boolean) => {
+    if (import.meta.env[key] === undefined) {
+        return defaultValue
+    }
+    return import.meta.env[key] === "true"
+}
+
+/**
+ * Get an environment variable as a number. If the variable is not set,
+ * return the default value.
+ * 
+ * @param key - the key of the environment variable
+ * @param defaultValue - the default value to return if the variable is not set
+ * @returns the value of the environment variable as a number
+ * @throws an error if the value is not a number
+ */
+export const numberEnv = (key: string, defaultValue: number) => {
+    if (import.meta.env[key] === undefined) {
+        return defaultValue
+    }
+
+    const value = Number(import.meta.env[key])
+    if (isNaN(value)) {
+        throw new Error(`Environment variable ${key} is not a number`)
+    }
+    return value
+ 
+}
 
 // The deployment mode of the application. Expectss "ground", "dev" or "prod"
 export const deployment = import.meta.env.VITE_VISTA_DEPLOYMENT_MODE || "dev"
@@ -132,3 +168,4 @@ export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
 export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)
 export const enableMap = booleanEnv("VITE_VISTA_ENABLE_MAP", false)
 export const enableTabbedPlots = booleanEnv("VITE_VISTA_ENABLE_TABBED_PLOTS", false)
+

@@ -8,6 +8,7 @@ import type { DecadesDataResponse } from "@/data/types"
 import { DecadesParameter, ParamsState } from '@/redux/parametersSlice'
 import { authFetch as fetch } from '@/utils'
 import { getDataUrl } from "@/data/utils"
+import { nowSecs } from "@/timeframe/utils"
 
 
 /**
@@ -36,7 +37,6 @@ const plotIsOngoing = (options: GetDataPlotOptions) => {
 const paramFromRawName = (rawName: string, parameters: Array<DecadesParameter>) => {
     const param = parameters.find(x => x.ParameterName === rawName)
     if(!param) {
-        console.log(`Parameter ${rawName} not found in parameters list, assuming raw`)
         return {
             ParameterIdentifier: rawName,
             ParameterName: rawName,
@@ -46,15 +46,6 @@ const paramFromRawName = (rawName: string, parameters: Array<DecadesParameter>) 
         }
     }
     return param
-}
-
-/**
- * Get the current time in seconds
- * 
- * @returns The current time in seconds
- */
-const nowSecs = () => {
-    return Math.floor(new Date().getTime() / 1000)
 }
 
 /**
@@ -74,7 +65,7 @@ const getTimeLims = (tf: string): [number, number] => {
         } catch {
             endTime = nowSecs()
         }
-        return [startTime, endTime]
+        return [startTime, isNaN(endTime) ? nowSecs() : endTime]
     }
 
     const end = nowSecs()
@@ -107,7 +98,7 @@ const getTimeLims = (tf: string): [number, number] => {
  * @returns Whether the plot can slide
  */
 const canSlide = (options: PlotURLOptions) => {
-    return !options.timeframe.includes(',') && options.scrolling
+    return plotIsOngoing(options) && options.scrolling
 }
 
 /**
@@ -465,5 +456,5 @@ const getAxesArray = (vars: ParamsState) => {
 
 export { 
     getData, startData, paramFromRawName, getYAxis, getXAxis, getTimeLims, updatePlot,
-    plotIsOngoing, getAxesArray
+    plotIsOngoing, getAxesArray, canSlide, slideLength
 }

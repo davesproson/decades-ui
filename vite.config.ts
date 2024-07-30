@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from "path"
 import react from "@vitejs/plugin-react"
 import checker from 'vite-plugin-checker'
@@ -16,6 +17,9 @@ export default ({ mode }) => {
       }),
       TanStackRouterVite()
     ],
+    test: {
+      environment: "jsdom",
+    },
     base: env.VITE_VISTA_BASE_URL,
     resolve: {
       alias: {

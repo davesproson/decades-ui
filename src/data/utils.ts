@@ -61,4 +61,3 @@ export const getDataUrl = (options: GetDataOptions, start: number, end?: number)
 
     return url.toString()
 }
-

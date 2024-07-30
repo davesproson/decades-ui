@@ -1,7 +1,7 @@
 import { apiEndpoints } from "./settings"
 
 export const onLuxe = () => {
-    return window.location.hostname.startsWith('192.168')
+    return window.location.hostname.startsWith('192.168.101')
 }
 
 export const capitalize = (s: string) => (s && s[0].toUpperCase() + s.slice(1)) || ""
@@ -67,42 +67,42 @@ export const localStorageWithExpiry = {
     }
 }
 
-/**
- * Get an environment variable as a boolean. If the variable is not set, 
- * return the default value.
- * 
- * @param key - the key of the environment variable
- * @param defaultValue - the default value to return if the variable is not set
- * @returns the value of the environment variable as a boolean
- */
-export const booleanEnv = (key: string, defaultValue: boolean) => {
-    if (import.meta.env[key] === undefined) {
-        return defaultValue
-    }
-    return import.meta.env[key] === "true"
-}
+// /**
+//  * Get an environment variable as a boolean. If the variable is not set, 
+//  * return the default value.
+//  * 
+//  * @param key - the key of the environment variable
+//  * @param defaultValue - the default value to return if the variable is not set
+//  * @returns the value of the environment variable as a boolean
+//  */
+// export const booleanEnv = (key: string, defaultValue: boolean) => {
+//     if (import.meta.env[key] === undefined) {
+//         return defaultValue
+//     }
+//     return import.meta.env[key] === "true"
+// }
 
-/**
- * Get an environment variable as a number. If the variable is not set,
- * return the default value.
- * 
- * @param key - the key of the environment variable
- * @param defaultValue - the default value to return if the variable is not set
- * @returns the value of the environment variable as a number
- * @throws an error if the value is not a number
- */
-export const numberEnv = (key: string, defaultValue: number) => {
-    if (import.meta.env[key] === undefined) {
-        return defaultValue
-    }
+// /**
+//  * Get an environment variable as a number. If the variable is not set,
+//  * return the default value.
+//  * 
+//  * @param key - the key of the environment variable
+//  * @param defaultValue - the default value to return if the variable is not set
+//  * @returns the value of the environment variable as a number
+//  * @throws an error if the value is not a number
+//  */
+// export const numberEnv = (key: string, defaultValue: number) => {
+//     if (import.meta.env[key] === undefined) {
+//         return defaultValue
+//     }
 
-    const value = Number(import.meta.env[key])
-    if (isNaN(value)) {
-        throw new Error(`Environment variable ${key} is not a number`)
-    }
-    return value
+//     const value = Number(import.meta.env[key])
+//     if (isNaN(value)) {
+//         throw new Error(`Environment variable ${key} is not a number`)
+//     }
+//     return value
  
-}
+// }
 
 /**
  * A wrapper around fetch which shows an error page on 403 and a redirect on 401.
@@ -154,5 +154,7 @@ export const getFlightNumber = async () => {
  * @returns the ID
  */
 export const genId = () => {
-    return Math.random().toString(36).substring(2)
+    const a = Math.random().toString(36).substring(2,7)
+    const b = Math.random().toString(36).substring(2,7)
+    return a + b
 }
