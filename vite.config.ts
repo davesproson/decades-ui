@@ -18,7 +18,16 @@ export default ({ mode }) => {
       TanStackRouterVite()
     ],
     test: {
-      environment: "jsdom",
+      environment: 'jsdom',
+      coverage: {
+        reporter: ['text', 'html'],
+        exclude: [
+          'node_modules/',
+          '.src/tests/setup.ts',
+        ],
+      },
+      setupFiles: ['./src/tests/setup.ts'],
+      globals: true,
     },
     base: env.VITE_VISTA_BASE_URL,
     resolve: {

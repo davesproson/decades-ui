@@ -5,10 +5,10 @@ import { Link } from "@tanstack/react-router";
 
 import type { FlightSummaryEntry } from "./types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertDialog, AlertDialogTitle, AlertDialogContent, AlertDialogHeader } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogTitle, AlertDialogContent, AlertDialogHeader, AlertDialogDescription } from "@/components/ui/alert-dialog";
 import { Show } from "@/components/flow";
 
-const Info = ({ entry, clearEntry }: { entry: FlightSummaryEntry | null, clearEntry: () => void }) => {
+export const Info = ({ entry, clearEntry }: { entry: FlightSummaryEntry | null, clearEntry: () => void }) => {
     if (!entry) return null
 
     return (
@@ -17,6 +17,9 @@ const Info = ({ entry, clearEntry }: { entry: FlightSummaryEntry | null, clearEn
                 <AlertDialogHeader>
                     <AlertDialogTitle>{entry.event}</AlertDialogTitle>
                 </AlertDialogHeader>
+                <AlertDialogDescription>
+                    A dialog showing the details of the event
+                </AlertDialogDescription>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -28,28 +31,28 @@ const Info = ({ entry, clearEntry }: { entry: FlightSummaryEntry | null, clearEn
                     <TableBody>
                         <TableRow>
                             <TableCell className="p-1"><strong>Time</strong></TableCell>
-                            <TableCell className="p-1">{new Date(entry.start.time * 1e3).toLocaleTimeString()}</TableCell>
-                            <TableCell className="p-1">{entry.stop.time ? new Date(entry.stop.time * 1e3).toLocaleTimeString() : ""}</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-start-time">{new Date(entry.start.time * 1e3).toLocaleTimeString()}</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-end-time">{entry.stop.time ? new Date(entry.stop.time * 1e3).toLocaleTimeString() : ""}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell className="p-1"><strong>Latitude</strong></TableCell>
-                            <TableCell className="p-1">{entry.start.latitude.toFixed(2)} °</TableCell>
-                            <TableCell className="p-1">{entry.stop.latitude ? `${entry.stop.latitude.toFixed(2)} °` : ""}</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-start-lat">{entry.start.latitude.toFixed(2)} °</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-end-lat">{entry.stop.latitude ? `${entry.stop.latitude.toFixed(2)} °` : ""}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell className="p-1"><strong>Longitude</strong></TableCell>
-                            <TableCell className="p-1">{entry.start.longitude.toFixed(2)} °</TableCell>
-                            <TableCell className="p-1">{entry.stop.longitude ? `${entry.stop.longitude.toFixed(2)} °` : ""}</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-start-lon">{entry.start.longitude.toFixed(2)} °</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-end-lon">{entry.stop.longitude ? `${entry.stop.longitude.toFixed(2)} °` : ""}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell className="p-1"><strong>Altitude</strong></TableCell>
-                            <TableCell className="p-1">{entry.start.altitude} ft</TableCell>
-                            <TableCell className="p-1">{entry.stop.altitude ? `${entry.stop.altitude} ft` : ""}</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-start-alt">{entry.start.altitude} ft</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-stop-alt">{entry.stop.altitude ? `${entry.stop.altitude} ft` : ""}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell className="p-1"><strong>Heading</strong></TableCell>
-                            <TableCell className="p-1">{entry.start.heading.toFixed(0)}°</TableCell>
-                            <TableCell className="p-1">{entry.stop.heading ? `${entry.stop.heading.toFixed(0)} °` : ""}</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-start-hdg">{entry.start.heading.toFixed(0)}°</TableCell>
+                            <TableCell className="p-1" data-testid="fs-evt-end-hdg">{entry.stop.heading ? `${entry.stop.heading.toFixed(0)}°` : ""}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
