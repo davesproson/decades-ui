@@ -6,7 +6,7 @@ import Loader from '@/components/loader'
 export const Route = createLazyFileRoute('/flight-summary/')({
   component: () => (
     <Navbar fixedWidth={false}>
-      <FlightSummary />
+      <FlightSummary hasNavbar={true}/>
     </Navbar>
   ),
   pendingComponent: () => <Loader />,

@@ -11,10 +11,14 @@ import { useLoaderData } from "@tanstack/react-router"
  * @returns - The flight summary data
  */
 const getFlightSummary = async (setter?: Dispatch<SetStateAction<FlightSummary|undefined>>) => {
-    const data = await fetch(apiEndpoints.flightsummary)
-    const json = await data.json()
-    if (setter) setter(json)
-    return json satisfies FlightSummary
+    try {
+        const data = await fetch(apiEndpoints.flightsummary)
+        const json = await data.json()
+        if (setter) setter(json)
+        return json satisfies FlightSummary
+    } catch(e) {
+        return {} satisfies FlightSummary
+    }
 
 }
 
@@ -29,11 +33,11 @@ const useFlightSummary = () => {
     const [data, setData] = useState<FlightSummary>()
     let loaderData: FlightSummary | undefined
     try {
-       loaderData = useLoaderData({from: '/flight-summary/'}) satisfies FlightSummary
+        loaderData = useLoaderData({from: '/flight-summary/'}) satisfies FlightSummary
     } catch {
         loaderData = undefined
     }
-
+    
     // Update the data every 5 seconds
     useEffect(() => {
         if(loaderData===undefined) {
