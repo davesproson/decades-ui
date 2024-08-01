@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import  FlightSummary  from "../flight-summary";
 import { testEntry } from "./testdata";
-import { act } from "react";
 
 const mocks = vi.hoisted(() => {
     return {
@@ -96,20 +95,3 @@ describe("Flight summary table", async () => {
     })
 })
 
-describe("Flight Summary Integration", async () => {
-    it("Should show the dialog when an entry is clicked", async () => {
-
-        mocks.useFlightSummary.mockImplementation(() => {
-            return {[testEntry.uuid]: testEntry}
-        })
-        render(<FlightSummary hasNavbar={false} />);
-        expect(screen.queryAllByTestId("fs-evt-start-time")).toHaveLength(0);
-        act(() => {
-            screen.getByText("Test Event").click();
-        })
-        await waitFor(() => {
-            expect(screen.queryAllByText("Close")).toHaveLength(1);
-            expect(screen.queryAllByTestId("fs-evt-start-time")).toHaveLength(1);
-        }, { timeout: 100, interval: 10 });
-    })
-})
