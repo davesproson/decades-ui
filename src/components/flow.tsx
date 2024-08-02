@@ -1,3 +1,4 @@
+import { useSelector } from "@/redux/store";
 
 const When = ({condition, children}: {condition: boolean, children: React.ReactNode}) => {
     return condition ? <>{children}</> : null;
@@ -21,4 +22,27 @@ const Show = ({when, unless, children}: {when?: boolean, unless?:  boolean, chil
     throw new Error("Show component must have either 'when' or 'unless' prop set")
 }
 
-export { Show, When, Unless }
+const QuicklookOnly = (props: ChildProps) => {
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
+
+    if (quickLookMode)
+        return props.children
+
+    return <></>
+
+}
+
+type ChildProps = {
+    children: React.ReactNode
+}
+const LiveDataOnly = (props: ChildProps) => {
+    const quickLookMode = useSelector(state => state.config.quickLookMode)
+
+    if (!quickLookMode)
+        return props.children
+
+    return <></>
+
+}
+
+export { Show, When, Unless, LiveDataOnly, QuicklookOnly }

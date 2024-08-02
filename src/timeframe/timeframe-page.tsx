@@ -7,7 +7,7 @@ import { TimeframeSelectorPlot } from './timeframe-chart'
 import { TimeframeSelectCard } from './timeframe-select'
 import { FlightSummarySelector } from './flightsummary'
 import { ParameterDispatcher } from '@/parameters/parameter-dispatcher'
-import { LiveDataOnly } from '@/quicklook'
+import { LiveDataOnly } from '@/components/flow'
 
 const TimeframeInfoBox = () => {
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)

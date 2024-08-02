@@ -10,7 +10,7 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { IndexSearch } from '.'
 import  Loader  from '@/components/loader'
 import { ModeSelector } from "@/modeSelect"
-import QuicklookSelector from '@/quicklook'
+import QuicklookSelector from '@/quicklook/quicklook'
 
 export const Route = createLazyFileRoute('/')({
   component: () => <Index />,

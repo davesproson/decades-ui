@@ -5,7 +5,7 @@ import {
     setOrdinateAxis
 } from '../redux/optionsSlice';
 
-import { LiveDataOnly } from '../quicklook';
+import { LiveDataOnly } from '@/components/flow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 

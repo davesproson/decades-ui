@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { DecadesBanner } from "@/components/decades";
 import { apiEndpoints } from "@/settings";
 import { setQcJob, setFlightNumber, setQcJobs } from "@/redux/quicklookSlice";
-import { useDispatch, useSelector } from "@store";
+import { useDispatch } from "@store";
 import { setParamsDispatched } from "@/redux/parametersSlice";
 import { useScrollInhibitor } from "@/hooks";
-import { setModeSelected, setQuickLookMode } from "./redux/configSlice";
+import { setModeSelected, setQuickLookMode } from "@/redux/configSlice";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router"
-import Loader from "./components/loader";
+import Loader from "@/components/loader";
 
 import type { QuicklookJob } from "@/redux/quicklookSlice";
 
@@ -123,29 +123,8 @@ const QuicklookSelector = () => {
     )
 }
 
-type ChildProps = {
-    children: React.ReactNode
-}
 
-const QuicklookOnly = (props: ChildProps) => {
-    const quickLookMode = useSelector(state => state.config.quickLookMode)
 
-    if (quickLookMode)
-        return props.children
 
-    return <></>
-
-}
-
-const LiveDataOnly = (props: ChildProps) => {
-    const quickLookMode = useSelector(state => state.config.quickLookMode)
-
-    if (!quickLookMode)
-        return props.children
-
-    return <></>
-
-}
 
 export default QuicklookSelector;
-export { QuicklookOnly, LiveDataOnly };

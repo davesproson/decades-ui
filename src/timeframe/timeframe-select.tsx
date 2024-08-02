@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TimePicker } from "./timepicker"
 import { useSelector, useDispatch } from "@store"
 import { setCustomTimeframe } from "@/redux/optionsSlice"
-import { QuicklookOnly } from "@/quicklook"
+import { QuicklookOnly } from "@/components/flow"
 import { Button } from "@/components/ui/button"
 
 const TimeframeSelectCard = () => {
