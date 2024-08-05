@@ -6,8 +6,10 @@ type NamedConfig = {name: string} & (
 	PlotViewConfig
 )
 
+export type TabEntry = NamedConfig & {id: string}
+
 export type TabsState = {
-	tabs: Array<NamedConfig & {id: string}>,
+	tabs: Array<TabEntry>,
 	selectedTab: string
 }
 
