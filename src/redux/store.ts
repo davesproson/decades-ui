@@ -16,21 +16,24 @@ import quicklookReducer from './quicklookSlice'
 import alarmReducer from './alarmSlice'
 import tabbedPlotsReducer from './tabsSlice'
 
+export const createStore = () => 
+  configureStore({
+    reducer: {
+      vars: paramReducer,
+      paramfilter: paramFilterReducer,
+      options: optionsReducer,
+      gauges: gaugeReducer,
+      view: viewReducer,
+      tutorial: tutorialReducer,
+      config: configReducer,
+      quicklook: quicklookReducer,
+      alarms: alarmReducer,
+      tabs: tabbedPlotsReducer
+    }
+  })
 
-const store = configureStore({
-  reducer: {
-    vars: paramReducer,
-    paramfilter: paramFilterReducer,
-    options: optionsReducer,
-    gauges: gaugeReducer,
-    view: viewReducer,
-    tutorial: tutorialReducer,
-    config: configReducer,
-    quicklook: quicklookReducer,
-    alarms: alarmReducer,
-    tabs: tabbedPlotsReducer
-  }
-})
+
+const store = createStore()
 
 
 export type RootState = ReturnType<typeof store.getState>
