@@ -8,10 +8,14 @@ import { X } from "lucide-react"
 import { useState } from "react"
 import { removeTab, renameTab, selectTab } from "@/redux/tabsSlice"
 import { Input } from "@/components/ui/input"
+import type  { TabEntry }  from "@/redux/tabsSlice"
 
-const TabTitle = ({ tabIndex }: { tabIndex: number }) => {
-    const dispatch = useDispatch()
-    const tab = useSelector(state => state.tabs.tabs)[tabIndex]
+type TabTitleProps = {
+    tab: TabEntry,
+    onChangeTitle: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    onRemove: () => void
+}
+const TabTitle = ({ tab, onChangeTitle, onRemove }: TabTitleProps) => {
     const [editMode, setEditMode] = useState(false)
 
     if (editMode) {
@@ -19,7 +23,7 @@ const TabTitle = ({ tabIndex }: { tabIndex: number }) => {
             <Input
                 autoFocus
                 value={tab.name}
-                onChange={(e) => { dispatch(renameTab({ index: tabIndex, name: e.target.value })) }}
+                onChange={onChangeTitle}
                 onBlur={() => setEditMode(false)}
                 onFocus={(e) => e.target.select()}
                 onKeyDown={(e) => {
@@ -33,7 +37,7 @@ const TabTitle = ({ tabIndex }: { tabIndex: number }) => {
     return (
         <span onDoubleClick={() => setEditMode(true)} className="flex items-center">
             {tab.name}
-            <X size={14} className="ml-2" onClick={() => dispatch(removeTab(tabIndex))} />
+            <X size={14} className="ml-2" onClick={onRemove} role="button" />
         </span>
     )
 }
@@ -42,8 +46,7 @@ const TabbedContent = () => {
     const tabs = useSelector(state => state.tabs.tabs)
     const selectedTab = useSelector(state => state.tabs.selectedTab)
     const dispatch = useDispatch()
-
-
+    
     return (
         <Tabs value={selectedTab} onValueChange={(value) => { dispatch(selectTab(value)) }} className="w-full z-50">
             <div className="flex w-full justify-center m-auto">
@@ -52,7 +55,10 @@ const TabbedContent = () => {
                     {
                         tabs.map((tab, index) => (
                             <TabsTrigger key={index} value={tab.id}>
-                                <TabTitle tabIndex={index} />
+                                <TabTitle 
+                                    tab={tab} 
+                                    onChangeTitle={(e)=> dispatch(renameTab({ index, name: e.target.value }))} 
+                                    onRemove={() => dispatch(removeTab(index))}/>
                             </TabsTrigger>
                         ))
                     }
@@ -93,6 +99,11 @@ const TabbbedParameterPage = () => {
             <TabbedContent />
         </ParameterDispatcher>
     )
+}
+
+export const testComponents = {
+    TabTitle,
+    TabbedContent
 }
 
 export { TabbbedParameterPage as ParameterPage }

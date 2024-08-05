@@ -9,7 +9,49 @@ import { useParameterEndpoint } from "./hooks"
 import { quickLookCompatability } from "@/quicklook/utils"
 import { authFetch as fetch } from "@/utils"
 
-const ParameterFilter = memo(() => {
+type ParameterRefreshButtonProps = {
+    enabled: boolean,
+    spin: boolean,
+    onClick: () => void
+}
+const ParameterRefreshButton = ({enabled, spin, onClick}: ParameterRefreshButtonProps) => {
+    return (
+        <Button variant="outline" disabled={!enabled} onClick={onClick}>
+            <RefreshCw className={`${spin && "animate-spin"}`} />
+        </Button>
+    )
+}
+
+type ParameterFilterInputBoxProps = {
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+const ParameterFilterInputBox = ({value, onChange}: ParameterFilterInputBoxProps) => {
+    return (
+        <Input className="align-middle" 
+                   placeholder="Filter parameters..." 
+                   value={value} 
+                   onChange={onChange} 
+                   data-testid="parameter-text-input" />
+    )
+}
+
+type ParameterTextClearButtonProps = {
+    onClick: () => void
+}
+const ParameterTextClearButton = ({onClick}: ParameterTextClearButtonProps) => {
+    return (
+        <Button variant="outline" 
+                    className="ml-2 mr-2"
+                    onClick={onClick}
+                    data-testid="parameter-text-clear-button">
+                Clear Selection
+            </Button>
+    )
+}
+
+
+export const ParameterFilter = memo(() => {
     const dispatch = useDispatch()
     const filterText = useSelector((state) => state.paramfilter.filterText)
     const parameterEndpoint = useParameterEndpoint(true)
@@ -59,20 +101,15 @@ const ParameterFilter = memo(() => {
 
     return (
         <div className="flex">
-            <Input className="align-middle" 
-                   placeholder="Filter parameters..." 
-                   value={filterText} 
-                   onChange={e=>setFilter(e)} />
-            <Button variant="outline" 
-                    className="ml-2 mr-2"
-                    onClick={clearSelection}>
-                Clear Selection
-            </Button>
-            <Button variant="outline" disabled={!enabled} onClick={reloadParams}>
-                <RefreshCw className={`${spin && "animate-spin"}`} />
-            </Button>
+            <ParameterFilterInputBox value={filterText} onChange={setFilter} />
+            <ParameterTextClearButton onClick={clearSelection} />
+            <ParameterRefreshButton enabled={enabled} spin={spin} onClick={reloadParams} />
         </div>
     )
 })
 
-export { ParameterFilter }
+export const testComponents = {
+    ParameterRefreshButton,
+    ParameterFilterInputBox,
+    ParameterTextClearButton
+}

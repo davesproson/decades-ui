@@ -17,17 +17,18 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 
 type AvailabiliyHoverCardProps = {
     children: React.ReactNode,
-    available: boolean
+    available: boolean,
+    open?: boolean
 }
 
-const AvailabiliyHoverCard = memo(({ children, available }: AvailabiliyHoverCardProps) => {
+const AvailabiliyHoverCard = memo(({ children, available, open }: AvailabiliyHoverCardProps) => {
     const title = available ? "Available" : "Unavailable"
     const titleClass = available ? "text-green-600" : "text-red-600"
     const content = available
         ? "This parameter is available for selection and visualization."
         : "This parameter is not currently available, and cannot be selected."
     return (
-        <HoverCard>
+        <HoverCard defaultOpen={!!open}>
             <HoverCardTrigger asChild>
                 {children}
             </HoverCardTrigger>
@@ -45,12 +46,61 @@ const AvailabiliyHoverCard = memo(({ children, available }: AvailabiliyHoverCard
     )
 })
 
-const ParameterTable = memo(() => {
+type ParameterTableProps = {
+    params: Parameter[],
+    onToggleParam: (param: Parameter) => void
+}
+const DumbParameterTable = memo(({params, onToggleParam}: ParameterTableProps) => {
     
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead></TableHead>
+                    <TableHead className="hidden md:table-cell">Parameter ID</TableHead>
+                    <TableHead>Parameter Name</TableHead>
+                    <TableHead>Units</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody className="p-0">
+                {params.map((param) => {
+                    const marker = param.status
+                        ? <Check className="text-green-600 mr-1" />
+                        : param.status === null
+                            ? <CircleHelp className="text-gray-600 mr-1" />
+                            : <X className="text-red-600 mr-1" />
+
+                    let rowClass = param.selected
+                        ? "text-green-700 dark:text-green-400 bg-green-200 dark:bg-green-900 cursor-pointer "
+                        : "cursor-pointer "
+
+                    const textClass = param.status === false
+                        ? "text-red-300 dark:text-red-900"
+                        : ""
+
+                    if (!param.status) rowClass += textClass
+                    return (
+                        <TableRow key={param.id} className={rowClass} onClick={() => onToggleParam(param)}>
+                            <TableCell className="p-0 pl-2">
+                                <AvailabiliyHoverCard available={!!param.status}>
+                                    {marker}
+                                </AvailabiliyHoverCard>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">{param.id}</TableCell>
+                            <TableCell><Button className={"p-0 m-0 " + "bg-transparent" + textClass} variant="link" size="sm" disabled={!param.status} onClick={(e)=>{onToggleParam(param); e.stopPropagation()}}>{param.name}</Button></TableCell>
+                            <TableCell>{param.units}</TableCell>
+                        </TableRow>
+                    )
+                })}
+            </TableBody>
+        </Table>
+    )
+})
+
+export const ParameterTable = () => {
     const dispatch = useDispatch()
     const parameters = useSelector((state) => state.vars.params)
     const filterText = useSelector((state) => state.paramfilter.filterText)
-
 
     const toggleParam = useCallback((param: Parameter) => {
         if (!param.status) return
@@ -68,49 +118,10 @@ const ParameterTable = memo(() => {
         )
     }, [parameters, filterText])
 
-    return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead></TableHead>
-                    <TableHead className="hidden md:table-cell">Parameter ID</TableHead>
-                    <TableHead>Parameter Name</TableHead>
-                    <TableHead>Units</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody className="p-0">
-                {filteredParameters.map((param) => {
-                    const marker = param.status
-                        ? <Check className="text-green-600 mr-1" />
-                        : param.status === null
-                            ? <CircleHelp className="text-gray-600 mr-1" />
-                            : <X className="text-red-600 mr-1" />
+    return <DumbParameterTable params={filteredParameters} onToggleParam={toggleParam} />
+}
 
-                    let rowClass = param.selected
-                        ? "text-green-700 dark:text-green-400 bg-green-200 dark:bg-green-900 cursor-pointer "
-                        : "cursor-pointer "
-
-                    const textClass = param.status === false
-                        ? "text-red-300 dark:text-red-900"
-                        : ""
-
-                    if (!param.status) rowClass += textClass
-                    return (
-                        <TableRow key={param.id} className={rowClass} onMouseDown={() => toggleParam(param)}>
-                            <TableCell className="p-0 pl-2">
-                                <AvailabiliyHoverCard available={!!param.status}>
-                                    {marker}
-                                </AvailabiliyHoverCard>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">{param.id}</TableCell>
-                            <TableCell><Button className={"p-0 m-0 " + "bg-transparent" + textClass} variant="link" size="sm" disabled={!param.status}>{param.name}</Button></TableCell>
-                            <TableCell>{param.units}</TableCell>
-                        </TableRow>
-                    )
-                })}
-            </TableBody>
-        </Table>
-    )
-})
-
-export { ParameterTable }
+export const testComponents = {
+    AvailabiliyHoverCard,
+    DumbParameterTable
+}
