@@ -4,27 +4,10 @@ import { render, screen, cleanup, fireEvent, act, waitFor } from '@testing-libra
 // import { ParameterPage } from '../parameter-page'
 import { testComponents } from '../parameter-page'
 import { testTab } from './testdata'
-import { Provider } from 'react-redux'
 import { addTab, removeTab, selectTab } from '@/redux/tabsSlice'
-import { createStore } from '@/redux/store'
-import store from '@/redux/store'
+import { setupTestStore } from '@/tests'
 
-function setupTestStore() {
-    const refObj = {} as {
-        store: typeof store,
-        Wrapper: { ({ children }: any): JSX.Element }
-    }
 
-    beforeEach(() => {
-        const _store = createStore()
-        refObj.store = _store
-        refObj.Wrapper = function Wrapper({ children }: any) {
-            return <Provider store={store}>{children}</Provider>
-        }
-    })
-
-    return refObj
-}
 
 const mocks = vi.hoisted(() =>{
     return {
