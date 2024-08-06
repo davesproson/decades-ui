@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { PlotViewConfig } from '@/views/types';
 import { genId } from '@/utils';
+import { PlotURLOptions } from '@/plot/types';
 
 type NamedConfig = {name: string} & (
-	PlotViewConfig
+	PlotURLOptions
 )
 
 export type TabEntry = NamedConfig & {id: string}
