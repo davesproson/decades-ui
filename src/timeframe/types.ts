@@ -1,11 +1,7 @@
-interface FlightSummaryEntry {
-    start: {
-        time: number
-    },  
-    stop: {
-        time: number
-    },  
-    event: string
+import { FlightSummaryEntry as RetreivedFlightSummaryEntry, FlightSummaryPoint } from "@/flight-summary/types"
+
+interface FlightSummaryEntry extends RetreivedFlightSummaryEntry { 
+    stop: FlightSummaryPoint,
 }
 
 interface FlightSummaryEntryProps {

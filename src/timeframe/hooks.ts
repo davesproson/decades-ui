@@ -1,43 +1,15 @@
 import { useState, useEffect, RefObject } from 'react';
-import { apiEndpoints, badData, geoCoords, geoCoordsQuicklook } from '../settings';
+import { badData, geoCoords, geoCoordsQuicklook } from '../settings';
 
 import * as Plotly from 'plotly.js-dist-min'
 
-import { FlightSummaryEntry, PlotlyHTMLDivElement } from './types'
+import { PlotlyHTMLDivElement } from './types'
 import { useDarkMode } from '@/components/theme-provider';
 import { useDispatch, useSelector } from '@store';
 import { getTimeLims } from './utils';
 import { setCustomTimeframe } from '@/redux/optionsSlice';
 import { DecadesDataResponse } from '@/data/types.ts';
 import { getData } from '@/data/utils.ts';
-
-/**
- * This hook fetches the flight summary data from the API and updates the 
- * state with the new data every 15 seconds.
- * 
- * @returns the current flight summary data
- * 
- */
-const useFlightSummary = () => {
-    const [flightSummary, setFlightSummary] = useState<Array<FlightSummaryEntry>>([]);
-
-    const getFlightSummary = () => {
-        fetch(apiEndpoints.flightsummary)
-            .then(response => response.json())
-            .then(data => setFlightSummary(data))
-            .catch(e=>{
-                console.log("Error fetching flight summary", e);
-            })
-    }
-
-    useEffect(() => {
-        getFlightSummary();
-        const interval = setInterval(getFlightSummary, 15000)
-        return () => clearInterval(interval)
-    }, []);
-
-    return flightSummary;
-}
 
 /**
  * This hook creates a Plotly plot with a range selector. It displays the
@@ -175,4 +147,4 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
     return true
 }
 
-export { useFlightSummary, useSelectorPlot }
+export { useSelectorPlot }

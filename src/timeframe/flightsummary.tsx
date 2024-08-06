@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useFlightSummary } from './hooks'
+// import { useFlightSummary } from './hooks'
+import { useFlightSummary } from '@/flight-summary/hooks'
 import { FlightSummaryEntry, FlightSummaryEntryProps } from './types'
+import { FlightSummary } from '@/flight-summary/types'
 import { useDispatch } from '@store'
 import { setCustomTimeframe } from '@/redux/optionsSlice'
 import { Button } from '@/components/ui/button'
@@ -63,13 +65,17 @@ const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
 const FlightSummarySelector = () => {
     const fs = useFlightSummary()
 
-    const filterFlightSummary = (fs: Array<FlightSummaryEntry>) => {
-        if(!fs) {
+    const filterFlightSummary = (fs: FlightSummary | undefined)  => {
+        const arrFs = Object.values(fs || {})
+        if(!arrFs) {
             return []
         }
-        const asArray = Object.values(fs).sort(x=>-x?.start?.time)
+        const asArray = Object.values(arrFs).sort(x=>-x?.start?.time) 
         
-        return asArray.filter(x=>x?.start?.time && x?.stop?.time)     
+        // Need the manual type assertion here because the filter function
+        // is not smart enough to know that the filter function will remove
+        // all undefined values
+        return asArray.filter(x=>(x?.start?.time && x?.stop?.time)) as FlightSummaryEntry[]
     }
 
     const filtered = filterFlightSummary(fs)
