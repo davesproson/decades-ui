@@ -34,13 +34,13 @@ export const testParameters: Parameter[] = [
 export const testTab: TabEntry = {
     id: "test-tab",
     name: "Test Tab",
-    type: "plot",
     params: ["param1"],
     axes: ["param1"],
     timeframe: "1h",
-    plotStyle: "line",
+    style: "line",
     scrolling: true,
     header: false,
     ordvar: "utc_time",
-    swapxy: false
+    swapxy: false,
+    job: null
 }

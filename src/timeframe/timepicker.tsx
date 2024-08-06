@@ -12,6 +12,7 @@ interface TimePickerProps {
     allowOngoing?: boolean,
 }
 const TimePicker = (props: TimePickerProps) => {
+    // TODO: This should be decoupled from the redux store
     const dispatch = useDispatch()
     const timeframes = useSelector(state => state.options.timeframes)
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
@@ -75,7 +76,8 @@ const TimePicker = (props: TimePickerProps) => {
                     value={padToTwo(hours)} 
                     onChange={(e)=>{setTime('Hours', e.target.value)}}
                     min="0"
-                    max="23" />
+                    max="23" 
+                    role="textbox" />
 
             <span className="m-2">:</span>
 
@@ -84,7 +86,8 @@ const TimePicker = (props: TimePickerProps) => {
                     value={padToTwo(minutes)}
                     onChange={(e)=>{setTime("Minutes", e.target.value)}}
                     min="0"
-                    max="59" />
+                    max="59" 
+                    role="textbox"/>
                         
             <span className="m-2">:</span>
 
@@ -93,7 +96,8 @@ const TimePicker = (props: TimePickerProps) => {
                     value={padToTwo(seconds)}
                     onChange={(e)=>{setTime("Seconds", e.target.value)}}
                     min="0"
-                    max="59" />
+                    max="59" 
+                    role="textbox"/>
         </div>
     )
 

@@ -21,7 +21,7 @@ const TimeframeSelectorPlot = () => {
       </Alert>
     )
     return  (
-        <Card className="mt-2">
+        <Card className="mt-2" data-testid="timeframe-selector-chart">
             <CardContent>
                 <div ref={ref} style={{height:"200px"}} />
             </CardContent>

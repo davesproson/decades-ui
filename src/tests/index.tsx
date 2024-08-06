@@ -7,13 +7,13 @@ import {  beforeEach } from 'vitest'
 export const setupTestStore = () => {
     const refObj = {} as {
         store: typeof store,
-        Wrapper: { ({ children }: any): JSX.Element }
+        Wrapper: { ({ children }: { children: React.ReactNode}): React.ReactNode }
     }
 
     beforeEach(() => {
         const _store = createStore()
         refObj.store = _store
-        refObj.Wrapper = function Wrapper({ children }: any) {
+        refObj.Wrapper = function Wrapper({ children }: { children: React.ReactNode }) {
             return <Provider store={store}>{children}</Provider>
         }
     })

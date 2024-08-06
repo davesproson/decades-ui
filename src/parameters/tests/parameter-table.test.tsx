@@ -111,42 +111,40 @@ describe('Test parameter table', () => {
         })
     })
 
-    it('Should render a green check when a parameter is available', () => {
+    it('Should render a green check when a parameter is available', async () => {
         const { DumbParameterTable } = testComponents
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
-        testParameters.forEach(param => {
+        for(let param of testParameters) {
+            if(param.status !== true) continue
             const marker = screen.getByText(param.name)?.closest('svg')
-            if(param.status) {
-                waitFor(() => {
-                    expect(marker).toHaveClass('text-green-600 lucide-check')
-                })
-            }
-        })
+            await waitFor(() => {
+                expect(marker).toHaveClass('text-green-600 lucide-check')
+            })
+        }
     })
 
-    it('Should render a red x when a parameter is unavailable', () => {
+    it('Should render a red x when a parameter is unavailable', async () => {
         const { DumbParameterTable } = testComponents
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
-        testParameters.forEach(param => {
+        for(let param of testParameters) {
+            if(param.status !== false) continue
             const marker = screen.getByText(param.name)?.closest('svg')
-            if(param.status === false) {
-                waitFor(() => {
-                    expect(marker).toHaveClass('text-red-600 lucide-x')
-                })
-            }
-        })
+            await waitFor(() => {
+                expect(marker).toHaveClass('text-red-600 lucide-x')
+            })
+        }
+        screen.debug()
     })
 
-    it('Should render a gray circle when a parameter is unknown', () => {
+    it('Should render a gray circle when a parameter is unknown', async () => {
         const { DumbParameterTable } = testComponents
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
-        testParameters.forEach(param => {
+        for(let param of testParameters) {
+            if(param.status !== null) continue
             const marker = screen.getByText(param.name)?.closest('svg')
-            if(param.status === null) {
-                waitFor(() => {
-                    expect(marker).toHaveClass('text-gray-600 lucide-circle-help')
-                })
-            }
-        })
+            await waitFor(() => {
+                expect(marker).toHaveClass('text-gray-600 lucide-circle-help')
+            })
+        }
     })
 })

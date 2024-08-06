@@ -6,6 +6,7 @@ import { testComponents } from '../parameter-page'
 import { testTab } from './testdata'
 import { addTab, removeTab, selectTab } from '@/redux/tabsSlice'
 import { setupTestStore } from '@/tests'
+import { setTabbedPlots } from '@/redux/configSlice'
 
 
 
@@ -33,12 +34,12 @@ describe("Test tabbed parameter tab title", () => {
         expect(screen.getByText(testTab.name)).toBeDefined()
     })
 
-    it("Should render an input when double-clicked", () => {
+    it("Should render an input when double-clicked", async () => {
         const { TabTitle } = testComponents
         render(<TabTitle tab={testTab} onChangeTitle={() => { }} onRemove={() => { }} />)
         const title = screen.getByText(testTab.name)
         act(() => { fireEvent.dblClick(title) })
-        waitFor(() => {
+        await waitFor(() => {
             expect(screen.getAllByRole('textbox')).toBeDefined()
         })
     })
@@ -54,43 +55,41 @@ describe("Test tabbed parameter tab title", () => {
         expect(onChangeTitle).toHaveBeenCalled()
     })
 
-    it("Should call onRemove when remove button is clicked", () => {
+    it("Should call onRemove when remove button is clicked", async () => {
         const { TabTitle } = testComponents
         const onRemove = vi.fn()
         render(<TabTitle tab={testTab} onChangeTitle={() => { }} onRemove={onRemove} />)
         const removeButton = screen.getByRole('button')
         act(() => fireEvent.click(removeButton))
-        waitFor(() => {
+        await waitFor(() => {
             expect(onRemove).toHaveBeenCalled()
         })
     })
 
-    it("Should hide input when enter is pressed", () => {
+    it("Should hide input when enter is pressed", async () => {
         const { TabTitle } = testComponents
         render(<TabTitle tab={testTab} onChangeTitle={() => { }} onRemove={() => { }} />)
         const title = screen.getByText(testTab.name)
         act(() => { fireEvent.dblClick(title) })
         const input = screen.getByRole('textbox')
         fireEvent.keyDown(input, { key: "Enter", code: "Enter" })
-        waitFor(() => {
+        await waitFor(() => {
             expect(screen.queryByRole('textbox')).toBeNull()
         })
     });
 
-    it("Should hide input when input is blurred", () => {
+    it("Should hide input when input is blurred", async () => {
         const { TabTitle } = testComponents
         render(<TabTitle tab={testTab} onChangeTitle={() => { }} onRemove={() => { }} />)
         const title = screen.getByText(testTab.name)
         act(() => { fireEvent.dblClick(title) })
         const input = screen.getByRole('textbox')
         fireEvent.blur(input)
-        waitFor(() => {
+        await waitFor(() => {
             expect(screen.queryByRole('textbox')).toBeNull()
         })
     })
 })
-
-
 
 
 describe("Test tabbed parameter content", () => {
@@ -107,36 +106,39 @@ describe("Test tabbed parameter content", () => {
         expect(screen.getByText("Param List")).toBeDefined()
     })
 
-    it("Should add a plot tab when config added to store", () => {
+    it("Should add a plot tab when config added to store", async () => {
+        
 
         const { TabbedContent } = testComponents
         render(<TabbedContent />, { wrapper: storeRef.Wrapper })
-
-        const { id, ...rest } = testTab
+        storeRef.store.dispatch(setTabbedPlots(true))
+        const { id, name, ...rest } = testTab
         storeRef.store.dispatch(addTab(rest))
-        waitFor(() => {
-            expect(screen.getByText(testTab.name)).toBeDefined()
+
+        await waitFor(() => {
+            expect(screen.getByText("Plot 1")).toBeDefined()
             expect(mocks.PlotDispatcher).toHaveBeenCalled()
         })
     })
 
-    it("Should remove a plot tab when config removed from store", () => {
+    it("Should remove a plot tab when config removed from store", async () => {
         const { TabbedContent } = testComponents
         render(<TabbedContent />, { wrapper: storeRef.Wrapper })
 
-        const { id, ...rest } = testTab
+        const { id, name, ...rest } = testTab
         storeRef.store.dispatch(addTab(rest))
-        waitFor(() => {
-            expect(screen.getByText(testTab.name)).toBeDefined()
+        storeRef.store.dispatch(setTabbedPlots(true))
+        await waitFor(() => {
+            expect(screen.getByText("Plot 1")).toBeDefined()
         })
 
         storeRef.store.dispatch(removeTab(1))
-        waitFor(() => {
-            expect(screen.queryByText(testTab.name)).toBeNull()
+        await waitFor(() => {
+            expect(screen.queryAllByText("Plot 1")).toHaveLength(0)
         })
     })
 
-    it("Should switch to a plot when clicked", () => {
+    it("Should switch to a plot when clicked", async () => {
         const { TabbedContent } = testComponents
         const { id, ...rest } = testTab
         
@@ -145,19 +147,17 @@ describe("Test tabbed parameter content", () => {
         storeRef.store.dispatch(selectTab("param-list"))
         render(<TabbedContent />, { wrapper: storeRef.Wrapper })
 
-        waitFor(() => {
+        await waitFor(() => {
             expect(screen.getByText(testTab.name)).toBeDefined()
             expect(mocks.PlotDispatcher).not.toHaveBeenCalled()
             expect(screen.getByText("PlotlyPlot")).toBeNull()
         })
-
-        waitFor(() => {
-            act(() => {
-                screen.getByText(testTab.name).click()
-            })
+        
+        act(() => {
+            screen.getByText(testTab.name).click()
         })
 
-        waitFor(() => {
+        await waitFor(() => {
             expect(mocks.PlotDispatcher).toHaveBeenCalled()
             expect(screen.getByText("PlotlyPlot")).toBeDefined()
         })
