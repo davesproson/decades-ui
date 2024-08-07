@@ -104,6 +104,7 @@ describe('Test parameter table', () => {
         const { DumbParameterTable } = testComponents
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
         testParameters.forEach(param => {
+            // TODO: fix direct access of the node
             const paramRow = screen.getByText(param.id).closest('tr')
             if(paramRow && param.status === false && !param.selected) {
                 expect(paramRow).toHaveClass('text-red-300 dark:text-red-900')
@@ -116,7 +117,8 @@ describe('Test parameter table', () => {
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
         for(let param of testParameters) {
             if(param.status !== true) continue
-            const marker = screen.getByText(param.name)?.closest('svg')
+            // TODO: fix direct access of the node
+            const marker = screen.getByText(param.id).parentElement?.querySelector('svg')
             await waitFor(() => {
                 expect(marker).toHaveClass('text-green-600 lucide-check')
             })
@@ -128,12 +130,12 @@ describe('Test parameter table', () => {
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
         for(let param of testParameters) {
             if(param.status !== false) continue
-            const marker = screen.getByText(param.name)?.closest('svg')
+            // TODO: fix direct access of the node
+            const marker = screen.getByText(param.id).parentElement?.querySelector('svg')
             await waitFor(() => {
                 expect(marker).toHaveClass('text-red-600 lucide-x')
             })
         }
-        screen.debug()
     })
 
     it('Should render a gray circle when a parameter is unknown', async () => {
@@ -141,7 +143,8 @@ describe('Test parameter table', () => {
         render(<DumbParameterTable params={testParameters} onToggleParam={()=>{}}/>)
         for(let param of testParameters) {
             if(param.status !== null) continue
-            const marker = screen.getByText(param.name)?.closest('svg')
+            // TODO: fix direct access of the node
+            const marker = screen.getByText(param.id).parentElement?.querySelector('svg')
             await waitFor(() => {
                 expect(marker).toHaveClass('text-gray-600 lucide-circle-help')
             })

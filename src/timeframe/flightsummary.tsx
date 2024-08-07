@@ -44,20 +44,20 @@ const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
 
     const icon = (() => {
         if(isOrbit) {
-            return <Circle size={16} className="mr-2"/>
+            return <Circle size={16} className="mr-2" data-testid="fs-orbit-icon"/>
         }
         if(isRun) {
-            return <MoveRight size={16} className="mr-2"/>
+            return <MoveRight size={16} className="mr-2" data-testid="fs-run-icon"/>
         }
         if(isProfile) {
-            return <MoveUpRight size={16} className="mr-2"/>
+            return <MoveUpRight size={16} className="mr-2" data-testid="fs-profile-icon"/>
         }
         return null
     })()
 
     return (
         <Button variant="ghost" className={tagStyle} onClick={()=>setTimeframe(fromMs, toMs)}>
-           {icon} <strong className="mr-2">{props.entry.event}:</strong> from {from} until {to}
+           {icon} <strong className="mr-2"><span>{props.entry.event}</span>:</strong> from {from} until {to}
         </Button>
     )
 }

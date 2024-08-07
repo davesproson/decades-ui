@@ -1,22 +1,28 @@
-import { createStore } from '@/redux/store'
-import store from '@/redux/store'
+import React, { PropsWithChildren } from 'react'
+import { render } from '@testing-library/react'
+import type { RenderOptions } from '@testing-library/react'
 import { Provider } from 'react-redux'
-import {  beforeEach } from 'vitest'
+import { AppStore, createStore } from '@/redux/store'
 
+interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
+    store?: AppStore
+}
 
-export const setupTestStore = () => {
-    const refObj = {} as {
-        store: typeof store,
-        Wrapper: { ({ children }: { children: React.ReactNode}): React.ReactNode }
+export function renderWithStore(
+    ui: React.ReactElement,
+    extendedRenderOptions: ExtendedRenderOptions = {}
+) {
+    const {
+        store = createStore(),
+        ...renderOptions
+    } = extendedRenderOptions
+
+    const Wrapper = ({ children }: PropsWithChildren) => (
+        <Provider store={store}>{children}</Provider>
+    )
+
+    return {
+        store,
+        ...render(ui, { wrapper: Wrapper, ...renderOptions })
     }
-
-    beforeEach(() => {
-        const _store = createStore()
-        refObj.store = _store
-        refObj.Wrapper = function Wrapper({ children }: { children: React.ReactNode }) {
-            return <Provider store={store}>{children}</Provider>
-        }
-    })
-
-    return refObj
 }

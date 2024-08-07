@@ -1,81 +1,98 @@
-import { describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
 import { FlightSummarySelector } from "../flightsummary";
-import { setupTestStore } from "@/tests";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import {
     RunFlightSummary,
-    // ProfileFlightSummary,
-    // OrbitFlightSummary,
-    // CombinedFlightSummary  
+    ProfileFlightSummary,
+    OrbitFlightSummary,
 } from "./testdata";
+import { renderWithStore } from "@/tests";
 
-const mocks = vi.hoisted(() => {
-    return {
-        getFlightSummary: vi.fn(),
-        useLoaderData: vi.fn(),
-        useFlightSummary: vi.fn(),
-    };
-})
+const mocks = vi.hoisted(() => ({
+    fetch: vi.fn(),
+    useLoaderData: vi.fn(),
+}))
 
 vi.mock("@/flight-summary/hooks", async () => {
     return {
         ...(await import('@/flight-summary/hooks')),
-        getFlightSummary: mocks.getFlightSummary,
-        useFlightSummary: mocks.useFlightSummary,
+        fetch: mocks.fetch,
     };
 })
 
-// vi.mock("@tanstack/react-router", () => {
-//     return {
-//         useLoaderData: mocks.useLoaderData,
-//     };
-// })
+vi.mock("@tanstack/react-router", () => {
+    return {
+        useLoaderData: mocks.useLoaderData,
+    };
+})
+
+vi.mock("@/utils", async () => {
+    return {
+        ...(await import('@/utils')),
+        authFetch: mocks.fetch,
+    };
+})
+
 
 describe("Test FlightSummarySelector component", () => {
 
-    const storeRef = setupTestStore()
+    beforeEach(() => {
+        mocks.fetch.mockClear()
+        cleanup()   
+    })
+
 
     it("Should render", () => {
-        render(<FlightSummarySelector />, { wrapper: storeRef.Wrapper })
+        renderWithStore(<FlightSummarySelector />)
         expect(screen.getByText("Flight Summary")).toBeDefined()
     })
 
     it("Should render a run correctly", async () => {
-        mocks.getFlightSummary.mockImplementation(()=>{
-            console.log('getFlightSummary mock called')
-            return {0: RunFlightSummary}
+        mocks.fetch.mockImplementation(() => {
+            return Promise.resolve({json: () => {return {0: RunFlightSummary}}})
         })
-        render(<FlightSummarySelector />, { wrapper: storeRef.Wrapper })
+        renderWithStore(<FlightSummarySelector />)
 
         await waitFor(() => {
-            // expect(screen.getByText(RunFlightSummary.event)).toBeDefined()
-            // expect(screen.getByText(new Date(RunFlightSummary.start.time).toLocaleTimeString())).toBeDefined()
-            // expect(screen.getByText(new Date(RunFlightSummary.stop.time).toLocaleTimeString())).toBeDefined()
-            // expect(screen.getByText(RunFlightSummary.event).closest('svg')).toHaveClass('lucide-move-right')
+            const from = new Date(RunFlightSummary.start.time * 1000).toLocaleTimeString()
+            const to = new Date(RunFlightSummary.stop.time * 1000).toLocaleTimeString()
+            const timeString = `from ${from} until ${to}` 
+            expect(screen.getByText(timeString)).toBeDefined()
+            expect(screen.getByText(RunFlightSummary.event)).toBeDefined()
+            expect(screen.getByTestId('fs-run-icon')).toBeDefined()
         })
     })
 
-    // it("Should render a profile correctly", async () => {
-    //     mocks.useFlightSummary.mockReturnValue({0: ProfileFlightSummary})
-    //     render(<FlightSummarySelector />, { wrapper: storeRef.Wrapper })
+    it("Should render a profile correctly", async () => {
+        mocks.fetch.mockImplementation(() => {
+            return Promise.resolve({json: () => {return {0: ProfileFlightSummary}}})
+        })
+        renderWithStore(<FlightSummarySelector />)
 
-    //     await waitFor(() => {
-    //         expect(screen.getByText(ProfileFlightSummary.event)).toBeDefined()
-    //         expect(screen.getByText(new Date(ProfileFlightSummary.start.time).toLocaleTimeString())).not.toBeDefined()
-    //         expect(screen.getByText(new Date(ProfileFlightSummary.stop.time).toLocaleTimeString())).not.toBeDefined()
-    //         expect(screen.getByText(ProfileFlightSummary.event).closest('svg')).toHaveClass('lucide-move-up-right')
-    //     })
-    // })
+        await waitFor(() => {
+            const from = new Date(RunFlightSummary.start.time * 1000).toLocaleTimeString()
+            const to = new Date(RunFlightSummary.stop.time * 1000).toLocaleTimeString()
+            const timeString = `from ${from} until ${to}` 
+            expect(screen.getByText(timeString)).toBeDefined()
+            expect(screen.getByText(ProfileFlightSummary.event)).toBeDefined()
+            expect(screen.getByTestId('fs-profile-icon')).toBeDefined()
+        })
+    })
 
-    // it("Should render an orbit correctly", () => {
-    //     mocks.useFlightSummary.mockReturnValue({0: OrbitFlightSummary})
-    //     render(<FlightSummarySelector />, { wrapper: storeRef.Wrapper })
+    it("Should render an orbit correctly", async () => {
+        mocks.fetch.mockImplementation(() => {
+            return Promise.resolve({json: () => {return {0: OrbitFlightSummary}}})
+        })
+        renderWithStore(<FlightSummarySelector />)
 
-    //     waitFor(() => {
-    //         expect(screen.getByText(OrbitFlightSummary.event)).toBeDefined()
-    //         expect(screen.getByText(new Date(OrbitFlightSummary.start.time).toLocaleTimeString())).toBeDefined()
-    //         expect(screen.getByText(new Date(OrbitFlightSummary.stop.time).toLocaleTimeString())).toBeDefined()
-    //         expect(screen.getByText(OrbitFlightSummary.event).closest('svg')).toHaveClass('lucide-rotate')
-    //     })
-    // })
+        await waitFor(() => {
+            const from = new Date(RunFlightSummary.start.time * 1000).toLocaleTimeString()
+            const to = new Date(RunFlightSummary.stop.time * 1000).toLocaleTimeString()
+            const timeString = `from ${from} until ${to}` 
+            expect(screen.getByText(timeString)).toBeDefined()
+            expect(screen.getByText(OrbitFlightSummary.event)).toBeDefined()
+            expect(screen.getByTestId('fs-orbit-icon')).toBeDefined()
+        })
+    })
+
 })

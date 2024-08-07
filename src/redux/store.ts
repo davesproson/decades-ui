@@ -38,6 +38,7 @@ const store = createStore()
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+export type AppStore = typeof store
 export const useDispatch: () => AppDispatch = useReduxDispatch
 export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector
 export default store

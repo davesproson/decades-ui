@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, cleanup, fireEvent, act, waitFor } from '@testing-library/react'
-
-// import { ParameterPage } from '../parameter-page'
+import { render, screen, cleanup, act, waitFor, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { testComponents } from '../parameter-page'
 import { testTab } from './testdata'
 import { addTab, removeTab, selectTab } from '@/redux/tabsSlice'
-import { setupTestStore } from '@/tests'
+import { renderWithStore } from '@/tests'
 import { setTabbedPlots } from '@/redux/configSlice'
 
 
@@ -16,8 +15,9 @@ const mocks = vi.hoisted(() =>{
     }
 })
 
-vi.mock('@/plot/plot', () => {
+vi.mock('@/plot/plot', async () => {
     return {
+        default: mocks.PlotDispatcher,
         PlotDispatcher: mocks.PlotDispatcher
     }
 })
@@ -26,6 +26,7 @@ describe("Test tabbed parameter tab title", () => {
 
     beforeEach(() => {
         cleanup()
+        mocks.PlotDispatcher.mockClear()
     })
 
     it("Should render", () => {
@@ -98,68 +99,79 @@ describe("Test tabbed parameter content", () => {
         cleanup()
     })
     
-    const storeRef = setupTestStore()
-    
     it("Should render", () => {
         const { TabbedContent } = testComponents
-        render(<TabbedContent />, { wrapper: storeRef.Wrapper })
+        renderWithStore(<TabbedContent />)
         expect(screen.getByText("Param List")).toBeDefined()
     })
 
-    it("Should add a plot tab when config added to store", async () => {
+     it("Should add a plot tab when config added to store", async () => {
         
+         const { TabbedContent } = testComponents
+         const { id, name, ...rest } = testTab
+         const { store } = renderWithStore(<TabbedContent />)
 
-        const { TabbedContent } = testComponents
-        render(<TabbedContent />, { wrapper: storeRef.Wrapper })
-        storeRef.store.dispatch(setTabbedPlots(true))
-        const { id, name, ...rest } = testTab
-        storeRef.store.dispatch(addTab(rest))
+         act(() => {
+  		    store.dispatch(setTabbedPlots(true))
+  	        store.dispatch(addTab(rest))
+         })
 
-        await waitFor(() => {
-            expect(screen.getByText("Plot 1")).toBeDefined()
-            expect(mocks.PlotDispatcher).toHaveBeenCalled()
-        })
-    })
+         await waitFor(() => {
+             expect(screen.getByText("Plot 1")).toBeDefined()
+             expect(mocks.PlotDispatcher).toHaveBeenCalled()
+         })
+     })
 
     it("Should remove a plot tab when config removed from store", async () => {
         const { TabbedContent } = testComponents
-        render(<TabbedContent />, { wrapper: storeRef.Wrapper })
+        const { store } = renderWithStore(<TabbedContent />)
 
         const { id, name, ...rest } = testTab
-        storeRef.store.dispatch(addTab(rest))
-        storeRef.store.dispatch(setTabbedPlots(true))
+
+        act(() => {
+            store.dispatch(addTab(rest))
+            store.dispatch(setTabbedPlots(true))
+        })
+
         await waitFor(() => {
             expect(screen.getByText("Plot 1")).toBeDefined()
         })
 
-        storeRef.store.dispatch(removeTab(1))
+        act(() => store.dispatch(removeTab(0)))
+
         await waitFor(() => {
             expect(screen.queryAllByText("Plot 1")).toHaveLength(0)
         })
     })
 
     it("Should switch to a plot when clicked", async () => {
+        const user = userEvent.setup()
         const { TabbedContent } = testComponents
-        const { id, ...rest } = testTab
+        const { id, name,  ...rest } = testTab
         
+        const { store } = renderWithStore(<TabbedContent />)
+
+        act(() => {
+            store.dispatch(addTab(rest))
+            store.dispatch(selectTab("param-list"))
+        })
+
         mocks.PlotDispatcher.mockClear()
-        storeRef.store.dispatch(addTab(rest))
-        storeRef.store.dispatch(selectTab("param-list"))
-        render(<TabbedContent />, { wrapper: storeRef.Wrapper })
 
         await waitFor(() => {
-            expect(screen.getByText(testTab.name)).toBeDefined()
+            expect(screen.getByText("Plot 1")).toBeDefined()
+            expect(screen.queryAllByText("PlotlyPlot")).toHaveLength(0)
             expect(mocks.PlotDispatcher).not.toHaveBeenCalled()
-            expect(screen.getByText("PlotlyPlot")).toBeNull()
         })
+
         
         act(() => {
-            screen.getByText(testTab.name).click()
+            user.click(screen.getByText("Plot 1"))
         })
-
+        
         await waitFor(() => {
-            expect(mocks.PlotDispatcher).toHaveBeenCalled()
             expect(screen.getByText("PlotlyPlot")).toBeDefined()
+            expect(mocks.PlotDispatcher).toHaveBeenCalled()
         })
     })
 

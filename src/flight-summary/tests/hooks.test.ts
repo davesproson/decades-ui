@@ -1,53 +1,50 @@
-import { describe, it, expect, vi } from "vitest"
-import { Dispatch, SetStateAction } from "react"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 
 import { useFlightSummary } from "../hooks"
 import { testEntry } from "./testdata"
-import { FlightSummary } from "../types"
-import { renderHook, waitFor } from '@testing-library/react'
+import { cleanup, renderHook, waitFor } from '@testing-library/react'
 
-const mocks = vi.hoisted(() => {
-    return {
-        useLoaderData: vi.fn()
-    }
-});
+const mocks = vi.hoisted(() => ({
+    useLoaderData: vi.fn(),
+    fetch: vi.fn(),
+}));
 
-vi.mock('../hooks', async () => {
-    return {
-        ...(await import('../hooks')),
-        getData: vi.fn((setter?: Dispatch<SetStateAction<FlightSummary | undefined>>) => {
-            if (setter) setter({ [testEntry.uuid]: testEntry })
-            return testEntry
-        })
-    }
-})
 
-vi.mock('@tanstack/react-router', async () => {
 
+vi.mock('@tanstack/react-router',  async () => {
     return {
         ...(await import('@tanstack/react-router')),
         useLoaderData: mocks.useLoaderData
     }
 })
 
+vi.mock('@/utils', async () => {
+    return {
+        ...(await import('@/utils')),
+        authFetch: mocks.fetch
+    }
+})
+
 
 describe('Check useFlightSummary behaviour', async () => {
+
+    beforeEach(() => {
+        mocks.useLoaderData.mockClear()
+        cleanup()
+    })
+
     it('Should return the loader data if it exists', async () => {
-        mocks.useLoaderData.mockImplementationOnce(() => {
+        mocks.useLoaderData.mockImplementation((_a:any) => {
             return { [testEntry.uuid]: testEntry }
         })
 
         const { result } = renderHook(useFlightSummary)
-        await waitFor(() => expect(result.current).toBe({ [testEntry.uuid]: testEntry }))
+        await waitFor(() => expect(result.current).toStrictEqual({ [testEntry.uuid]: testEntry }))
     })
 
     it('Should return the data from the API if the loader data does not exist', async () => {
-        vi.mock('@tanstack/react-router', async () => {
-            return {
-                useLoaderData: () => undefined
-            }
-        })
+        mocks.fetch.mockResolvedValueOnce({ json: () => { return { [testEntry.uuid]: testEntry } } })
         const { result } = renderHook(() => useFlightSummary())
-        await waitFor(() => expect(result.current).toBe({ [testEntry.uuid]: testEntry }))
+        await waitFor(() => expect(result.current).toStrictEqual({ [testEntry.uuid]: testEntry }))
     })
 })

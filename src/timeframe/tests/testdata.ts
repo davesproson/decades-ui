@@ -1,5 +1,5 @@
-export const startTime = new Date("2021-04-05T11:12:13.000Z").getTime()
-export const stopTime = new Date("2021-04-05T14:15:16.000Z").getTime()
+export const startTime = new Date("2021-04-05T11:12:13.000Z").getTime() / 1000
+export const stopTime = new Date("2021-04-05T14:15:16.000Z").getTime() / 1000
 
 export const RunFlightSummary = {
     "uuid": 0,
