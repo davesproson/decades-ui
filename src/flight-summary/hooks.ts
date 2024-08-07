@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { apiEndpoints } from "../settings"
 import type { FlightSummary } from "./types"
 import { useLoaderData } from "@tanstack/react-router"
+import { authFetch as fetch } from "@/utils"
 
 /**
  * Get the flight summary data from the API. Optionally set the returned data 
