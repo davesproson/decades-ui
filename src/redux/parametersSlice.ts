@@ -229,3 +229,7 @@ export const {
 export default paramSlice.reducer;
 
 export type { ParamsState, DecadesParameter, Parameter, Axis }
+
+export const testFunctions = {
+    paramFromDecadesParam
+}
