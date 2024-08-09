@@ -9,18 +9,14 @@ const mocks = vi.hoisted(() => ({
     fetch: vi.fn(),
 }));
 
-
-
 vi.mock('@tanstack/react-router',  async () => {
     return {
-        ...(await import('@tanstack/react-router')),
         useLoaderData: mocks.useLoaderData
     }
 })
 
 vi.mock('@/utils', async () => {
     return {
-        ...(await import('@/utils')),
         authFetch: mocks.fetch
     }
 })
@@ -34,16 +30,13 @@ describe('Check useFlightSummary behaviour', async () => {
     })
 
     it('Should return the loader data if it exists', async () => {
-        mocks.useLoaderData.mockImplementation((_a:any) => {
-            return { [testEntry.uuid]: testEntry }
-        })
-
+        mocks.useLoaderData.mockImplementation(() => ({ [testEntry.uuid]: testEntry }))
         const { result } = renderHook(useFlightSummary)
         await waitFor(() => expect(result.current).toStrictEqual({ [testEntry.uuid]: testEntry }))
     })
 
     it('Should return the data from the API if the loader data does not exist', async () => {
-        mocks.fetch.mockResolvedValueOnce({ json: () => { return { [testEntry.uuid]: testEntry } } })
+        mocks.fetch.mockResolvedValueOnce({ json: () =>({ [testEntry.uuid]: testEntry })})
         const { result } = renderHook(() => useFlightSummary())
         await waitFor(() => expect(result.current).toStrictEqual({ [testEntry.uuid]: testEntry }))
     })
