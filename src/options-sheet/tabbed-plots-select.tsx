@@ -14,7 +14,7 @@ export const TabbedPlotsSwitch = () => {
     return (
         <div className="flex items-center space-x-2 mt-1">
             <Switch checked={tabbedPlots} onCheckedChange={toggleTabbedPlots} id="enable-tabs" />
-            <Label htmlFor="enable-tabs">Tabbed plots</Label>
+            <Label htmlFor="enable-tabs">Tabbed Plots</Label>
         </div>
     )
 }

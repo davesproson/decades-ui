@@ -47,3 +47,7 @@ export const ParamSetSelector = () => {
         </Select>
     )
 }
+
+export const testConstants = {
+    PARAMETER_SETS
+}
