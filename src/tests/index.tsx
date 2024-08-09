@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react'
-import { render } from '@testing-library/react'
+import { render, renderHook } from '@testing-library/react'
 import type { RenderOptions } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { AppStore, createStore } from '@/redux/store'
@@ -24,5 +24,21 @@ export function renderWithStore(
     return {
         store,
         ...render(ui, { wrapper: Wrapper, ...renderOptions })
+    }
+}
+
+export function renderHookWithStore(
+    hook: () => any,
+    extendedRenderOptions: ExtendedRenderOptions = {}
+) {
+    const store = createStore()
+
+    const Wrapper = ({ children }: PropsWithChildren) => (
+        <Provider store={store}>{children}</Provider>
+    )
+
+    return {
+        store,
+        ...renderHook(hook, { wrapper: Wrapper, ...extendedRenderOptions })
     }
 }
