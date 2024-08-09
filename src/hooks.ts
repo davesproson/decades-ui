@@ -4,6 +4,7 @@ import { useParameterEndpoint } from "@/parameters/hooks"
 import { geoCoords, geoCoordsQuicklook, presets, presetsQuicklook } from "@/settings"
 import { setParams, setParamsDispatched } from "@/redux/parametersSlice"
 import { quickLookCompatability } from "@/quicklook/utils"
+import { authFetch as fetch } from "./utils"
 
 export const useScrollInhibitor = (stopScroll: boolean) => {
     useEffect(() => {
