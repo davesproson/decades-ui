@@ -3,6 +3,7 @@ import { DecadesParameter } from "@/redux/parametersSlice";
 import { useSelector } from "@store";
 import { apiEndpoints } from "@/settings";
 import { quickLookCompatability } from "@/quicklook/utils";
+import { authFetch as fetch } from "@/utils";
 
 
 /**
