@@ -31,7 +31,10 @@ export function renderHookWithStore(
     hook: () => any,
     extendedRenderOptions: ExtendedRenderOptions = {}
 ) {
-    const store = createStore()
+    const {
+        store = createStore(),
+        ...renderOptions
+    } = extendedRenderOptions
 
     const Wrapper = ({ children }: PropsWithChildren) => (
         <Provider store={store}>{children}</Provider>
@@ -39,6 +42,6 @@ export function renderHookWithStore(
 
     return {
         store,
-        ...renderHook(hook, { wrapper: Wrapper, ...extendedRenderOptions })
+        ...renderHook(hook, { wrapper: Wrapper, ...renderOptions })
     }
 }
