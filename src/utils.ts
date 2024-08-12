@@ -111,7 +111,7 @@ export const localStorageWithExpiry = {
  * @param options - the fetch options
  * @returns the fetch response
  */
-export const authFetch = async (url: string, options?: RequestInit): Promise<Response> => {
+export const authFetch = async (url: string|URL, options?: RequestInit): Promise<Response> => {
     const modOptions: RequestInit = {
         ...options,
         credentials: "include",
