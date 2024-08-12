@@ -11,7 +11,7 @@ export interface CustomTimeframeSetter {
 
 interface Timeframe {
     selected: boolean,
-    value: string,
+    value: 'all' | '2hr' | '1hr' | '30min' | '5min' | '1min',
     label: string
 };
 
