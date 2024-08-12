@@ -43,7 +43,7 @@ const CogLoader = ({ text, progressPercent }: { text?: string, progressPercent?:
     }, [setValue])
 
     return (
-        <div className="absolute flex flex-col inset-0 justify-center items-center">
+        <div className="absolute flex flex-col inset-0 justify-center items-center" data-testid="decades-loader">
             <div className="flex flex-row">
                 <div style={{ transform: `rotate(${value}deg)` }}>
                     <ProgressIcon size="6em" color="#252243" />
@@ -61,7 +61,7 @@ const CogLoader = ({ text, progressPercent }: { text?: string, progressPercent?:
 
 const Loader = ({ text, progressPercent }: { text?: string, progressPercent?: number }) => {
     return (
-        <div className="absolute flex flex-col inset-0 justify-center items-center">
+        <div className="absolute flex flex-col inset-0 justify-center items-center" data-testid="decades-loader">
             <div className="flex justify-center w-[50%] animate-slider">
                 <PlaneIcon size="6em" color="#252243" style={{
                     rotate: "45deg",
