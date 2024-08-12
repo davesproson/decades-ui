@@ -15,6 +15,11 @@ export interface QuicklookState {
 	dataTimeSpan: {start: number, end: number} | null,
 }
 
+type Payload<P> = {
+	type: string,
+	payload: P
+}
+
 export const quicklookSlice = createSlice({
 	name: 'quicklook',
 	initialState: {
@@ -25,19 +30,19 @@ export const quicklookSlice = createSlice({
 		dataTimeSpan: null
 	} as QuicklookState,
 	reducers: {
-		setQcJob: (state, action: {type: string, payload: number|null}) => {
+		setQcJob: (state, action: Payload<number|null>) => {
 			state.qcJob = action.payload;
 		},
-		setQcJobs: (state, action: {type: string, payload: QuicklookJob[]}) => {
+		setQcJobs: (state, action: Payload<QuicklookJob[]>) => {
 			state.qcJobs = action.payload;
 		},
-		setFlightNumber: (state, action) => {
+		setFlightNumber: (state, action: Payload<string | null>) => {
 			state.flightNumber = action.payload;
 		},
-		setBasetime: (state, action) => {
+		setBasetime: (state, action: Payload<number>) => {
 			state.baseTime = action.payload;
 		},
-		setDataTimeSpan: (state, action) => {
+		setDataTimeSpan: (state, action: Payload<{start: number, end:number}>) => {
 			state.dataTimeSpan = action.payload;
 		}
 	},
