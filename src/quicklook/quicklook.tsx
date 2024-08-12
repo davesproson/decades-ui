@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
 import { DecadesBanner } from "@/components/decades";
-import { apiEndpoints } from "@/settings";
-import { setQcJob, setFlightNumber, setQcJobs } from "@/redux/quicklookSlice";
+import { setQcJob, setFlightNumber } from "@/redux/quicklookSlice";
 import { useDispatch } from "@store";
 import { setParamsDispatched } from "@/redux/parametersSlice";
 import { useScrollInhibitor } from "@/hooks";
@@ -11,57 +9,62 @@ import { useNavigate } from "@tanstack/react-router"
 import Loader from "@/components/loader";
 
 import type { QuicklookJob } from "@/redux/quicklookSlice";
+import { When } from "@/components/flow";
+import { useQuicklookJobs } from "./hooks";
 
-type QuicklookJobResponseElement = {
-    flight_number: string,
-    flight_date: string,
-    flight_project: string,
-    url: string
-}
-type QuicklookJobResponse = {
-    results: QuicklookJobResponseElement[]
-}
+
 
 const jobSortFn = (a: QuicklookJob, b: QuicklookJob) => {
-    return new Date(b.flightDate).getTime() - new Date(a.flightDate).getTime()
+    const dateDiff = new Date(b.flightDate).getTime() - new Date(a.flightDate).getTime()
+    if (dateDiff === 0) {
+        return b.flightNumber.localeCompare(a.flightNumber)
+    }
+    return dateDiff
+}
+
+const QuicklookSelectorNoFlights = ({ onClick }: { onClick: () => void }) => {
+    return (
+        <div className="fixed inset-0">
+            <div className="flex flex-col items-center justify-center h-full">
+                <h2 className="text-3xl font-medium">
+                    No flights are currently available to view
+                </h2>
+                <h3 className="text-muted-foreground">
+                    Flight data typically becomes available within 24 hours of a flight,
+                    and is available for viewing for approximately 2 weeks.
+                </h3>
+                <Button className="mt-4" onClick={onClick}>
+                    Back
+                </Button>
+            </div>
+        </div>
+    )
+}
+
+const QuicklookSelectorFlightList = ({ jobs, onJobSelected }: { jobs: QuicklookJob[] | null, onJobSelected: (job: QuicklookJob) => void }) => {
+    if(jobs === null) {
+        console.error("QuicklookSelectorFlightList: jobs is null")
+        return null
+    }
+
+    return (
+        jobs.sort(jobSortFn).map(job => {
+            return (
+                <Button key={job.flightNumber} className="m-1 w-[300px]" onClick={() => onJobSelected(job)}>
+                    {job.flightNumber} ({job.flightProject}) {job.flightDate}
+                </Button>
+            )
+        })
+    )
 }
 
 const QuicklookSelector = () => {
-    const [jobs, setJobs] = useState<QuicklookJob[]>([])
-    const [loading, setLoading] = useState(true)
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    useScrollInhibitor(!jobs.length)
-
-    useEffect(() => {
-        fetch(apiEndpoints.quicklook_jobs)
-            .then(response => response.json())
-            .then((data: QuicklookJobResponse) => {
-                setJobs(data.results.map(a => {
-                    return {
-                        flightNumber: a.flight_number,
-                        flightDate: a.flight_date,
-                        flightProject: a.flight_project,
-                        // TODO: This is a hack to get the jobID from the URL
-                        // This should be fixed in the API
-                        jobID: parseInt(a.url.split('/')[7])
-                    }
-                }))
-                dispatch(setQcJobs(data.results.map(a => {
-                    return {
-                        flightNumber: a.flight_number,
-                        flightDate: a.flight_date,
-                        flightProject: a.flight_project,
-                        jobID: parseInt(a.url.split('/')[7])
-                    }
-                })))
-            })
-            .then(() => setLoading(false))
-            .catch(() => {
-                throw new Error("Failed to fetch quicklook jobs")
-            })
-    }, [])
+    const { jobs, loading } = useQuicklookJobs()
+    useScrollInhibitor(!jobs?.length)
 
     if (loading) {
         return (
@@ -85,39 +88,16 @@ const QuicklookSelector = () => {
         navigate({ to: "/" })
     }
 
-    let content: React.ReactNode;
-    if (jobs.length === 0) {
-        content = (
-            <div className="fixed inset-0">
-                <div className="flex flex-col items-center justify-center h-full">
-                    <h2 className="text-3xl font-medium">
-                        No flights are currently available to view
-                    </h2>
-                    <h3 className="text-muted-foreground">
-                        Flight data typically becomes available within 24 hours of a flight,
-                        and is available for viewing for approximately 2 weeks.
-                    </h3>
-                    <Button className="mt-4" onMouseDown={reset}>
-                        Back
-                    </Button>
-                </div>
-            </div>
-        )
-    } else {
-        content = jobs.sort(jobSortFn).map(job => {
-            return (
-                <Button key={job.flightNumber} className="m-1 w-[300px]" onClick={() => jobSelected(job)}>
-                    {job.flightNumber} ({job.flightProject}) {job.flightDate}
-                </Button>
-            )
-        })
-    }
-
     return (
         <>
             <DecadesBanner />
             <div className="fixed inset-0 items-center justify-center flex flex-col">
-                {content}
+                <When condition={jobs === null || jobs.length === 0}>
+                    <QuicklookSelectorNoFlights onClick={reset} />
+                </When>
+                <When condition={!!jobs?.length}>
+                    <QuicklookSelectorFlightList jobs={jobs} onJobSelected={jobSelected} />
+                </When>
             </div>
         </>
     )
@@ -125,6 +105,11 @@ const QuicklookSelector = () => {
 
 
 
-
-
 export default QuicklookSelector;
+export const testComponents = {
+    QuicklookSelectorNoFlights,
+    QuicklookSelectorFlightList
+}
+export const testFunctions = {
+    jobSortFn
+}

@@ -1,8 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from '@store'
 import { setCustomTimeframe, setTimeframe } from '@/redux/optionsSlice'
 import { apiEndpoints } from '@/settings'
-import { setBasetime, setDataTimeSpan } from '@/redux/quicklookSlice'
+import { QuicklookJob, setBasetime, setDataTimeSpan } from '@/redux/quicklookSlice'
+import { authFetch as fetch } from '@/utils'
+import { setQcJobs } from '@/redux/quicklookSlice'
+import { QuicklookJobResponse, QuicklookJobResponseElement } from './types'
 
 /**
  * A hook to set the custom timeframe for the quicklook plot. This hook
@@ -19,7 +22,6 @@ export const useQuickLookTimeframe = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-
         if(!quickLookMode) {
             dispatch(setTimeframe({value: '30min'}))
             return
@@ -52,4 +54,38 @@ export const useQuickLookTimeframe = () => {
             console.error("Error fetching quicklook timeframe:", e)
         })  
     }, [qcJob, quickLookMode])
+}
+
+const apiJobToInteralJob = (job: QuicklookJobResponseElement): QuicklookJob => {
+    return {
+        flightNumber: job.flight_number,
+        flightDate: job.flight_date,
+        flightProject: job.flight_project,
+        jobID: parseInt(job.url.split('/')[7])
+    }
+}
+
+export const useQuicklookJobs = () => {
+    const [loading, setLoading] = useState(true)
+    const dispatch = useDispatch()
+    const jobs = useSelector(state => state.quicklook.qcJobs)
+
+    useEffect(() => {
+        fetch(apiEndpoints.quicklook_jobs)
+            .then(response => response.json())
+            .then((data: QuicklookJobResponse) => {
+                dispatch(setQcJobs(data.results.map(apiJobToInteralJob)))
+            })
+            .then(() => setLoading(false))
+            .catch((e) => {
+                console.log(e)
+                throw new Error("Failed to fetch quicklook jobs")
+            })
+    }, [setLoading, dispatch, setQcJobs])
+
+    return { jobs: jobs ? [...jobs] : [], loading }
+}
+
+export const testFunctions = {
+    apiJobToInteralJob
 }
