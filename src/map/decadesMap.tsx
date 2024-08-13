@@ -26,6 +26,9 @@ import { Show } from '../components/flow';
 import { Optional } from '../types';
 import { mapTilesUrl } from '../settings';
 
+import entityIcon from '@/assets/map-icons/g-luxe.png';
+import markerIcon from '@/assets/map-icons/flag-marker.png';
+
 const LayerHash = {
     'vector': VectorLayer,
     'geojson': VectorLayer
@@ -112,7 +115,7 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                 <VectorLayer>
                     <TrackedEntity
                         icon={{
-                            src: 'mapicons/g-luxe.png',
+                            src: entityIcon,
                             scale: 0.5,
                         }}
                         name='G-LUXE'
@@ -146,7 +149,7 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                             longitude={flag.lon}
                             name={flag.name}
                             icon={{
-                                src: 'mapicons/flag-marker.png',
+                                src: markerIcon,
                                 scale: 0.15,
                             }}
                         />
