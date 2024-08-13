@@ -56,11 +56,11 @@ const POIOverlay = (props: POIOverlayProps) => {
     const lonInfo = ddToDmm(props.lon, ['E', 'W'])
 
     return (
-        <div className="p-2" style={{
-            zIndex: 999, position: "absolute", top: props.y, left: props.x,
-            pointerEvents: "none", borderRadius: "5px", transform: "translate(-50%, -110%)"
-        }}>
-            <h2 className="title is-6">{props.name}</h2>
+        <div className="p-2 bg-white dark:bg-black absolute z-50 pointer-events-none rounded-md"
+            style={{top: props.y, left: props.x, transform: "translate(-50%, -110%)" }}
+        >
+        
+            <h2 className="font-bold">{props.name}</h2>
             <span>{`${latInfo.coord} ${latInfo.hemisphere}`}</span>
             <p>{`${lonInfo.coord} ${lonInfo.hemisphere}`}</p>
         </div>
@@ -75,7 +75,6 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
     const { state, actions } = useDecadesMapState()
 
     useScrollInhibitor(true)
-
 
     const toggleLayerVisibility = (name: string) => {
         actions.setLayers(state.layers.map(layer => {
