@@ -61,29 +61,6 @@ const MapClickEvent = ({ state, actions }: DecadesProps) => {
         }
     }, [mapState.map, state.mapModes, actions.setAircraftMeasures])
 
-    // Add a measurement line to the map if the start measurement mode is active
-    // useEffect(() => {
-    //     if (!mapState.map) return
-    //     if (!state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)) return
-
-    //     const startMeasurement = (e: any) => {
-    //         if (!mapState.map) return
-    //         const pixel = mapState.map.getEventPixel(e.originalEvent)
-    //         const lonLat = toLonLat(mapState.map.getCoordinateFromPixel(pixel))
-            
-    //         const interaction = new Draw({
-    //             source: new VectorSource(),
-    //             type: 'LineString'
-    //         })
-    //     }
-
-    //     mapState.map.on('click', startMeasurement)
-    //     return () => {
-    //         mapState.map?.un('click', startMeasurement)
-    //     }
-    // }, [mapState.map, state.mapModes, actions.setAircraftMeasures])
-    
-
     return null
 }
 
