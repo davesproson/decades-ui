@@ -11,6 +11,7 @@ import { IndexSearch } from '.'
 import  Loader  from '@/components/loader'
 import { ModeSelector } from "@/modeSelect"
 import QuicklookSelector from '@/quicklook/quicklook'
+import { enableQuicklook } from '@/settings'
 
 export const Route = createLazyFileRoute('/')({
   component: () => <Index />,
@@ -45,11 +46,11 @@ function Index() {
       setTheme('dark')
   }, [darkMode, setTheme])
 
-  if(!modeSelected) {
+  if(!modeSelected && enableQuicklook) {
     return <ModeSelector />
   }
 
-  if(modeSelected && quickLookMode && !qcJob) {
+  if(modeSelected && quickLookMode && !qcJob && enableQuicklook) {
     return <QuicklookSelector />
   }
 

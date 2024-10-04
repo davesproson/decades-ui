@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { ParamSetSelector } from "./paramset-select"
 import { LiveDataOnly } from "@/components/flow"
 import { QuicklookSwitch } from "./quicklook-select"
-import { enableChat } from "@/settings"
+import { enableChat, enableQuicklook, enableTabbedPlots } from "@/settings"
 import { When } from "@/components/flow"
 import { TabbedPlotsSwitch } from "./tabbed-plots-select"
 
@@ -32,8 +32,10 @@ const OptionsSheet = () => {
 
                     <ThemeSelect />
 
-                    <Separator className="my-4" />
-                    <QuicklookSwitch />
+                    <When condition={enableQuicklook}>
+                        <Separator className="my-4" />
+                        <QuicklookSwitch />
+                    </When>
 
                     <LiveDataOnly>
                         <When condition={enableChat}>
@@ -42,14 +44,15 @@ const OptionsSheet = () => {
                         </When>
                     </LiveDataOnly>
 
-                    <Separator className="my-4" />
-                    <TabbedPlotsSwitch />
+                    <When condition={enableTabbedPlots}>
+                        <Separator className="my-4" />
+                        <TabbedPlotsSwitch />
+                    </When>
 
                     <LiveDataOnly>
                         <Separator className="my-4" />
                         <ParamSetSelector />
                     </LiveDataOnly>
-
 
             </SheetContent>
         </Sheet>

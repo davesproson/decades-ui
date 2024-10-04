@@ -16,7 +16,7 @@ import { setTimeframe } from "@/redux/optionsSlice"
 import { useNavigate } from "@tanstack/react-router"
 import { useGeoCoords, useParameterPresets } from "@/hooks"
 import { selectParamsByRawName, setParamsDispatched, unselectAllParams } from "./redux/parametersSlice"
-import { LiveDataOnly, QuicklookOnly } from "@/components/flow"
+import { LiveDataOnly, QuicklookOnly, Show } from "@/components/flow"
 import { loadSavedView } from "./redux/viewSlice"
 import { Home } from "lucide-react"
 import { cn } from "./lib/utils"
@@ -27,6 +27,7 @@ import { useDashboardUrl } from "./dashboard/hooks"
 import { setQcJob } from "./redux/quicklookSlice"
 import { addTab } from "./redux/tabsSlice"
 import { PlotURLOptions } from "./plot/types"
+import { enableChat } from "./settings"
 
 const launch = (url: string | undefined) => {
     if (url === undefined) return
@@ -161,10 +162,12 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         <MenubarContent>
                             <MenubarItem onClick={() => navigate({ to: "/map" })}>Map...</MenubarItem>
                             <MenubarItem onClick={() => navigate({ to: "/flight-summary" })}>Flight Summary...</MenubarItem>
-                            <MenubarSeparator />
-                            <MenubarItem onClick={() => navigate({ to: "/chat" })}>
-                                Chat...
-                            </MenubarItem>
+                            <Show when={enableChat}>
+                                <MenubarSeparator />
+                                <MenubarItem onClick={() => navigate({ to: "/chat" })}>
+                                    Chat...
+                                </MenubarItem>
+                            </Show>
                             <MenubarSeparator />
                             <MenubarItem onClick={() => navigate({ to: '/alarms/config' })}>Alarms...</MenubarItem>
                             <MenubarItem onClick={() => navigate({ to: '/gauges/config' })}>Gauges...</MenubarItem>
@@ -194,9 +197,9 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                         <MenubarSub>
                             <MenubarSubTrigger>Earth coordinates</MenubarSubTrigger>
                             <MenubarSubContent>
-                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(latUrl?.toString(), {ordvar: geoCoords.latitude, swapxy: true})}>vs latitude</MenubarItem>
-                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(lonUrl?.toString(), {ordvar: geoCoords.longitude})}>vs longitude</MenubarItem>
-                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(heightUrl?.toString(), {ordvar: geoCoords.altitude, swapxy: true})}>vs altitude</MenubarItem>
+                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(latUrl?.toString(), { ordvar: geoCoords.latitude, swapxy: true })}>vs latitude</MenubarItem>
+                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(lonUrl?.toString(), { ordvar: geoCoords.longitude })}>vs longitude</MenubarItem>
+                                <MenubarItem disabled={!nSelectedParams} onClick={() => launchPlot(heightUrl?.toString(), { ordvar: geoCoords.altitude, swapxy: true })}>vs altitude</MenubarItem>
                             </MenubarSubContent>
                         </MenubarSub>
                         <MenubarSeparator />
