@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { FlexCenter, Splash } from '@/components/layout';
 import { CircleAlert, ExternalLink, SendHorizonal } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { base } from '@/settings';
 
 /**
  * A component to display a message when chat is selected but not enabled.
@@ -39,12 +40,12 @@ const ChatTime = (props: { time: number }) => {
 }
 
 const stripUrl = (message: string) => message.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '')
-                                             .replace(/(\/plot\?[\n\S]+)/g, '')
+                                             .replace(new RegExp(`(${base}plot\?[\\n\\S]+)`), '')
 
 const MessageUrlComponent = ({message}: {message: string}) => {
     let messageUrl: string = ''
     const rex = /(?:https?|ftp):\/\/([\n\S]+)\/([\n\S]+)/
-    const rex2 = /(\/plot\?[\n\S]+)/
+    const rex2 = new RegExp(`(${base}plot\?[\\n\\S]+)`)
 
     const matched = message.match(rex)
     const matched2 = message.match(rex2)
@@ -154,6 +155,7 @@ const Chat = (props: ChatProps) => {
                         <div key={message.messageid}>
                             <span className="mr-2 font-mono text-muted-foreground"><ChatTime time={message.time} /></span>
                             <Badge className={'mr-2 mb-1 ' + tagType} >{tagText}</Badge>
+                            {/* {message.message} */}
                             {messageText} <MessageUrlComponent message={message.message}/>
                         </div>
                     )
