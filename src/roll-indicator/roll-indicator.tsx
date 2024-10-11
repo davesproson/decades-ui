@@ -122,7 +122,7 @@ const RollIndicator = (props: RollIndicatorProps) => {
     const data = useRollIndicator()
     useScrollInhibitor(true)
     const [ref, widthOrHeight] = useRollResizer()
-    const [fwdAspect, setFwdAspect] = useState(true)
+    const [fwdAspect, setFwdAspect] = useState(false)
 
     const containerStyle: React.CSSProperties = props.standalone
         ? { position: "absolute", left: 0, width: "100%", height: "100%" }
