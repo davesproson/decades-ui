@@ -24,6 +24,7 @@ export type OptionsState = {
     scrollingWindow: boolean,
     dataHeader: boolean,
     ordinateAxis: string,
+    colorVariable: string | null,
     server: string | undefined,
     timeframes: Array<Timeframe>,
     useCustomTimeframe: boolean,
@@ -42,6 +43,7 @@ export const optionsSlice = createSlice({
         dataHeader: false,
         ordinateAxis: 'utc_time',
         server: undefined,
+        colorVariable: null,
         timeframes: [
             {selected: false, value: 'all', label: 'All'},
             {selected: false, value: '2hr', label: '2 hours'},
@@ -120,6 +122,9 @@ export const optionsSlice = createSlice({
         },
         setOrdinateAxis: (state, action) => {
             state.ordinateAxis = action.payload;
+        },
+        setColorVariable: (state, action) => {
+            state.colorVariable = action.payload;
         }
 	},
 });
@@ -127,7 +132,7 @@ export const optionsSlice = createSlice({
 
 export const { 
     toggleSwapOrientation, toggleScrollingWindow, toggleDataHeader, togglePlotStyle,
-    setTimeframe, setServer, setOrdinateAxis, setCustomTimeframe
+    setTimeframe, setServer, setOrdinateAxis, setCustomTimeframe, setColorVariable
 } = optionsSlice.actions;
 
 export default optionsSlice.reducer;

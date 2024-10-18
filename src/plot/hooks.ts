@@ -16,7 +16,7 @@ import {
     startData
 } from './utils';
 import { useGetParameters } from '@/parameters/hooks';
-import { PlotSearchParams, Route } from '@/routes/plot';
+// import { PlotSearchParams, Route } from '@/routes/plot';
 
 const ShareIcon = {
     'width': 500,
@@ -37,6 +37,7 @@ interface OptionsState {
     ordinateAxis: string,
     server: string | undefined,
     axes: string[],
+    caxis: string | null,
     job?: number | null
 }
 
@@ -74,6 +75,7 @@ const getUrl = (options: OptionsState) => {
     url.searchParams.set("ordvar", options.ordinateAxis)
     if(options.server) url.searchParams.set("server", options.server)
     if(options.job) url.searchParams.set("job", options.job.toString())
+    if(options.caxis) url.searchParams.set("caxis", options.caxis)
     // url.searchParams.set("server", options.server)
     for(const axStr of axisStrings) {
         url.searchParams.append("axis", axStr)
@@ -153,6 +155,7 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
             ordinateAxis: overridden("ordvar", plotOptions.ordinateAxis),
             server: overridden("server", server),
             axes: overridden("axes", axes),
+            caxis: overridden("caxis", plotOptions.colorVariable)
         }
 
         // We don't want to unset qcJob if we're toggling between quicklook and
@@ -239,6 +242,8 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         // The number of axes to include in the plot
         const numAxes = options.axes.length;
 
+        const colorParam = options.caxis ? paramFromRawName(options.caxis, params) : null
+
         // The plotly layout object
         const layout: any = {
             showlegend: true,
@@ -246,6 +251,10 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             paper_bgcolor: darkMode ? darkBg : "white",
             font: {
                 color: darkMode ? "white" : "black"
+            },
+            title: {
+                text: options.caxis ? `${colorParam?.DisplayText} (${colorParam?.DisplayUnits})` : null,
+                font: {size: 12}
             },
             legend: {
                 font: {
@@ -385,7 +394,18 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             line: {
                 color?: string
             },
-            mode?: string
+            mode?: string,
+            marker?: {
+                color?: Array<number>,
+                colorscale?: string,
+                cmin?: number,
+                cmax?: number,
+                size?: number,
+                colorbar?: {
+                    title?: string,
+                    orientation?: string
+                }
+            }
         }
 
         // Initialise the plot traces
@@ -400,13 +420,26 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                 y: [],
                 yaxis: options.swapxy ? 'y' : getYAxis(options, options.params[i]),
                 xaxis: options.swapxy ? getXAxis(options, options.params[i]) : 'x',
-                line: {}
+                line: {},
             } as PlotlyTrace
             
-            if(options.style === "scatter") {
+            // Use markers if the style is scatter, or if a colour axis is set
+            if(options.style === "scatter" || options.caxis) {
                 opts.mode = "markers";
             } else {
                 opts.mode = "lines";
+            }
+
+            // If the colour axis is set, configure the marker to use the colour axis
+            if(options.caxis) {
+                opts.marker = {
+                    color: [],
+                    size: 10,
+                    colorscale: 'Viridis',
+                    colorbar: {
+                        orientation: 'h'
+                    }
+                }
             }
 
             // If a parameter name contains "red", "green" or "blue", set the line
@@ -517,33 +550,35 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
  * @returns The plot options
  */
 const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
-    let searchParams: PlotSearchParams | null = null
 
-    try {
-        searchParams = Route.useSearch()
-    } catch(e) {
-        // We're not on the plot route, so we can't get the search params.
-        // In this case we expect the options to be passed in as an argument
-    }
     if(!options) return undefined
+
+    const searchParams = new URLSearchParams(window.location.search)
     
-    const job = options.job || searchParams?.job || null
+    const urlJob = (()=>{
+        return searchParams.get('job') === null
+            ? null
+            : parseInt(searchParams.get('job') || "") || null
+    })()
+    const job = options.job || urlJob
 
     const opts: PlotURLOptions = {
-        params: options.params 
+        params: options.params
             || (()=>{
-                    const sparams: string | undefined = searchParams?.params
+                    const sparams: string | null = searchParams.get("params")
                     return sparams ? sparams.split(",") : []
                 })(),
-        axes: options.axes || searchParams?.axis || [],
-        timeframe: options.timeframe || (searchParams?.timeframe || "30min"),
-        swapxy: options.swapxy || (searchParams?.swapxy ?? false),
-        scrolling: options.scrolling || (searchParams?.scrolling ?? false),
-        style: options.plotStyle || (searchParams?.style || "line"),
-        header: options.data_header || (searchParams?.data_header ?? false),
-        ordvar: options.ordvar || (searchParams?.ordvar || "utc_time"),
+        axes: options.axes || searchParams.get('axis')?.split(',') || [],
+        timeframe: options.timeframe || (searchParams.get('timeframe') || "30min"),
+        swapxy: options.swapxy || (searchParams.get('swapxy') === 'true' || false),
+        scrolling: options.scrolling || (searchParams.get('scrolling') === 'true' || false),
+        style: options.plotStyle || (searchParams.get('style') || "line"),
+        header: options.data_header || (searchParams.get('data_header') === 'true' || false),
+        caxis: options.caxis || searchParams.get('caxis') || "",
+        ordvar: options.ordvar || (searchParams.get('ordvar') || "utc_time"),
+ 
     }
-    if(job) opts.job = job
+    if(job) opts.job = job || null
 
     return opts
 }

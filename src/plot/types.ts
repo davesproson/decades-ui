@@ -8,6 +8,7 @@ type PlotURLOptions = {
     header: boolean,
     server?: string | undefined,
     ordvar: string,
+    caxis?: string,
     job?: number | null
 };
 

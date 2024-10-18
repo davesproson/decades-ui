@@ -151,9 +151,9 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
     // Filter out bad data. It's not totally clear that this is the best option,
     // but leaving missing data in the plot causes issues with data < 1 Hz, or
     // data with regular gaps, e.g. the GIN data reformatted by the prtaft DLU.
+    const ordVarIsBad = data[options.ordvar].map(x => x === badData)
     for(const param of options.params) {
         const paramIsBad = data[param].map(x => x === badData)
-        const ordVarIsBad = data[options.ordvar].map(x => x === badData)
 
         const isBad = paramIsBad.map((x, i) => x || ordVarIsBad[i])
 
@@ -171,9 +171,24 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
     const maxTraceLength = canSlide(options) ? parseInt(slideLength(options)) : undefined
     
     import('plotly.js-dist-min').then(Plotly => { 
+        
         Plotly.extendTraces(ref.current, {
             y: yData, x: xData
         }, [...Array(yData.length).keys()], maxTraceLength)
+        
+        if(options.caxis && options.params.length === 1) {
+            const currentData = ref.current.data
+            const newData = data[options.caxis]
+            const newDataIsBad = data[options.caxis].map(x => x === badData)
+            const isBad = newDataIsBad.map((x, i) => x || ordVarIsBad[i])
+            const newColorArray: Array<number> = [...currentData[0].marker.color, ...newData.filter((_x, i) => !isBad[i])]
+            Plotly.restyle(ref.current, {
+                'marker.color': [newColorArray],
+                'marker.cmin': Math.min(...newColorArray.filter(x => x === badData ? null : x)),
+                'marker.cmax': Math.max(...newColorArray.filter(x => x === badData ? null : x))
+            } as any, 0)
+        }
+
     })
 }
 
