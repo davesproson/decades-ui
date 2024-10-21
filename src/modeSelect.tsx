@@ -77,8 +77,7 @@ export const ModeSelector = () => {
 
                 <ModeSelectCard title="Live data" onLaunch={() => setMode(MODE_LIVEDATA)}>
                     <>
-                        View live data from the aircraft, when available, or a demonstration
-                        of the system with simulated data otherwise.
+                        View live data from the aircraft when the aircraft is in flight.
                     </>
                 </ModeSelectCard>
 
