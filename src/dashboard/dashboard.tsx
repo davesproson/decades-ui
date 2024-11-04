@@ -30,8 +30,8 @@ const DashHeader = (props: DashHeaderProps) => {
     if (props.inAlarm) alarmClass = "bg-destructive "
 
     return (
-        <div className={alarmClass + "flex justify-center items-center font-bold rounded-t-lg"}>
-            <Button size="sm" variant="ghost" onClick={props.maximize}>
+        <div className={alarmClass + "flex justify-center items-center font-bold rounded-t-lg overflow-hidden p-2 w-auto"}>
+            <Button size="sm" variant="ghost" onClick={props.maximize} className="break-words w-full justify-start whitespace-normal h-auto min-h-2 p-2 overflow-hidden">
                 {props.title}
             </Button>
         </div>
