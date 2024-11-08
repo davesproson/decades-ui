@@ -15,7 +15,8 @@ type POIFeatureType = {
     type: "poi",
     latitude: number,
     longitude: number,
-    color?: string
+    color?: string,
+    heading?: number,
 }
 type GeoJsonFeatureType = {
     type: "geojson"

@@ -1,10 +1,11 @@
 import { useRef, useEffect, useState } from "react";
 import { Map as OlMap, View } from 'ol';
-import {fromLonLat} from 'ol/proj.js';
-import { defaults as controlDefaults} from 'ol/control/defaults';
+import { fromLonLat } from 'ol/proj.js';
+import { defaults as controlDefaults } from 'ol/control/defaults';
 import { getData } from "@/data/utils";
 import { badData } from "../settings";
-import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
+import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, LayerType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
+import { LAYER_INTERFACES } from "./layers/interface";
 
 type OpenLayersMapArgs = {
     zoom?: number,
@@ -14,7 +15,7 @@ type OpenLayersMapArgs = {
     }
 }
 
-const useOpenLayersMap = ({zoom, center}: OpenLayersMapArgs) => {
+const useOpenLayersMap = ({ zoom, center }: OpenLayersMapArgs) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const [map, setMap] = useState<OlMap | null>(null);
     const state = {
@@ -27,7 +28,7 @@ const useOpenLayersMap = ({zoom, center}: OpenLayersMapArgs) => {
     };
 
     useEffect(() => {
-        if(!mapRef.current) {
+        if (!mapRef.current) {
             return
         }
 
@@ -50,9 +51,9 @@ const useOpenLayersMap = ({zoom, center}: OpenLayersMapArgs) => {
             olMap.setTarget(undefined)
             actions.setMap(null)
         }
-	}, [mapRef.current])
+    }, [mapRef.current])
 
-    return {mapRef, state, actions}
+    return { mapRef, state, actions }
 }
 
 const useAircraftData = () => {
@@ -85,10 +86,10 @@ const useAircraftData = () => {
             return
         }
 
-        if(acData.lat === badData || acData.lon === badData) return
-        if(acData.lat === null || acData.lon === null) return
-        if(acData.lat === undefined || acData.lon === undefined) return
-        if(isNaN(acData.lat) || isNaN(acData.lon)) return
+        if (acData.lat === badData || acData.lon === badData) return
+        if (acData.lat === null || acData.lon === null) return
+        if (acData.lat === undefined || acData.lon === undefined) return
+        if (isNaN(acData.lat) || isNaN(acData.lon)) return
 
         setAircraftData(acData)
         setAircraftHistory((oldState) => [...oldState, acData])
@@ -99,7 +100,7 @@ const useAircraftData = () => {
         const now = Math.floor(new Date().getTime() / 1000);
         let data = await getData({
             params: params
-        }, now - 3600*4, now - 1);
+        }, now - 3600 * 4, now - 1);
 
         const acData = {
             lat: data.gin_latitude[data.gin_latitude.length - 1],
@@ -120,7 +121,7 @@ const useAircraftData = () => {
                 time: data.utc_time[i],
             }
         }).filter((pos) => pos.lat !== badData && pos.lon !== badData)
-          .filter((_pos, i) => i % 3 === 0)
+            .filter((_pos, i) => i % 3 === 0)
 
         setAircraftData(acData)
         setAircraftHistory(acHistory)
@@ -138,14 +139,43 @@ const useAircraftData = () => {
     return { aircraftData, aircraftHistory }
 }
 
+const useLayers = () => {
+    const [layers, setLayers] = useState<Array<LayerType>>([])
+
+    useEffect(() => {
+
+        (async () => {
+            setLayers(await LAYER_INTERFACES.FAAMGround())
+        })()
+
+        const interval = setInterval(
+            (async () => {
+                const newLayers = await LAYER_INTERFACES.FAAMGround()
+                setLayers((oldLayers) => {
+                    return newLayers.map((newLayer) => {
+                        const oldLayer = oldLayers.find((l) => l.name === newLayer.name)
+                        return {
+                            ...newLayer,
+                            visible: oldLayer?.visible || false
+                        }
+                    })
+                })
+            }), 60000)
+
+        return () => clearInterval(interval)
+    }, [])
+
+    return [layers, setLayers]//layers
+}
+
 const useDecadesMapState = () => {
     const [showHeaderBar, setShowHeaderBar] = useState<boolean>(true)
     const [showLayersMenu, setShowLayersMenu] = useState<boolean>(false)
     const [showToolbox, setShowToolbox] = useState<boolean>(false)
     const [showGraticule, setShowGraticule] = useState<boolean>(false)
-    const [layers, setLayers] = useState([])
+    const [layers, setLayers] = useLayers() //useState<Array<LayerType>>([])
     const [flags, setFlags] = useState([])
-    const [overlay, setOverlay] = useState<MapFlag & {x: number, y: number} | null>(null)
+    const [overlay, setOverlay] = useState<MapFlag & { x: number, y: number } | null>(null)
     const [aircraftMeasures, setAircraftMeasures] = useState<PositionData[]>([])
     const [measurements, setMeasurements] = useState<Array<Position[]>>([])
     const [mapModes, setMapModes] = useState<Array<DecadesMapModality>>([])
@@ -155,14 +185,14 @@ const useDecadesMapState = () => {
     const [drifters, setDrifters] = useState<Array<PositionWithTime>>([])
 
     const toggleMapMode = (mode: DecadesMapModality) => {
-        setMapModes(x=>{
-            if(x.includes(mode)) {
-                return x.filter(m=>m !== mode)
+        setMapModes(x => {
+            if (x.includes(mode)) {
+                return x.filter(m => m !== mode)
             }
             return [...x, mode]
         })
     }
-       
+
     return {
         state: {
             showHeaderBar,
@@ -199,4 +229,4 @@ const useDecadesMapState = () => {
     }
 }
 
-export { useOpenLayersMap, useAircraftData, useDecadesMapState}
+export { useOpenLayersMap, useAircraftData, useDecadesMapState }
