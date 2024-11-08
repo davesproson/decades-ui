@@ -568,7 +568,7 @@ const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
                     const sparams: string | null = searchParams.get("params")
                     return sparams ? sparams.split(",") : []
                 })(),
-        axes: options.axes || searchParams.get('axis')?.split(',') || [],
+        axes: options.axes || searchParams.getAll('axis') || [],
         timeframe: options.timeframe || (searchParams.get('timeframe') || "30min"),
         swapxy: options.swapxy || (searchParams.get('swapxy') === 'true' || false),
         scrolling: options.scrolling || (searchParams.get('scrolling') === 'true' || false),
