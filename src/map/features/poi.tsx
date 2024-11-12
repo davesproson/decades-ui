@@ -67,7 +67,7 @@ const POI = (props: POIProps) => {
             layer.getSource()?.removeFeature(feature)
         }
         
-    }, [layer])
+    }, [layer, props])
 
     return null
 }
