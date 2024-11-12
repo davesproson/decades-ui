@@ -44,7 +44,7 @@ const getGluxeLayers = async (luxeBase: string) => {
 }
 
 export const LAYER_INTERFACES = {
-    GluxeAir: (async () => await getGluxeLayers('http://192.168.101.105/gluxe')),
-    GluxeDev: (async () => await getGluxeLayers('http://localhost:9999')),
-    GluxeGround: (async () => await getGluxeLayers('https://www.faam.ac.uk/gluxe')),
+    GluxeAir: () => getGluxeLayers('http://192.168.101.105/gluxe'),
+    GluxeDev: () =>  getGluxeLayers('http://localhost:9999'),
+    GluxeGround: () => getGluxeLayers('https://www.faam.ac.uk/gluxe'),
 }
