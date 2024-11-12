@@ -1,4 +1,7 @@
 // import { booleanEnv, numberEnv } from "./utils"
+
+import { LayerInterfaces } from "./types"
+
 /**
  * Get an environment variable as a boolean. If the variable is not set, 
  * return the default value.
@@ -162,6 +165,8 @@ export const plotHeaderDefaults = [
 
 // URI to retreive map slippy tiles from
 export const mapTilesUrl = import.meta.env.VITE_VISTA_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+// Map layer interface to use
+export const mapLayerInterface: LayerInterfaces = import.meta.env.VITE_VISTA_MAP_LAYER_INTERFACE || "GluxeAir"
 
 // Experimental features
 export const enableQuicklook = booleanEnv("VITE_VISTA_ENABLE_QUICKLOOK", false)
