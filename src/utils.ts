@@ -1,4 +1,4 @@
-import { apiEndpoints } from "./settings"
+import { apiEndpoints, badData } from "./settings"
 
 export const onLuxe = () => {
     return window.location.hostname.startsWith('192.168.101')
@@ -9,6 +9,14 @@ export const capitalize = (s: string) => (s && s[0].toUpperCase() + s.slice(1)) 
 export const nullNaN = (x: number) => isNaN(x) ? null : x
 
 export const ddToDmm = (dd: number, hemisphereOpts: Array<string>) => {
+
+    if(dd === badData) {
+        return {
+            coord: 'No Data',
+            hemisphere: ''
+        }
+    }
+
     const hemisphere = dd >= 0 ? hemisphereOpts[0] : hemisphereOpts[1]
     const absDd = Math.abs(dd)
     const d = Math.floor(absDd)
