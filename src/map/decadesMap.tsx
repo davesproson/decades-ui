@@ -28,10 +28,12 @@ import { mapTilesUrl } from '../settings';
 
 import entityIcon from '@/assets/map-icons/g-luxe.png';
 import markerIcon from '@/assets/map-icons/flag-marker.png';
+import { KMLFeature } from './features/kml';
 
 const LayerHash = {
     'vector': VectorLayer,
-    'geojson': VectorLayer
+    'geojson': VectorLayer,
+    'kml': VectorLayer,
 }
 
 function getFeatureType(feature: FeatureType): React.FC<any> {
@@ -40,6 +42,8 @@ function getFeatureType(feature: FeatureType): React.FC<any> {
             return POI
         case 'geojson':
             return GeoJson
+        case 'kml':
+            return KMLFeature
         default:
             throw new Error('Unknown feature type')
     }
@@ -199,7 +203,7 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                 </Show>
 
                 <Show when={state.showLayersMenu}>
-                    <LayersMenu headerActive={state.showHeaderBar} 
+                    <LayersMenu
                         layers={state.layers}
                         toggleLayerVisibility={toggleLayerVisibility}
                     />

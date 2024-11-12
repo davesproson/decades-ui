@@ -22,7 +22,11 @@ type GeoJsonFeatureType = {
     type: "geojson"
     data?: any
 }
-export type FeatureType = POIFeatureType | GeoJsonFeatureType
+type KMLFeatureType = {
+    type: "kml",
+    url: string
+}
+export type FeatureType = POIFeatureType | GeoJsonFeatureType | KMLFeatureType
 
 interface AbstractLayerType {
     type: string,
@@ -38,7 +42,11 @@ interface GeoJsonLayerType extends AbstractLayerType {
     type: 'geojson',
     features: Array<GeoJsonFeatureType>
 }
-export type LayerType = POILayerType | GeoJsonLayerType
+interface KMLLayerType extends AbstractLayerType {
+    type: 'kml',
+    features: Array<KMLFeatureType>
+}
+export type LayerType = POILayerType | GeoJsonLayerType | KMLLayerType
 
 export type MapFlag = {
     lat: number,

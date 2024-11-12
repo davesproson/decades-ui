@@ -3,7 +3,7 @@ import { Map as OlMap, View } from 'ol';
 import { fromLonLat } from 'ol/proj.js';
 import { defaults as controlDefaults } from 'ol/control/defaults';
 import { getData } from "@/data/utils";
-import { badData } from "../settings";
+import { badData, mapLayerInterface } from "../settings";
 import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, LayerType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 import { LAYER_INTERFACES } from "./layers/interface";
 
@@ -145,12 +145,12 @@ const useLayers = () => {
     useEffect(() => {
 
         (async () => {
-            setLayers(await LAYER_INTERFACES.FAAMGround())
+            setLayers(await LAYER_INTERFACES[mapLayerInterface]())
         })()
 
         const interval = setInterval(
             (async () => {
-                const newLayers = await LAYER_INTERFACES.FAAMGround()
+                const newLayers = await LAYER_INTERFACES[mapLayerInterface]()
                 setLayers((oldLayers) => {
                     return newLayers.map((newLayer) => {
                         const oldLayer = oldLayers.find((l) => l.name === newLayer.name)
