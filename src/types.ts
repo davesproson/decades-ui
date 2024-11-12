@@ -23,3 +23,5 @@ export type QCCArg = QcResponse | Array<DecadesParameter>
 export const isQCResponse = (p: QcResponse | DecadesParameter[]): p is QcResponse => {
     return (p as QcResponse).variables !== undefined;
 }
+
+export type LayerInterfaces  = 'GluxeAir' | 'GluxeDev' | 'GluxeGround'
