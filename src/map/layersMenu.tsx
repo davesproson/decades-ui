@@ -4,7 +4,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { LayerType } from "./types"
+import { LayerType, FeatureTypeName } from "./types"
 import { Eye, EyeOff } from "lucide-react"
 
 
@@ -13,14 +13,21 @@ type LayerMenuProps = {
     layers: Array<LayerType>,
 }
 
-const filterLayersForFeatureType = (layers: Array<LayerType>, featureType: string) => {
-    return layers.filter(layer => layer.features[0].type === featureType)
+/**
+ * Filter layers by feature type.
+ * 
+ * @param layers 
+ * @param featureType 
+ * @returns An array of layers filtered by feature type
+ */
+const filterLayersForFeatureType = (layers: Array<LayerType>, featureType: FeatureTypeName) => {
+    return layers.filter(layer => layer.features[0]?.type === featureType)
 }
 
 const LayerItem = ({ layer, toggleLayerVisibility }: { layer: LayerType, toggleLayerVisibility: Function }) => {
     return (
         <AccordionContent key={layer.name}>
-            <label className={`checkbox flex gap-2 cursor-pointer ${layer.visible || "text-secondary hover:text-primary"}`}>
+            <label className={`checkbox flex gap-2 cursor-pointer ${layer.visible || "text-gray-500 hover:text-primary"}`}>
                 <input className="appearance-none shrink-0" type="checkbox" checked={layer.visible} onChange={() => toggleLayerVisibility(layer.name)} />
                 {layer.visible && <Eye /> || <EyeOff />}
                 <span className="hover:underline">{layer.name}</span>
