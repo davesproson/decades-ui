@@ -1,30 +1,30 @@
-# React + TypeScript + Vite
+# DECADES Vista
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A terrible name for an awful project.
 
-Currently, two official plugins are available:
+A bog standard React TS application bootstrapped with Vite. Vista (eurgh) is intended to be a complete user interface for DECADES. It includes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Timeseries visualisation
+- Tephigrams
+- Data panels ('dashboards')
+- User defined views
+- Mapping
+- Flight summary
+- User-user chat
+- A bunch of other widgets of varying uselessness
 
-## Expanding the ESLint configuration
+Requires `aio-decades` as the backend, which is assumed to be running on the same host as the frontend, behind the path `/decades` (though this can be changed in the settings file).
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+The following environment variables may be set:
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- `VITE_VISTA_DEPLOYMENT_MODE`: Set to `prod`, `ground` or `dev` for aircraft, ground or development mode respectively. Default is `dev`.
+- `VITE_VISTA_BASE_URL`: The base URL for the application. Default is `/`.
+- `VITE_VISTA_BAD_DATA`: The numerical value to use for bad data. Default is `-999.99`.
+- `VITE_VISTA_ENABLE_TUTORIAL`: Set to `true` to enable the tutorial. Default is `true`. Currently only supported in Version 1.
+- `VITE_VISTA_MAP_TILE_URL`: The URL for the map tile server. Default is `https://tile.openstreetmap.org/{z}/{x}/{y}.png`.
+- `VITE_VISTA_ENABLE_QUICKLOOK`: Set to `true` to enable the quicklook feature (visualisation of processed data). Default is `false`. Should only be enabled for ground segment.
+- `VITE_VISTA_ENABLE_CHAT`: Set to `true` to enable the chat feature. Default is `false`. 
+- `VITE_VISTA_ENABLE_MAP`: Set to `true` to enable the map feature. Default is `false`.
+- `VIER_VISTA_MAP_LAYER_INTERFACE`: A string representing the map layer interface to use. Default is `GluxeAir`.
+- `VITE_VISTA_ENABLE_TABBED_PLOTS`: Set to `true` to enable tabbed plot (i.e. stacking on the parameter page). Default is `false`.
+-  `USE_WEBSOCKET_DATA`: Set to `true` to use webdocket data. Highly experimental, default is `false`.
