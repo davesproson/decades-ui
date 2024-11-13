@@ -27,4 +27,4 @@ The following environment variables may be set:
 - `VITE_VISTA_ENABLE_MAP`: Set to `true` to enable the map feature. Default is `false`.
 - `VIER_VISTA_MAP_LAYER_INTERFACE`: A string representing the map layer interface to use. Default is `GluxeAir`.
 - `VITE_VISTA_ENABLE_TABBED_PLOTS`: Set to `true` to enable tabbed plot (i.e. stacking on the parameter page). Default is `false`.
--  `USE_WEBSOCKET_DATA`: Set to `true` to use webdocket data. Highly experimental, default is `false`.
+-  `USE_WEBSOCKET_DATA`: Set to `true` to use websocket data. Highly experimental, default is `false`.
