@@ -26,6 +26,16 @@ export interface ViewState {
     viewConfigTab: ViewConfigTabType
 }
 
+const emptyAdvancedConfig: AdvancedConfig = {
+    "type": "view",
+    "title": "",
+    "rows": 1,
+    "columns": 1,
+    "rowPercent": [100],
+    "columnPercent": [100],
+    "elements": []
+}
+
 
 const reducePlots = (state: ViewState) => {
     state.plots = [...state.plots.slice(0, state.nRows * state.nCols)];
@@ -46,15 +56,7 @@ export const viewSlice = createSlice({
         nCols: 1,
         plots: [""],
         savedViews: [],
-        advancedConfig: {
-            "type": "view",
-            "title": "",
-            "rows": 1,
-            "columns": 1,
-            "rowPercent": [100],
-            "columnPercent": [100],
-            "elements": []
-        },
+        advancedConfig: {...emptyAdvancedConfig},
         advancedConfigSaved: true,
         viewConfigTab: "ADVANCED"
     } as ViewState,
@@ -68,15 +70,7 @@ export const viewSlice = createSlice({
         },
         setAdvancedConfig: (state, action: PayloadAction<AdvancedConfig | null>) => {
             if(action.payload === null) {
-                state.advancedConfig = {
-                    "type": "view",
-                    "title": "",
-                    "rows": 1,
-                    "columns": 1,
-                    "rowPercent": [100],
-                    "columnPercent": [100],
-                    "elements": []
-                }
+                state.advancedConfig = {...emptyAdvancedConfig};
                 return;
             }
             state.advancedConfig = action.payload;
