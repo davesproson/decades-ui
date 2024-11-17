@@ -5,7 +5,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { useSelector, useDispatch } from '@/redux/store';
-import { setAdvancedConfig } from '@/redux/viewSlice';
+import { saveView, setAdvancedConfig } from '@/redux/viewSlice';
 import { Button } from '@/components/ui/button';
 import { AdvancedConfig } from '@/redux/viewSlice';
 
@@ -20,6 +20,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { JsonEditor } from 'json-edit-react'
 import { ParameterDispatcher } from '@/parameters/parameter-dispatcher';
 import { base } from '@/settings';
+import { Download, Upload } from 'lucide-react';
+import { v4 } from 'uuid';
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -397,7 +399,14 @@ const AdvancedViewConfig = () => {
     }
 
     // Create a mutable copy of the config
-    const config = mutable(currentConfig)
+    const config = (() => {
+        try {
+            return mutable(currentConfig)
+        } catch (e) {
+            dispatch(setAdvancedConfig(emptyConfig()))
+            return emptyConfig()
+        }
+    })()
 
     // Launch the view in a new tab
     const launch = () => {
@@ -406,6 +415,41 @@ const AdvancedViewConfig = () => {
         url.pathname = base + "view"
         window.open(url, "_blank")
     }
+
+    const downloadConfigJson = () => {
+        const blob = new Blob([JSON.stringify(config)], { type: "text/json" });
+        const link = document.createElement("a");
+
+        link.download = 'view-config.json';
+        link.href = window.URL.createObjectURL(blob);
+        link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+
+        const evt = new MouseEvent("click", {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+
+        link.dispatchEvent(evt);
+        link.remove()
+    }
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const fileReader = new FileReader();
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        fileReader.readAsText(files[0], "UTF-8");
+        fileReader.onload = e => {
+            try {
+                const config = JSON.parse(e?.target?.result?.toString() || "")
+                dispatch(setAdvancedConfig(config))
+                dispatch(saveView({ ...config, id: config.id || v4() }))
+            } catch (e) {
+                console.error("Error parsing config file", e)
+            }
+        };
+      };
 
     return (
         <TooltipProvider delayDuration={0} >
@@ -423,11 +467,21 @@ const AdvancedViewConfig = () => {
                 setConfig={(c: AdvancedConfig) => dispatch(setAdvancedConfig(c))}
                 top={true} />
 
-            <div className="flex flex-row-reverse mt-2">
-                <Button className="w-[150px]" onClick={launch}>Launch</Button>
-                <Button className="mr-2" variant="outline" onClick={() => {
-                    dispatch(setAdvancedConfig({ ...emptyConfig(), title: "" }))
-                }}>Reset</Button>
+            <div className="flex justify-between mt-2">
+                <div className="flex gap-2">
+                    <Button onClick={downloadConfigJson}><Download /></Button>
+                    <Button onClick={() => {
+                        const input = document.getElementById("contentFile") as HTMLInputElement
+                        input.click()
+                    }}><Upload /></Button>
+                    <input id="contentFile" className="hidden" type="file" accept="application/json" onChange={handleFileUpload} />
+                </div>
+                <div className="flex flex-row-reverse">
+                    <Button className="w-[150px]" onClick={launch}>Launch</Button>
+                    <Button className="mr-2" variant="outline" onClick={() => {
+                        dispatch(setAdvancedConfig({ ...emptyConfig(), title: "" }))
+                    }}>Reset</Button>
+                </div>
             </div>
         </TooltipProvider>
     )
