@@ -1,3 +1,10 @@
+import { 
+    // AlarmConfig, AlarmViewConfig, ClockViewConfig, DashboardViewConfig,
+    // HeadingViewConfig, MapViewConfig, PitchViewConfig, PlotViewConfig, RollViewConfig, TephigramViewConfig, TimerViewConfig, URLViewConfig, 
+     version3View, version3ViewElement } from "./schema"
+     
+import { z } from "zod"
+
 interface Version2View {
     version: 2,
     config: {
@@ -26,113 +33,21 @@ interface Version1View {
     }>,
 }
 
-interface AlarmConfig {
-    name: string,
-    description: string,
-    parameters: Array<string>,
-    rule: string,
-    disableFlash?: boolean,
-    passingText?: string,
-    failingText?: string,
-    interval?: number,
-    failOnNoData?: boolean
-    muteOnFail?: boolean
-}
+// export type AlarmConfig = z.infer<typeof AlarmConfig>
+// export type AlarmViewConfig = z.infer<typeof AlarmViewConfig>
+// export type DashboardViewConfig = z.infer<typeof DashboardViewConfig>
+// export type URLViewConfig = z.infer<typeof URLViewConfig>
+// export type MapViewConfig = z.infer<typeof MapViewConfig>
+// export type ClockViewConfig = z.infer<typeof ClockViewConfig>
+// export type HeadingViewConfig = z.infer<typeof HeadingViewConfig>
+// export type RollViewConfig = z.infer<typeof RollViewConfig>
+// export type PitchViewConfig = z.infer<typeof PitchViewConfig>
+// export type TephigramViewConfig = z.infer<typeof TephigramViewConfig>
+// export type TimerViewConfig = z.infer<typeof TimerViewConfig>
+// export type PlotViewConfig = z.infer<typeof PlotViewConfig>
 
-interface AlarmViewConfig {
-    type: "alarms",
-    alarms: Array<AlarmConfig>
-}
-
-
-interface DashboardViewConfig {
-    type: "dashboard",
-    params: Array<string>,
-    limits?: Array<{param: string, min: number} | {param: string, max: number}>
-}
-
-interface URLViewConfig {
-    type: "url",
-    url: string
-}
-
-interface MapViewConfig  {
-    type: "map",
-    url: string
-}
-
-interface ClockViewConfig {
-    type: "clock"
-}
-
-interface HeadingViewConfig {
-    type: "heading"
-}
-
-interface RollViewConfig {
-    type: "roll"
-}
-
-interface PitchViewConfig {
-    type: "pitch"
-}
-
-interface TephigramViewConfig {
-    type: "tephi"
-}
-
-interface TimerViewConfig {
-    type: "timers",
-    initialTimers: Array<{
-        type: "countdown" | "countup",
-        name: string,
-        initialTime: number
-    }>
-}
-
-interface PlotViewConfig {
-    type: "plot",
-    params: Array<string>,
-    axes: Array<string>,
-    timeframe: string,
-    plotStyle: string,
-    scrolling: boolean,
-    header: boolean,
-    ordvar: string,
-    swapxy: boolean,
-    job?: number | null,
-}
-
-type ViewConfig = (
-      AlarmViewConfig 
-    | DashboardViewConfig
-    | URLViewConfig
-    | PlotViewConfig
-    | TimerViewConfig
-    | TephigramViewConfig
-    | PitchViewConfig
-    | RollViewConfig
-    | HeadingViewConfig
-    | ClockViewConfig
-    | MapViewConfig
-    | Version3ViewElement
-)
-
-interface Version3ViewElement {
-    type: "view" 
-    rows: number,
-    columns: number,
-    rowPercent: Array<number>,
-    columnPercent: Array<number>,
-    elements: Array<ViewConfig>,
-    title?: string,
-}
-
-interface Version3View extends Version3ViewElement {
-    version: 3
-    name?: string,
-    id?: string,
-}
+type Version3ViewElement = z.infer<typeof version3ViewElement>
+type Version3View = z.infer<typeof version3View>
 
 interface Version3LibraryView {
     title: string,
@@ -165,5 +80,4 @@ export type {
     Version2LibraryView,
     Version1View,
     Version1LibraryView,
-    PlotViewConfig
 }

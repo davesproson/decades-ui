@@ -2,7 +2,7 @@
  * This module provides components for configuring the advanced view.
  */
 
-import React from 'react'
+import React, { useId } from 'react'
 import { useState } from 'react';
 import { useSelector, useDispatch } from '@/redux/store';
 import { saveView, setAdvancedConfig } from '@/redux/viewSlice';
@@ -22,6 +22,8 @@ import { ParameterDispatcher } from '@/parameters/parameter-dispatcher';
 import { base } from '@/settings';
 import { Download, Upload } from 'lucide-react';
 import { v4 } from 'uuid';
+import { version3View } from './schema';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ConfigWidgetProps {
     visible: boolean,
@@ -379,7 +381,9 @@ const _AdvancedViewConfig = (props: AdvancedViewConfigProps) => {
  */
 const AdvancedViewConfig = () => {
     const currentConfig = useSelector(state => state.view.advancedConfig)
+    const ulID = useId()
     const dispatch = useDispatch()
+    const toast = useToast()
 
     /**
      * Function to make the config mutable, so we can edit it - the state
@@ -443,6 +447,17 @@ const AdvancedViewConfig = () => {
         fileReader.onload = e => {
             try {
                 const config = JSON.parse(e?.target?.result?.toString() || "")
+                const parsedConfig = version3View.safeParse(config)
+                if (parsedConfig.success === false) {
+                    console.error("Error parsing config file", parsedConfig.error)
+                    toast.toast({
+                        title: "Error parsing config file",
+                        description: "The config file is invalid",
+                        variant: "destructive"
+                    })
+                    return
+                }
+                
                 dispatch(setAdvancedConfig(config))
                 dispatch(saveView({ ...config, id: config.id || v4() }))
             } catch (e) {
@@ -471,10 +486,10 @@ const AdvancedViewConfig = () => {
                 <div className="flex gap-2">
                     <Button onClick={downloadConfigJson}><Download /></Button>
                     <Button onClick={() => {
-                        const input = document.getElementById("contentFile") as HTMLInputElement
+                        const input = document.getElementById(ulID) as HTMLInputElement
                         input.click()
                     }}><Upload /></Button>
-                    <input id="contentFile" className="hidden" type="file" accept="application/json" onChange={handleFileUpload} />
+                    <input id={ulID} className="hidden" type="file" accept="application/json" onChange={handleFileUpload} />
                 </div>
                 <div className="flex flex-row-reverse">
                     <Button className="w-[150px]" onClick={launch}>Launch</Button>
