@@ -18,7 +18,7 @@ import { useGeoCoords, useParameterPresets } from "@/hooks"
 import { selectParamsByRawName, setParamsDispatched, unselectAllParams } from "./redux/parametersSlice"
 import { LiveDataOnly, QuicklookOnly, Show } from "@/components/flow"
 import { loadSavedView } from "./redux/viewSlice"
-import { Home } from "lucide-react"
+import { Home, OctagonX, TriangleAlert } from "lucide-react"
 import { cn } from "./lib/utils"
 import { useTephiAvailable, useTephiUrl } from "./tephigram/hooks"
 import { usePlotInternalOptions, usePlotUrl } from "./plot/hooks"
@@ -43,6 +43,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
     const useCustomTimeframe = useSelector((state) => state.options.useCustomTimeframe)
     const nSelectedParams = useSelector((state) => state.vars.params).filter((param) => param.selected).length
     const tabbedPlots = useSelector((state) => state.config.tabbedPlots)
+    const params = useSelector((state) => state.vars.params)
 
     const presets = useParameterPresets()
     const navigate = useNavigate()
@@ -129,8 +130,13 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                     <MenubarTrigger>Presets</MenubarTrigger>
                     <MenubarContent>
                         {Object.keys(presets).map((preset) => {
+                            const someAvailable = presets[preset].some((param) => params.find((p) => p.raw === param)?.status)
+                            const allAvailable = presets[preset].every((param) => params.find((p) => p.raw === param)?.status)
+                            const noneAvailable = !someAvailable
                             return (
-                                <MenubarItem key={preset} onClick={() => selectParameters(presets[preset])}>
+                                <MenubarItem key={preset} onClick={() => selectParameters(presets[preset])} disabled={noneAvailable}>
+                                    {(!allAvailable && someAvailable) && <TriangleAlert className="text-orange-500 mr-2" />}
+                                    {noneAvailable &&  <OctagonX className="text-red-500 mr-2" />}
                                     {preset}
                                 </MenubarItem>
                             )

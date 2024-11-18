@@ -165,7 +165,7 @@ export const paramSlice = createSlice({
             state.axes = []
             const rawNames = action.payload
             state.params.forEach(param => {
-                if(rawNames.includes(param.raw)) {
+                if(rawNames.includes(param.raw)&& param.status) {
                     param.selected = true;
                 }
                 manageAxis(param, state);
