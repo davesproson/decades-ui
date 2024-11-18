@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import PlotDispatcher from "@/plot/plot"
-import type { PlotURLOptions } from "@/plot/types"
+import type { PlotInternalOptions, PlotURLOptions } from "@/plot/types"
 import { getAxesArray } from "@/plot/utils"
 import { useSelector } from "@store"
 import { forwardRef, useImperativeHandle, useRef } from "react"
@@ -8,23 +8,41 @@ import type { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration
 import { containerStyle } from "./utils"
 import chartIcon  from "@/assets/view-icons/chart.svg"
 
-type ConfigPlotData = {
-    params: string[],
-    axes: string[],
-    timeframe: string,
-    plotStyle: string,
-    scrolling: boolean,
-    header: boolean,
-    ordvar: string,
-    swapxy: boolean,
-    server?: string
-}
-
+/**
+ * A functional component that renders a badge with a text "Yes" or "No" 
+ * based on the boolean value passed as a prop.
+ *
+ * @param {Object} props - The props object.
+ * @param {boolean} props.value - The boolean value to determine the badge text.
+ * @returns A Badge component with the text "Yes" if the value is true, otherwise "No".
+ */
 const BooleanBadge = ({ value }: { value: boolean }) => {
     return <Badge>{value ? 'Yes' : 'No'}</Badge>
 }
 
-const ConfigPlotArea = forwardRef<ConfigHandle<ConfigPlotData>, {}>((_props, ref) => {
+/**
+ * ConfigPlotArea Component
+ * 
+ * This component is responsible for configuring and displaying the plot area settings.
+ * It uses React's `forwardRef` to expose a method for retrieving the current plot configuration.
+ * The component utilizes Redux selectors to fetch the current plot options and parameter options from the state.
+ * 
+ * The component performs the following tasks:
+ * - Retrieves the current plot configuration options and parameter options from the Redux store.
+ * - Converts the parameter options into an array of axis strings.
+ * - Exposes a method `getData` via `useImperativeHandle` to return the current plot configuration data.
+ * - Configures the timeframe string based on the selected timeframe or custom timeframe.
+ * - Configures the parameter list to display selected parameters as badges.
+ * - Renders a summary of the current plot configuration including timeframe, parameters, style, ordinate variable, axis swap, and scrolling options.
+ * 
+ * @component
+ * @example
+ * const ref = useRef();
+ * <ConfigPlotArea ref={ref} />
+ * 
+ * @returns {JSX.Element} A JSX element displaying the current plot configuration.
+ */
+const ConfigPlotArea = forwardRef<ConfigHandle<PlotInternalOptions>, {}>((_props, ref) => {
 
     // Get the current plot configuration
     const options = useSelector(state => state.options)
@@ -83,8 +101,21 @@ const ConfigPlotArea = forwardRef<ConfigHandle<ConfigPlotData>, {}>((_props, ref
     )
 })
 
+/**
+ * Custom hook to register a Plot widget in the provided registry.
+ *
+ * @param {RegistryType<WidgetConfiguration>} registry - The registry where the Plot widget will be registered.
+ *
+ * @example
+ * const registry = useRegistry();
+ * usePlotWidget(registry);
+ *
+ * @remarks
+ * This hook creates a Plot widget plugin with a configuration component, save functionality, icon, tooltip, and main component.
+ * The configuration component uses a ref to manage internal options and save data.
+ */
 const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
-    const ref = useRef<ConfigHandle<ConfigPlotData>>(null)
+    const ref = useRef<ConfigHandle<PlotInternalOptions>>(null)
     const plugin = {
         name: "Plot",
         type: "plot",
