@@ -13,6 +13,7 @@ const getGluxeLayers = async (luxeBase: string) => {
                 name: layer.name,
                 visible: false,
                 type: 'vector',
+                color: detail.color,
                 features: detail.pois.map((poi: any) => ({
                     type: 'poi',
                     latitude: poi.latitude,

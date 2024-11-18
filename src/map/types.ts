@@ -35,6 +35,7 @@ export type FeatureType = POIFeatureType | GeoJsonFeatureType | KMLFeatureType |
 interface AbstractLayerType {
     type: string,
     name: string,
+    color?: string,
     visible: boolean
 }
 
