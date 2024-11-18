@@ -12,7 +12,7 @@ import { Toolbar } from './controls';
 import { Toolbox } from './toolbox';
 import { LayersMenu } from './layersMenu';
 import { GeoJson } from './features/geojson';
-import { DecadesMapModality, FeatureType, MapFlag, Position } from './types';
+import { DecadesMapModality, FeatureType, LayerType, MapFlag, Position } from './types';
 import { ddToDmm } from '../utils';
 import { AircraftMeasurement } from './features/aircraftMeasurement';
 import { LineMeasurement, LineMeasurementInteraction } from './features/lineMeasurement';
@@ -49,7 +49,19 @@ function getFeatureType(feature: FeatureType): React.FC<any> {
     }
 }
 
-type POIOverlayProps =  (Optional<MapFlag, "lat" | "lon" | "name"> & { x?: number, y?: number }) | null | undefined
+const getFeatureOrLayerColor = (feature: FeatureType, layer: LayerType):  { color?: string } => {
+    let color: {color?: string} = {}
+    if (feature.type === 'poi') {
+        color = feature.color
+            ? { color: feature.color }
+            : layer.color
+                ? { color: layer.color }
+                : {}
+    }
+    return color
+}
+
+type POIOverlayProps = (Optional<MapFlag, "lat" | "lon" | "name"> & { x?: number, y?: number }) | null | undefined
 const POIOverlay = (props: POIOverlayProps) => {
 
     if (!props) return null
@@ -61,9 +73,9 @@ const POIOverlay = (props: POIOverlayProps) => {
 
     return (
         <div className="p-2 bg-white dark:bg-black absolute z-50 pointer-events-none rounded-md"
-            style={{top: props.y, left: props.x, transform: "translate(-50%, -110%)" }}
+            style={{ top: props.y, left: props.x, transform: "translate(-50%, -110%)" }}
         >
-        
+
             <h2 className="font-bold">{props.name}</h2>
             <span>{`${latInfo.coord} ${latInfo.hemisphere}`}</span>
             <p>{`${lonInfo.coord} ${lonInfo.hemisphere}`}</p>
@@ -74,7 +86,7 @@ const POIOverlay = (props: POIOverlayProps) => {
 type DecadesMapProps = {
     withMenu?: boolean
 }
-const DecadesMap = ({withMenu}: DecadesMapProps) => {
+const DecadesMap = ({ withMenu }: DecadesMapProps) => {
     const { aircraftData, aircraftHistory } = useAircraftData()
     const { state, actions } = useDecadesMapState()
 
@@ -99,7 +111,7 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                 <MapHeader />
             </Show>
 
-            <OpenLayersMap zoom={8} center={{lon: 0, lat: 52}} withMenu={withMenu}>
+            <OpenLayersMap zoom={8} center={{ lon: 0, lat: 52 }} withMenu={withMenu}>
 
                 <BaseLayer url={mapTilesUrl} />
 
@@ -114,7 +126,7 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                 <Show when={!!state.overlay}>
                     <POIOverlay {...state.overlay} />
                 </Show>
-                
+
                 <VectorLayer>
                     <TrackedEntity
                         icon={{
@@ -139,7 +151,9 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                         <Layer key={i}>
                             {layer.features.map((feature, j) => {
                                 const Feature = getFeatureType(feature)
-                                return <Feature key={j} {...feature} />
+                                // This is a bit hacky: we want to use the color of the feature if it has one, otherwise use the color of the layer, if it has one
+                                const color = getFeatureOrLayerColor(feature, layer)
+                                return <Feature key={j} {...feature} {...color} />
                             })}
                         </Layer>
                     )
@@ -193,7 +207,7 @@ const DecadesMap = ({withMenu}: DecadesMapProps) => {
                 </VectorLayer>
 
                 <VectorLayer>
-                    <Drawings drawMode={state.drawMode}/>
+                    <Drawings drawMode={state.drawMode} />
                 </VectorLayer>
 
                 <Toolbar state={state} actions={actions} />
