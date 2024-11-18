@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type ParameterID = string | number;
 
+// Internal representation of a parameter
 interface Parameter {
     id: ParameterID,
     name: string,
@@ -12,6 +13,7 @@ interface Parameter {
     axisId: number | null
 };
 
+// Decades API representation of a parameter
 interface DecadesParameter {
     ParameterIdentifier: number | string,
     ParameterName: string,
@@ -20,7 +22,7 @@ interface DecadesParameter {
     available: boolean | null
 };
 
-
+// Internal representation of an axis
 interface Axis {
     id: number,
     units: string,
@@ -31,6 +33,7 @@ interface Axis {
     }
 };
 
+// Shape of the state of the parameters slice
 type ParamsState = {
     params: Parameter[],
     axes: Axis[],
@@ -38,6 +41,14 @@ type ParamsState = {
     paramsDispatched: boolean
 }
 
+
+/**
+ * Generates a new axis with a unique ID and specified units.
+ * 
+ * @param units - The units for the new axis.
+ * @param axes - An array of existing axes.
+ * @returns A new axis object with a unique ID, specified units, and default scaling.
+ */
 const getNewAxis = (units: string, axes: Array<Axis>): Axis => {
     for(let i=1; i<axes.length+1; i++) {
         if(!axes.find(axis => axis.id === i)) {
@@ -64,6 +75,12 @@ const getNewAxis = (units: string, axes: Array<Axis>): Axis => {
     }
 }
 
+/**
+ * Converts a DecadesParameter object to a Parameter object.
+ *
+ * @param param - The DecadesParameter object to convert.
+ * @returns A new Parameter object with properties mapped from the DecadesParameter.
+ */
 const paramFromDecadesParam = (param: DecadesParameter): Parameter => {
     return {
         id: param.ParameterIdentifier,
@@ -76,6 +93,16 @@ const paramFromDecadesParam = (param: DecadesParameter): Parameter => {
     }
 }
 
+/**
+ * Manages the association of a parameter with an axis in the state.
+ * 
+ * If the parameter is selected, it assigns an existing axis with matching units
+ * or creates a new axis if none exists. If the parameter is not selected, it
+ * removes the association and deletes the axis if no other parameters are using it.
+ * 
+ * @param param - The parameter to manage.
+ * @param state - The current state containing parameters and axes.
+ */
 const manageAxis = (param: Parameter, state: ParamsState) => {
     if(param.selected) {
         const pAxis = state.axes.find(axis => axis.units === param.units)
@@ -104,6 +131,7 @@ const manageAxis = (param: Parameter, state: ParamsState) => {
     state.axes = state.axes.filter(axis => usedAxes.includes(axis.id));
 }
 
+// Slice for managing parameters and axes
 export const paramSlice = createSlice({
 
 	name: 'params',
@@ -114,12 +142,17 @@ export const paramSlice = createSlice({
         paramsDispatched: false
     } as ParamsState,
 	reducers: {
+        // Set the dispatched status of the parameters
         setParamsDispatched: (state, action: PayloadAction<boolean>) => {
             state.paramsDispatched = action.payload;
         },
+
+        // Set the parameter set
         setParamSet: (state, action: PayloadAction<string>) => {
             state.paramSet = action.payload;
         },
+
+        // Add a parameter to the state
 		addParam: (state, action: PayloadAction<Parameter>) => {
 			const param = {
 				id: action.payload.id.toString(),
@@ -131,6 +164,8 @@ export const paramSlice = createSlice({
 			} as Parameter;
 			state.params.push(param);
 		},
+
+        // Set the parameters in the state
         setParams: (state, action: PayloadAction<Array<DecadesParameter>>) => {
             let params = action.payload;
             if(!(params instanceof Array)) {
@@ -143,12 +178,16 @@ export const paramSlice = createSlice({
                 state.params.push(paramToAdd);
             }
         },
+
+        // Set the status of a parameter. Status is used to indicate if a parameter is available.
         setParamStatus: (state, action: PayloadAction<Parameter>) => {
             const param = state.params.find(param => param.id === action.payload.id);
             if (param) {
                 param.status = action.payload.status;
             }
         },
+
+        // Toggle the selected status of a parameter
         toggleParamSelected: (state, action: PayloadAction<{id: ParameterID}>) => {
             const param = state.params.find(param => param.id === action.payload.id);
             if (param) {
@@ -156,10 +195,14 @@ export const paramSlice = createSlice({
                 manageAxis(param, state);
             }
         },
+
+        // Unselect all parameters and clear axes
         unselectAllParams: (state) => {
             state.params.forEach(param => param.selected = false);
             state.axes = []
         },
+
+        // Select parameters by their raw names. The raw name is the name used in the Decades API.
         selectParamsByRawName: (state, action: PayloadAction<Array<string>>) => {
             state.params.forEach(param => param.selected = false);
             state.axes = []
@@ -171,6 +214,8 @@ export const paramSlice = createSlice({
                 manageAxis(param, state);
             });
         },
+
+        // Add a new axis to the state, and assign it to a parameter
         addNewAxis: (state, action: PayloadAction<{paramId: ParameterID}>) => {
             const paramId = action.payload.paramId;
             const param = state.params.find(param => param.id === paramId);
@@ -187,6 +232,8 @@ export const paramSlice = createSlice({
             state.axes.push(newAxis);
             param.axisId = newAxis.id;
         },
+
+        // Select an axis for a parameter
         selectAxis: (state, action: PayloadAction<{axisId: number, paramId: ParameterID}>) => {
             const paramId = action.payload.paramId;
             const axisId = action.payload.axisId;
@@ -203,6 +250,8 @@ export const paramSlice = createSlice({
 
             state.axes = state.axes.filter(axis => usedAxes.includes(axis.id));
         },
+
+        // Set the scaling of an axis
         setAxisScaling: (state, action) => {
             const axisId = action.payload.axisId;
             const scaling = action.payload.scaling;
@@ -213,6 +262,8 @@ export const paramSlice = createSlice({
             }
             axis.scaling = scaling;
         },
+
+        // Reset the status of all parameters to null (unknown)
         resetParameterStatuses: (state) => {
             state.params.forEach(param => param.status = null);
         }
