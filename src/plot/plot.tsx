@@ -1,7 +1,7 @@
 import { useRef, forwardRef, useEffect } from 'react'
 import { usePlot, usePlotOptions } from './hooks'
-// import { Dashboard } from '../dashboard/dashboard'
-// import { plotHeaderDefaults } from '../settings'
+import { PlotHeaderDash } from '../dashboard/dashboard'
+import { plotHeaderDefaults } from '../settings'
 import  Loader from '../components/loader'
 import { PlotURLOptions } from "./types"
 import { useDispatch } from 'react-redux'
@@ -17,14 +17,11 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
 
     const load = props.loadDone ? null : <Loader text="Loading plot..." />
 
-    // const dash = props.parameters
-    //     ? <Dashboard 
-    //         params={Array(...new Set([...props.parameters, ...plotHeaderDefaults]))}
-    //         useURL={false}
-    //         size="small"
-    //       />
-    //     : null
-    const dash = null
+    const dash = props.parameters
+        ? <PlotHeaderDash
+            params={Array(...new Set([...props.parameters, ...plotHeaderDefaults]))}
+          />
+        : null
 
     const style = props.style || {     
         top: "0px",

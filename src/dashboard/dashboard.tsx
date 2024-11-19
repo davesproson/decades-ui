@@ -1,13 +1,15 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { useGetParameters } from "@/parameters/hooks";
 import { DecadesParameter } from "@/redux/parametersSlice";
 import { badData } from "@/settings";
-import { useState } from "react";
 import { SimplePlot } from "../plot/plot";
 import { useDashboardData } from "./hooks";
 import type { DashboardOptions } from "./types";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+
 import {
     ContextMenu, 
     ContextMenuCheckboxItem, 
@@ -260,5 +262,65 @@ const DashboardDispatcher = (props: DashboardDispatcherProps) => {
     )
 }
 
+interface PlotHeaderProps {
+    params: string[],
+}
+/**
+ * Component that renders a header with badges displaying the latest data for each parameter.
+ *
+ * @param {PlotHeaderProps} props - The properties for the PlotHeaderDash component.
+ * @param {Array<string>} props.params - The list of parameter names to display.
+ *
+ * @returns A div containing badges with the latest data for each parameter.
+ *
+ * This component uses the `useGetParameters` hook to fetch available parameters and the `useDashboardData` hook
+ * to fetch the latest data for the given parameters. It filters the available parameters based on the provided
+ * `props.params` and ensures that all parameters in `props.params` are included in the filtered list.
+ *
+ * Each badge displays the parameter's display text, the latest data value (formatted to two decimal places), and
+ * the display units. If no data is available, the badge will display `null` for the data value.
+ */
+const PlotHeaderDash = (props: PlotHeaderProps) => {
+    const availableParams = useGetParameters()
+    const dataOptions: DashboardOptions = {
+        params: props.params,
+    }
+
+    
+    const data = useDashboardData(dataOptions)
+    if (!availableParams) return <></>
+    let filteredParams = availableParams.filter(x => {
+        return props.params.includes(x.ParameterName)
+    })
+
+    for (let p of props.params) {
+        if (!filteredParams.find(x => x.ParameterName === p)) {
+            filteredParams.push({
+                ParameterName: p,
+                DisplayText: p,
+                ParameterIdentifier: 0,  // Here for type checking
+                DisplayUnits: "",
+                available: true
+            })
+        }
+    }
+
+    return (
+        <div className="flex gap-1 justify-center mt-2">
+        {
+            filteredParams.map((param, _i) => {
+                const paramName = param.ParameterName
+                return (
+                    <Badge>
+                        {param.DisplayText}: {data ? data[paramName][data[paramName].length-1].toFixed(2) : null} {param.DisplayUnits}
+                    </Badge>
+                )
+            })
+        }
+        </div>
+    )
+}
+
+
 export default DashboardDispatcher
-export { Redash };
+export { Redash, PlotHeaderDash };
