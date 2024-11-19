@@ -65,7 +65,8 @@ const ConfigPlotArea = forwardRef<ConfigHandle<PlotInternalOptions>, {}>((_props
                     header: options.dataHeader,
                     ordvar: options.ordinateAxis,
                     swapxy: options.swapOrientation,
-                    server: options.server
+                    server: options.server,
+                    mask: options.mask
                 }
             }
         }

@@ -25,8 +25,6 @@ const plotIsOngoing = (options: GetDataPlotOptions) => {
     return customOngoing || defined
 }
 
-
-
 /**
  * Get the parameter object from the parameters list by the raw name
  * 
@@ -123,6 +121,77 @@ const slideLength = (options: PlotURLOptions) => {
     return (parseFloat(tf) * multiplier).toString()
 }
 
+
+/**
+ * Filters and maps data based on the provided options.
+ *
+ * @param options - An object containing plot URL options.
+ * @param data - The data to be filtered and mapped.
+ * @returns A tuple containing two arrays: xData and yData.
+ * 
+ * The function performs the following operations:
+ * - Maps `utc_time` to milliseconds if `ordvar` is 'utc_time'.
+ * - Maps bad data to null if `job` is specified in options
+ * - Filters out bad data points if `job` is not specified in options.
+ * - If `job` is specified, maps bad data to null without filtering.
+ * 
+ * @example
+ * const options = {
+ *   ordvar: 'utc_time',
+ *   params: ['param1', 'param2'],
+ *   job: false
+ * };
+ * const data = {
+ *   utc_time: [1609459200, 1609459260, null],
+ *   param1: [10, 20, badData],
+ *   param2: [30, badData, 50]
+ * };
+ * const result = filterData(options, data);
+ * // result will be a tuple containing filtered and mapped xData and yData arrays.
+ */
+const filterData = (options: PlotURLOptions, data: DataType) => {
+    // Map utc_time to milliseconds
+    const ordVarIsBad = data[options.ordvar].map(x => x === badData)
+    const timeMap = (data: number | null) => {
+        return options.ordvar === 'utc_time' 
+            ? data === null
+                ? null
+                : data * 1000 
+            : data
+    }
+
+    // Map bad data to null
+    const badDataMap = (data: number) => {
+        return data === badData ? null : data
+    }
+
+    let yData: Array<Array<number|null>> = []
+    let xData: Array<Array<number|null>> = []
+
+    if(!options.job) {
+        // If the job is not specified, we're in real-time mode, so filter out bad data
+        // withouth mapping it to null
+        for(const param of options.params) {
+            const paramIsBad = data[param].map(x => x === badData)
+
+            const isBad = paramIsBad.map((x, i) => x || ordVarIsBad[i])
+
+            yData.push(data[param].filter((_x, i) => !isBad[i]))
+            xData.push(data[options.ordvar].filter((_x, i) => !isBad[i]).map(timeMap))
+            
+        }
+    } else {
+        // When the job is specified, we're in quicklook mode, so map bad data to null
+        // so we can mask flagged data
+        for(const param of options.params) {
+            yData.push(data[param].map(badDataMap))
+            xData.push(data[options.ordvar].map(badDataMap).map(timeMap))
+        }
+    }
+
+    return [xData, yData]
+}
+
 type DataType = {
     [key: string]: Array<number>
 }
@@ -136,39 +205,17 @@ type DataType = {
  */
 const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: type?*/) => {
 
-    // Map utc_time to milliseconds
-    const timeMap = (data: number) => {
-        return options.ordvar === 'utc_time' ? data * 1000 : data
-    }
-
-    // Map bad data to null
-    // const badDataMap = (data: number) => {
-    //     return data === badData ? null : data
-    // }
-
-    let yData: Array<Array<number>> = []
-    let xData: Array<Array<number>> = []
     // Filter out bad data. It's not totally clear that this is the best option,
     // but leaving missing data in the plot causes issues with data < 1 Hz, or
     // data with regular gaps, e.g. the GIN data reformatted by the prtaft DLU.
-    const ordVarIsBad = data[options.ordvar].map(x => x === badData)
-    for(const param of options.params) {
-        const paramIsBad = data[param].map(x => x === badData)
-
-        const isBad = paramIsBad.map((x, i) => x || ordVarIsBad[i])
-
-        yData.push(data[param].filter((_x, i) => !isBad[i]))
-        xData.push(data[options.ordvar].filter((_x, i) => !isBad[i]).map(timeMap))
-        
-    }
-
+    let [xData, yData] = filterData(options, data)
+    
     if(options.swapxy) {
-        const temp = xData
-        xData = yData
-        yData = temp
+        [yData, xData] = [xData, yData]
     }
-
+    
     const maxTraceLength = canSlide(options) ? parseInt(slideLength(options)) : undefined
+    const ordVarIsBad = data[options.ordvar].map(x => x === badData)
     
     import('plotly.js-dist-min').then(Plotly => { 
         

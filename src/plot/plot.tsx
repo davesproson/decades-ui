@@ -80,7 +80,8 @@ const SimplePlot = (props: SimplePlotProps) => {
         timeframe: "5min",
         scrolling: true,
         header: false,
-        style: "line",      
+        style: "line",
+        mask: false
     }
 
     usePlot(options, ref)

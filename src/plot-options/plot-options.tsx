@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from '../redux/store'
 import {
     toggleSwapOrientation, toggleScrollingWindow, toggleDataHeader, togglePlotStyle,
     setOrdinateAxis,
-    setColorVariable
+    setColorVariable,
+    togglePlotMask
 } from '../redux/optionsSlice';
 
-import { LiveDataOnly, Show } from '@/components/flow';
+import { LiveDataOnly, QuicklookOnly, Show } from '@/components/flow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 
@@ -97,6 +98,7 @@ const PlotOptions = () => {
     const swapToggleOn = useSelector(s => s.options.swapOrientation)
     const scrollingOn = useSelector(s => s.options.scrollingWindow)
     const dataHeaderOn = useSelector(s => s.options.dataHeader)
+    const maskData = useSelector(s => s.options.mask)
     const selectedParams = useSelector(s => s.vars.params).filter(p => p.selected)
     const dispatch = useDispatch()
 
@@ -127,6 +129,12 @@ const PlotOptions = () => {
                         <Switch checked={dataHeaderOn} onCheckedChange={() => dispatch(toggleDataHeader())} />
                     </OptionBlock>
                 </LiveDataOnly>
+
+                <QuicklookOnly>
+                    <OptionBlock title="Mask flagged data">
+                        <Switch checked={maskData} onCheckedChange={() => dispatch(togglePlotMask())} />
+                    </OptionBlock>
+                </QuicklookOnly>
 
                 <OptionBlock title="Ordinate Axis">
                     <ParameterSelectorDropdown

@@ -52,6 +52,13 @@ export const getDataUrl = (options: GetDataOptions, start: number, end?: number)
     if (job && quicklookMode)
         url.searchParams.set('job', job.toString())
 
+    if (quicklookMode) {
+        // TODO: this is terrible typeguarding
+        if ('mask' in options) {
+            url.searchParams.set('mask', options.mask.toString())
+        }
+    }
+
     // Allow the endpoint to include a query string
     url.searchParams.set('frm', start.toString())
 

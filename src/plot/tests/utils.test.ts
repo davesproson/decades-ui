@@ -22,6 +22,7 @@ const getOptions = (options: Partial<PlotURLOptions>) => {
         ordvar: '',
         job: 0,
         timeframe: '30mins',
+        mask: false,
     }
     return {...defaultOptions, ...options}
 }

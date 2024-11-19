@@ -28,7 +28,8 @@ export type OptionsState = {
     server: string | undefined,
     timeframes: Array<Timeframe>,
     useCustomTimeframe: boolean,
-    customTimeframe: CustomTimeframe
+    customTimeframe: CustomTimeframe,
+    mask: boolean
 };
 
 export const optionsSlice = createSlice({
@@ -56,7 +57,8 @@ export const optionsSlice = createSlice({
         customTimeframe: {
             start: null,
             end: null
-        } 
+        },
+        mask: false
     } as OptionsState,
 	reducers: {
         toggleSwapOrientation: (state) => {
@@ -74,6 +76,9 @@ export const optionsSlice = createSlice({
             } else {
                 state.plotStyle.value = state.plotStyle.options[0];
             }
+        },
+        togglePlotMask: (state) => {
+            state.mask = !state.mask;
         },
         setTimeframe: (state, action: PayloadAction<{value: string}>) => {
  
@@ -132,6 +137,7 @@ export const optionsSlice = createSlice({
 
 export const { 
     toggleSwapOrientation, toggleScrollingWindow, toggleDataHeader, togglePlotStyle,
+    togglePlotMask,
     setTimeframe, setServer, setOrdinateAxis, setCustomTimeframe, setColorVariable
 } = optionsSlice.actions;
 

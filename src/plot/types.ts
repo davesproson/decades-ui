@@ -9,7 +9,8 @@ type PlotURLOptions = {
     server?: string | undefined,
     ordvar: string,
     caxis?: string,
-    job?: number | null
+    job?: number | null,
+    mask: boolean,
 };
 
 /* Urgh. Why have we used two different interfaces for the same thing?

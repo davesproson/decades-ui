@@ -28,17 +28,18 @@ const ShareIcon = {
 const darkBg = "#0a0a0a";
 
 interface OptionsState {
-    timeframe: string,
     params: string[],
     swapOrientation: boolean,
     scrollingWindow: boolean,
     dataHeader: boolean,
     plotStyle: string,
+    timeframe: string,
     ordinateAxis: string,
     server: string | undefined,
     axes: string[],
     caxis: string | null,
-    job?: number | null
+    job?: number | null,
+    mask: boolean
 }
 
 /**
@@ -76,6 +77,7 @@ const getUrl = (options: OptionsState) => {
     if(options.server) url.searchParams.set("server", options.server)
     if(options.job) url.searchParams.set("job", options.job.toString())
     if(options.caxis) url.searchParams.set("caxis", options.caxis)
+    if(options.mask) url.searchParams.set("mask", options.mask.toString())
     // url.searchParams.set("server", options.server)
     for(const axStr of axisStrings) {
         url.searchParams.append("axis", axStr)
@@ -155,7 +157,8 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
             ordinateAxis: overridden("ordvar", plotOptions.ordinateAxis),
             server: overridden("server", server),
             axes: overridden("axes", axes),
-            caxis: overridden("caxis", plotOptions.colorVariable)
+            caxis: overridden("caxis", plotOptions.colorVariable),
+            mask: overridden("mask", plotOptions.mask)
         }
 
         // We don't want to unset qcJob if we're toggling between quicklook and
@@ -576,7 +579,7 @@ const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
         header: options.data_header || (searchParams.get('data_header') === 'true' || false),
         caxis: options.caxis || searchParams.get('caxis') || "",
         ordvar: options.ordvar || (searchParams.get('ordvar') || "utc_time"),
- 
+        mask: options.mask || (searchParams.get('mask') === 'true' || false),
     }
     if(job) opts.job = job || null
 
@@ -623,7 +626,8 @@ const usePlotInternalOptions = () => {
             paramSet: 'default',
             paramsDispatched: true
         }),
-        job: job
+        job: job,
+        mask: plotOptions.mask
     } satisfies PlotURLOptions
 }
 

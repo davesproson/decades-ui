@@ -42,5 +42,6 @@ export const testTab: TabEntry = {
     header: false,
     ordvar: "utc_time",
     swapxy: false,
-    job: null
+    job: null,
+    mask: false
 }
