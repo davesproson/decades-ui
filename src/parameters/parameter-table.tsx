@@ -9,11 +9,12 @@ import {
 
 import { Button } from "@/components/ui/button"
 
-import { Check, X, CircleHelp } from "lucide-react"
+import { Check, X, CircleHelp, OctagonX, Info } from "lucide-react"
 import { useDispatch, useSelector } from "@store"
 import { memo, useCallback, useMemo } from "react"
 import { Parameter, toggleParamSelected } from "@/redux/parametersSlice"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { FlexCenter } from "@/components/layout"
 
 type AvailabiliyHoverCardProps = {
     children: React.ReactNode,
@@ -50,8 +51,8 @@ type ParameterTableProps = {
     params: Parameter[],
     onToggleParam: (param: Parameter) => void
 }
-const DumbParameterTable = memo(({params, onToggleParam}: ParameterTableProps) => {
-    
+const DumbParameterTable = memo(({ params, onToggleParam }: ParameterTableProps) => {
+
     return (
         <Table>
             <TableHeader>
@@ -87,7 +88,7 @@ const DumbParameterTable = memo(({params, onToggleParam}: ParameterTableProps) =
                                 </AvailabiliyHoverCard>
                             </TableCell>
                             <TableCell className="hidden md:table-cell">{param.id}</TableCell>
-                            <TableCell><Button className={"p-0 m-0 " + "bg-transparent" + textClass} variant="link" size="sm" disabled={!param.status} onClick={(e)=>{onToggleParam(param); e.stopPropagation()}}>{param.name}</Button></TableCell>
+                            <TableCell><Button className={"p-0 m-0 " + "bg-transparent" + textClass} variant="link" size="sm" disabled={!param.status} onClick={(e) => { onToggleParam(param); e.stopPropagation() }}>{param.name}</Button></TableCell>
                             <TableCell>{param.units}</TableCell>
                         </TableRow>
                     )
@@ -96,6 +97,22 @@ const DumbParameterTable = memo(({params, onToggleParam}: ParameterTableProps) =
         </Table>
     )
 })
+
+type InfoTextProps = {
+    text: string,
+    icon?: React.ReactNode
+}
+const InfoText = ({ text, icon }: InfoTextProps) => {
+    return (
+        <div className="mt-5">
+            <FlexCenter direction="row">
+                <span className="flex gap-2">
+                    {icon} {text}
+                </span>
+            </FlexCenter>
+        </div>
+    )
+}
 
 export const ParameterTable = () => {
     const dispatch = useDispatch()
@@ -117,6 +134,14 @@ export const ParameterTable = () => {
             })
         )
     }, [parameters, filterText])
+
+    if (!filteredParameters.length) {
+        return <InfoText icon={<Info className="text-orange-500" />} text="No parameters match the filter criteria." />
+    }
+
+    if (!parameters.filter((param) => param.status).length) {
+        return <InfoText icon={<OctagonX className="text-destructive" />} text="No parameters are available for selection." />
+    }
 
     return <DumbParameterTable params={filteredParameters} onToggleParam={toggleParam} />
 }
