@@ -75,7 +75,7 @@ const FlightSummarySelector = () => {
         // Need the manual type assertion here because the filter function
         // is not smart enough to know that the filter function will remove
         // all undefined values
-        return asArray.filter(x=>(x?.start?.time && x?.stop?.time)) as FlightSummaryEntry[]
+        return asArray.filter(x=>(x?.start?.time && x?.stop?.time && !x.deleted)) as FlightSummaryEntry[]
     }
 
     const filtered = filterFlightSummary(fs)
