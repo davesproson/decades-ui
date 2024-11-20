@@ -5,6 +5,7 @@ import {
     RunFlightSummary,
     ProfileFlightSummary,
     OrbitFlightSummary,
+    DeletedFlightSummary,
 } from "./testdata";
 import { renderWithStore } from "@/tests";
 
@@ -92,6 +93,21 @@ describe("Test FlightSummarySelector component", () => {
             expect(screen.getByText(timeString)).toBeDefined()
             expect(screen.getByText(OrbitFlightSummary.event)).toBeDefined()
             expect(screen.getByTestId('fs-orbit-icon')).toBeDefined()
+        })
+    })
+
+    it("Should not render a deleted entry", async () => {
+        mocks.fetch.mockImplementation(() => {
+            return Promise.resolve({json: () => {return {
+                0: DeletedFlightSummary,
+                1: RunFlightSummary,
+            }}})
+        })
+        renderWithStore(<FlightSummarySelector />)
+
+        await waitFor(() => {
+            expect(screen.queryByText(DeletedFlightSummary.event)).toBeDefined()
+            expect(screen.queryByText(DeletedFlightSummary.event)).toBeNull()
         })
     })
 

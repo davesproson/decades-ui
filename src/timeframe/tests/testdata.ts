@@ -89,6 +89,29 @@ export const GenericFlightSummary = {
     "comment": null
 }
 
+export const DeletedFlightSummary = {
+    "uuid": 4,
+    "event": "Deleted 1",
+    "modified": 1617630000,
+    "start": {
+        "time": startTime,
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0,
+        "heading": 0
+    },
+    "stop": {
+        "time": stopTime,
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0,
+        "heading": 0
+    },
+    "ongoing": false,
+    "comment": null,
+    "deleted": true
+}
+
 export const CombinedFlightSummary = {
     0: RunFlightSummary,
     1: ProfileFlightSummary,
