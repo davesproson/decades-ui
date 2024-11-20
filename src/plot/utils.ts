@@ -150,8 +150,19 @@ const slideLength = (options: PlotURLOptions) => {
  * // result will be a tuple containing filtered and mapped xData and yData arrays.
  */
 const filterData = (options: PlotURLOptions, data: DataType) => {
-    // Map utc_time to milliseconds
+    
     const ordVarIsBad = data[options.ordvar].map(x => x === badData)
+
+    /**
+     * Transform the time data to milliseconds if the ordinate variable is 'utc_time'
+     * and the data is not null.
+     * 
+     * This function can be applied to the ordinate variable, and only acts on the data
+     * if the ordinate variable is 'utc_time'.
+     * 
+     * @param data - The data to transform
+     * @returns The transformed data
+     */
     const timeMap = (data: number | null) => {
         return options.ordvar === 'utc_time' 
             ? data === null
@@ -167,17 +178,24 @@ const filterData = (options: PlotURLOptions, data: DataType) => {
 
     let yData: Array<Array<number|null>> = []
     let xData: Array<Array<number|null>> = []
+    let cData: Array<Array<number|null>> = []
 
     if(!options.job) {
         // If the job is not specified, we're in real-time mode, so filter out bad data
         // withouth mapping it to null
         for(const param of options.params) {
             const paramIsBad = data[param].map(x => x === badData)
+            const cDataIsBad = options.caxis
+                ? data[options.caxis].map(x => x === badData)
+                : data[param].map(() => false)
 
-            const isBad = paramIsBad.map((x, i) => x || ordVarIsBad[i])
+            const isBad = paramIsBad.map((x, i) => x || ordVarIsBad[i] || cDataIsBad[i])
 
             yData.push(data[param].filter((_x, i) => !isBad[i]))
             xData.push(data[options.ordvar].filter((_x, i) => !isBad[i]).map(timeMap))
+            if(options.caxis) {
+                cData.push(data[options.caxis].filter((_x, i) => !isBad[i]))
+            }
             
         }
     } else {
@@ -186,10 +204,13 @@ const filterData = (options: PlotURLOptions, data: DataType) => {
         for(const param of options.params) {
             yData.push(data[param].map(badDataMap))
             xData.push(data[options.ordvar].map(badDataMap).map(timeMap))
+            if(options.caxis) {
+                cData.push(data[options.caxis].map(badDataMap))
+            }
         }
     }
 
-    return [xData, yData]
+    return [xData, yData, cData]
 }
 
 type DataType = {
@@ -208,14 +229,14 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
     // Filter out bad data. It's not totally clear that this is the best option,
     // but leaving missing data in the plot causes issues with data < 1 Hz, or
     // data with regular gaps, e.g. the GIN data reformatted by the prtaft DLU.
-    let [xData, yData] = filterData(options, data)
+    let [xData, yData, cData] = filterData(options, data)
     
     if(options.swapxy) {
         [yData, xData] = [xData, yData]
     }
     
+    // TODO: This causes unexpected behaviour when the data are not actually 1 Hz
     const maxTraceLength = canSlide(options) ? parseInt(slideLength(options)) : undefined
-    const ordVarIsBad = data[options.ordvar].map(x => x === badData)
     
     import('plotly.js-dist-min').then(Plotly => { 
         
@@ -225,10 +246,8 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
         
         if(options.caxis && options.params.length === 1) {
             const currentData = ref.current.data
-            const newData = data[options.caxis]
-            const newDataIsBad = data[options.caxis].map(x => x === badData)
-            const isBad = newDataIsBad.map((x, i) => x || ordVarIsBad[i])
-            const newColorArray: Array<number> = [...currentData[0].marker.color, ...newData.filter((_x, i) => !isBad[i])]
+            const newColorArray: Array<number> = [...currentData[0].marker.color, ...cData[0]]
+
             Plotly.restyle(ref.current, {
                 'marker.color': [newColorArray],
                 'marker.cmin': Math.min(...newColorArray.filter(x => x === badData ? null : x)),

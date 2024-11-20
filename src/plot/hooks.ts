@@ -549,6 +549,9 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
  * @param options.header - Whether to include the data header
  * @param options.ordvar - The ordinate variable
  * @param options.server - The server to plot from
+ * @param options.caxis - The colour axis
+ * @param options.job - The job number
+ * @param options.mask - Whether to mask flagged data when in quicklook mode
  * 
  * @returns The plot options
  */
