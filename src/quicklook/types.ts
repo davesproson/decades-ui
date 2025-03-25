@@ -5,6 +5,7 @@ import { DecadesParameter } from "@/redux/parametersSlice";
 export type QcParameter = {
     name: string,
     long_name: string,
+    units: string
 }
 
 // This is the type of the response from the QC API

@@ -65,7 +65,7 @@ describe("Test useGetParameters hook", async () => {
         "ParameterIdentifier": "static_pressure",
         "ParameterName": "static_pressure",
         "DisplayText": "Static Pressure",
-        "DisplayUnits": "unit",
+        "DisplayUnits": "-",
         "available": true
     }]
 

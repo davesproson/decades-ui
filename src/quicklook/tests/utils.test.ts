@@ -6,10 +6,12 @@ const quicklookParameterData = {
         {
             name: 'test1',
             long_name: 'Test 1',
+            units: 'K'
         },
         {
             name: 'test2',
             long_name: 'Test 2',
+            units: 'm'
         },
     ]
 }
@@ -19,14 +21,14 @@ const DecadesParameterData = [
         ParameterIdentifier: 'test1',
         ParameterName: 'test1',
         DisplayText: 'Test 1',
-        DisplayUnits: 'unit',
+        DisplayUnits: 'K',
         available: true
     },
     {
         ParameterIdentifier: 'test2',
         ParameterName: 'test2',
         DisplayText: 'Test 2',
-        DisplayUnits: 'unit',
+        DisplayUnits: 'm',
         available: true
     }
 ]

@@ -28,7 +28,7 @@ export const quickLookCompatability = (quickLookMode: boolean): (a: QCCArg) => A
                     'ParameterIdentifier': v.name,
                     'ParameterName': v.name,
                     'DisplayText': v.long_name,
-                    'DisplayUnits': 'unit',
+                    'DisplayUnits': v.units || '-',
                     'available': true
                 } as DecadesParameter
             })
