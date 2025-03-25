@@ -21,17 +21,42 @@ const FlappyPlane: React.FC = () => {
   const cloudGenerationInterval = 50;
   const groundHeight = 15; // ground height as percentage of viewport height
   
+  // Enemy plane constants
+  const enemyPlaneSpeed = cloudSpeed * 1.5; // Enemy planes move faster than clouds
+  const enemyPlaneGenerationInterval = 200; // Less frequent than clouds
+  const enemyCollisionMultiplier = 2.5; // Enlarged collision box for enemy planes
+  
+  // Danger area constants
+  const dangerAreaSpeed = cloudSpeed; // Same speed as clouds
+  const dangerAreaGenerationInterval = 350; // Less frequent than clouds and enemy planes
+  
   // Viewport size state with initial measurements
   const [viewportSize, setViewportSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
   });
   
+  // Enemy plane state
+  const [enemyPlanes, setEnemyPlanes] = useState<Array<{
+    left: number,
+    top: number,
+    id: number
+  }>>([]);
+  
+  // Danger area state
+  const [dangerAreas, setDangerAreas] = useState<Array<{
+    left: number,
+    height: number,
+    id: number
+  }>>([]);
+  
   // Refs for values that don't need to trigger re-renders
   const gameRef = useRef<HTMLDivElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
   const gameLoopRef = useRef<number | null>(null);
   const cloudIdCounter = useRef<number>(0);
+  const enemyPlaneIdCounter = useRef<number>(0);
+  const dangerAreaIdCounter = useRef<number>(0);
   const frameCount = useRef<number>(0);
   const gameStartTimeRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
@@ -112,11 +137,15 @@ const FlappyPlane: React.FC = () => {
     setGameOver(false);
     setScore(0);
     setClouds([]);
+    setEnemyPlanes([]); 
+    setDangerAreas([]); // Reset danger areas
     
     // Reset all refs with viewport-aware positioning
     planePositionRef.current = { top: viewportSize.height / 2, rotation: 0 };
     velocityRef.current = 0;
     cloudIdCounter.current = 0;
+    enemyPlaneIdCounter.current = 0;
+    dangerAreaIdCounter.current = 0; // Reset danger area counter
     frameCount.current = 0;
     gameStartTimeRef.current = performance.now();
     lastUpdateTimeRef.current = performance.now();
@@ -148,6 +177,36 @@ const FlappyPlane: React.FC = () => {
       isThunderstorm: Math.random() > 0.6,
       collected: false,
       id: cloudIdCounter.current++
+    };
+  }, [viewportSize, getGroundYPosition]);
+  
+  // Create a new enemy plane
+  const createEnemyPlane = useCallback(() => {
+    const groundY = getGroundYPosition();
+    // Allow enemy planes to fly at different heights
+    const minHeight = 40; // Keep a minimum distance from top
+    const maxHeight = groundY - 80; // Keep some distance from ground
+    
+    return {
+      left: viewportSize.width,
+      top: minHeight + Math.random() * (maxHeight - minHeight),
+      id: enemyPlaneIdCounter.current++
+    };
+  }, [viewportSize, getGroundYPosition]);
+  
+  // Create a new danger area
+  const createDangerArea = useCallback(() => {
+    const groundY = getGroundYPosition();
+    
+    // Randomize the height, between 10% and 30% of the available space
+    const minHeight = groundY * 0.1;
+    const maxHeight = groundY * 0.6;
+    const height = minHeight + Math.random() * (maxHeight - minHeight);
+    
+    return {
+      left: viewportSize.width,
+      height: height,
+      id: dangerAreaIdCounter.current++
     };
   }, [viewportSize, getGroundYPosition]);
   
@@ -189,6 +248,19 @@ const FlappyPlane: React.FC = () => {
     const timeSinceStart = now - gameStartTimeRef.current;
     if (timeSinceStart > 500 && frameCount.current % cloudGenerationInterval === 0) {
       setClouds(prev => [...prev, createCloud()]);
+    }
+    
+    // Generate new enemy planes - less frequently than clouds
+    if (timeSinceStart > 1500 && frameCount.current % enemyPlaneGenerationInterval === 0) {
+      setEnemyPlanes(prev => [...prev, createEnemyPlane()]);
+    }
+    
+    // Generate new danger areas - even less frequently
+    if (timeSinceStart > 2000 && frameCount.current % dangerAreaGenerationInterval === 0) {
+      // Only add a new danger area 40% of the time to keep them rare
+      if (Math.random() < 0.4) {
+        setDangerAreas(prev => [...prev, createDangerArea()]);
+      }
     }
     
     // Update clouds and check collisions
@@ -251,13 +323,106 @@ const FlappyPlane: React.FC = () => {
           })
           .filter(cloud => cloud.left > -60); // Remove clouds that are off-screen
       });
+      
+      // Update enemy planes and check collisions
+      setEnemyPlanes(prevEnemyPlanes => {
+        if (!gameRef.current || !planeRef.current) return prevEnemyPlanes;
+        
+        const planeRect = planeRef.current.getBoundingClientRect();
+        const gameRect = gameRef.current.getBoundingClientRect();
+        
+        return prevEnemyPlanes
+          .map(enemyPlane => {
+            // Move enemy plane left - faster than clouds
+            const updatedEnemyPlane = {
+              ...enemyPlane,
+              left: enemyPlane.left - (enemyPlaneSpeed * deltaTime)
+            };
+            
+            // Get the enemy plane's actual dimensions
+            const enemyWidth = 60;
+            const enemyHeight = 40;
+            
+            // Calculate the enlarged collision box (2.5x)
+            const collisionWidth = enemyWidth * enemyCollisionMultiplier;
+            const collisionHeight = enemyHeight * enemyCollisionMultiplier;
+            
+            // Offset to center the collision box around the enemy plane
+            const widthOffset = (collisionWidth - enemyWidth) / 2;
+            const heightOffset = (collisionHeight - enemyHeight) / 2;
+            
+            // Create the collision rectangle
+            const enemyRect = {
+              left: updatedEnemyPlane.left + gameRect.left - widthOffset,
+              top: updatedEnemyPlane.top + gameRect.top - heightOffset,
+              right: updatedEnemyPlane.left + gameRect.left + enemyWidth + widthOffset,
+              bottom: updatedEnemyPlane.top + gameRect.top + enemyHeight + heightOffset
+            };
+            
+            // Check for collision with player plane
+            if (
+              planeRect.right > enemyRect.left &&
+              planeRect.left < enemyRect.right &&
+              planeRect.bottom > enemyRect.top &&
+              planeRect.top < enemyRect.bottom
+            ) {
+              // Enemy plane collision
+              setGameOver(true);
+              isRunningRef.current = false;
+            }
+            
+            return updatedEnemyPlane;
+          })
+          .filter(enemyPlane => enemyPlane.left > -80); // Remove enemy planes that are off-screen
+      });
+      
+      // Update danger areas and check collisions
+      setDangerAreas(prevDangerAreas => {
+        if (!gameRef.current || !planeRef.current) return prevDangerAreas;
+        
+        const planeRect = planeRef.current.getBoundingClientRect();
+        const gameRect = gameRef.current.getBoundingClientRect();
+        
+        return prevDangerAreas
+          .map(dangerArea => {
+            // Move danger area left - same speed as clouds
+            const updatedDangerArea = {
+              ...dangerArea,
+              left: dangerArea.left - (dangerAreaSpeed * deltaTime)
+            };
+            
+            
+            // Create the danger area rectangle
+            const dangerRect = {
+              left: updatedDangerArea.left + gameRect.left,
+              top: groundY - updatedDangerArea.height + gameRect.top,
+              right: updatedDangerArea.left + gameRect.left + 100, // Danger areas are 100px wide
+              bottom: groundY + gameRect.top
+            };
+            
+            // Check for collision with player plane
+            if (
+              planeRect.right > dangerRect.left &&
+              planeRect.left < dangerRect.right &&
+              planeRect.bottom > dangerRect.top &&
+              planeRect.top < dangerRect.bottom
+            ) {
+              // Danger area collision
+              setGameOver(true);
+              isRunningRef.current = false;
+            }
+            
+            return updatedDangerArea;
+          })
+          .filter(dangerArea => dangerArea.left > -100); // Remove danger areas that are off-screen
+      });
     }
     
     // Request next frame if still running
     if (isRunningRef.current) {
       gameLoopRef.current = requestAnimationFrame(animationLoop);
     }
-  }, [createCloud, getGroundYPosition]);
+  }, [createCloud, createEnemyPlane, createDangerArea, getGroundYPosition, enemyPlaneSpeed, dangerAreaSpeed]);
   
   // Main game effect - controls starting and stopping the game loop
   useEffect(() => {
@@ -326,7 +491,7 @@ const FlappyPlane: React.FC = () => {
       }}
     >
 
-      <button data-testid="fb-exit-button" className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={()=>dispatch(setFilterText({ filterText: '' }))}>
+      <button className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={()=>dispatch(setFilterText({ filterText: '' }))} data-testid="fp-exit-button">
         Exit
       </button>
 
@@ -337,6 +502,21 @@ const FlappyPlane: React.FC = () => {
           zIndex: 8
         }}
       />
+      
+      {/* Danger Areas */}
+      {dangerAreas.map(dangerArea => (
+        <div
+          key={`danger-${dangerArea.id}`}
+          className="danger-area"
+          style={{
+            left: `${dangerArea.left}px`,
+            bottom: `${groundHeight}vh`,
+            height: `${dangerArea.height}px`,
+            width: '100px',
+            zIndex: 20
+          }}
+        />
+      ))}
       
       {/* Plane */}
       <div 
@@ -350,6 +530,31 @@ const FlappyPlane: React.FC = () => {
           zIndex: 10
         }}
       />
+      
+      {/* Enemy Planes */}
+      {enemyPlanes.map(enemyPlane => (
+        <div key={`enemy-${enemyPlane.id}`}>
+          <div
+            className="enemy-plane"
+            style={{
+              left: `${enemyPlane.left}px`,
+              top: `${enemyPlane.top}px`,
+              zIndex: 10
+            }}
+          />
+          {/* Uncomment to visualize collision boxes 
+          <div
+            className="enemy-collision-box"
+            style={{
+              left: `${enemyPlane.left - (60 * (enemyCollisionMultiplier - 1) / 2)}px`,
+              top: `${enemyPlane.top - (40 * (enemyCollisionMultiplier - 1) / 2)}px`,
+              width: `${60 * enemyCollisionMultiplier}px`,
+              height: `${40 * enemyCollisionMultiplier}px`
+            }}
+          />
+          */}
+        </div>
+      ))}
       
       {/* Clouds */}
       {clouds.map(cloud => (
@@ -372,6 +577,7 @@ const FlappyPlane: React.FC = () => {
         <div className="start-screen">
           <h2>Flappy Plane</h2>
           <p>Click to start</p>
+          <p>Avoid thunderclouds, enemy planes, and danger zones!</p>
         </div>
       )}
       

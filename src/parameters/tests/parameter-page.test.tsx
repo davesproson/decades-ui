@@ -140,7 +140,7 @@ describe("Test flappyplane easter egg",  async () => {
         })
 
         act(() => {
-            userEvent.click(screen.getByTestId("fb-exit-button"))
+            userEvent.click(screen.getByTestId("fp-exit-button"))
         })
 
         await waitFor(() => {

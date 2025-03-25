@@ -5,11 +5,13 @@ import { ParameterTable } from "./parameter-table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import PlotDispatcher from "@/plot/plot"
 import { X } from "lucide-react"
-import { useState } from "react"
+import { useState, lazy, Suspense } from "react"
 import { removeTab, renameTab, selectTab } from "@/redux/tabsSlice"
 import { Input } from "@/components/ui/input"
 import type  { TabEntry }  from "@/redux/tabsSlice"
-import FlappyPlane from "@/flappyplane/flappy-plane"
+import Loader from "@/components/loader"
+
+// import FlappyPlane from "@/flappyplane/flappy-plane"
 
 const kwikhash = (str: string) => {
     let hash = 0;
@@ -98,8 +100,11 @@ const TabbbedParameterPage = () => {
     const filterText = useSelector(state => state.paramfilter.filterText);
 
     if (kwikhash(filterText) === -65155874) {
+        const FlappyPlane = lazy(() => import("@/flappyplane/flappy-plane"));
         return (
-            <FlappyPlane />
+            <Suspense fallback={<Loader />}>
+                <FlappyPlane />
+            </Suspense>
         )
     }
 

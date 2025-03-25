@@ -26,6 +26,18 @@
   transform: rotate(90deg);
 }
 
+.enemy-plane {
+  position: absolute;
+  width: 60px;
+  height: 40px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff0000" d="M22,16v-2l-8.5-5V3.5C13.5,2.67,12.83,2,12,2s-1.5,0.67-1.5,1.5V9L2,14v2l8.5-2.5V19L8,20.5V22l4-1l4,1v-1.5L13.5,19v-5.5L22,16z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 10;
+  transform-origin: center center;
+  transform: rotate(270deg); /* Face the opposite direction */
+}
+
 .cloud {
   position: absolute;
   width: 60px;
@@ -120,4 +132,13 @@
   width: 100%;
   background-image: linear-gradient(to bottom, #8B4513, #228B22);
   z-index: 8;
+}
+
+/* Danger area styling */
+.danger-area {
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.3);
+  border-top: 2px solid rgba(255, 0, 0, 0.7);
+  z-index: 15; /* Below clouds and planes but above background */
+  pointer-events: none; /* Allow clicks to pass through */
 }
