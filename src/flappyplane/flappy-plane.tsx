@@ -490,6 +490,10 @@ const FlappyPlane: React.FC = () => {
         overflow: 'hidden'   // Ensure content doesn't overflow
       }}
     >
+      {/* Fixed position of mountains in the DOM order to ensure proper z-index stacking */}
+      <div className="mountains-container">
+        <div className="mountains"></div>
+      </div>
 
       <button className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={()=>dispatch(setFilterText({ filterText: '' }))} data-testid="fp-exit-button">
         Exit
@@ -577,7 +581,7 @@ const FlappyPlane: React.FC = () => {
         <div className="start-screen">
           <h2>Flappy Plane</h2>
           <p>Click to start</p>
-          <p>Avoid thunderclouds, enemy planes, and danger zones!</p>
+          <p>Sample the clouds, but avoid thunderclouds and danger zones, and give other aircraft a wide berth!</p>
         </div>
       )}
       
