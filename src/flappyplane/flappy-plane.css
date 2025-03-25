@@ -152,10 +152,10 @@
   height: 25vh; /* Mountains height */
   z-index: 4; /* Lower z-index to ensure visibility behind gameplay elements */
   pointer-events: none; /* Non-interactive */
-  animation: mountainScroll 60s linear infinite; /* Slow animation */
+  animation: mountainScroll 90s linear infinite; /* Slow animation */
   background-color: transparent; /* Ensure no background color is blocking */
   /* Add gradient overlay for blending with sky */
-  mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 60%);
+  mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 60%);
   -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
 }
 
@@ -185,18 +185,13 @@
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" preserveAspectRatio="none"><path fill="%23445588" d="M0,300 L0,200 L80,220 L160,170 L240,210 L320,160 L400,220 L480,180 L560,230 L640,150 L720,200 L800,170 L880,230 L960,190 L1000,210 L1000,300 Z" /></svg>');
   background-size: 800px 100%; /* Different size for variety */
   background-repeat: repeat-x;
-  opacity: 0.4; /* Slightly more transparent */
+  opacity: 0.9; /* Slightly more transparent */
   background-blend-mode: soft-light;
-  animation: mountainScrollRight 120s linear infinite;
+  animation: mountainScroll 60s linear infinite;
   z-index: 3; /* Behind the first mountain layer */
 }
 
 @keyframes mountainScroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-33.33%); } /* Move one-third for seamless loop */
-}
-
-@keyframes mountainScrollRight {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(33.33%); } /* Move one-third for seamless loop */
 }
