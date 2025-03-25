@@ -326,7 +326,7 @@ const FlappyPlane: React.FC = () => {
       }}
     >
 
-      <button className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={()=>dispatch(setFilterText({ filterText: '' }))}>
+      <button data-testid="fb-exit-button" className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={()=>dispatch(setFilterText({ filterText: '' }))}>
         Exit
       </button>
 

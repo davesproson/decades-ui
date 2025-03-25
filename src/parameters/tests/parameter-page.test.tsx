@@ -6,12 +6,14 @@ import { testTab } from './testdata'
 import { addTab, removeTab, selectTab } from '@/redux/tabsSlice'
 import { renderWithStore } from '@/tests'
 import { setTabbedPlots } from '@/redux/configSlice'
-
+import { ParameterPage } from '../parameter-page'
+import { setFilterText } from '@/redux/filterSlice'
 
 
 const mocks = vi.hoisted(() =>{
     return {
-        PlotDispatcher: vi.fn(() => <>PlotlyPlot</>)
+        PlotDispatcher: vi.fn(() => <>PlotlyPlot</>),
+        ParameterDispatcher: vi.fn((props) =><>{props.children}</>)
     }
 })
 
@@ -19,6 +21,13 @@ vi.mock('@/plot/plot', async () => {
     return {
         default: mocks.PlotDispatcher,
         PlotDispatcher: mocks.PlotDispatcher
+    }
+})
+
+vi.mock('@/parameters/parameter-dispatcher', async () => {
+    return {
+        default: mocks.ParameterDispatcher,
+        ParameterDispatcher: mocks.ParameterDispatcher
     }
 })
 
@@ -92,6 +101,53 @@ describe("Test tabbed parameter tab title", () => {
     })
 })
 
+describe("Test flappyplane easter egg",  async () => {
+    beforeEach(() => {
+        cleanup();
+        mocks.ParameterDispatcher.mockClear();
+    })
+
+    it("Should render FlappyPlane only when filtertext is 'flappyplane'", async () => {
+
+        const { store } = renderWithStore(<ParameterPage />)
+
+        act(() => {
+            store.dispatch(setFilterText({ filterText: "flappyplane" }))
+        })
+        
+        await waitFor(() => {
+            expect(screen.getByText("Flappy Plane")).toBeDefined()
+        })
+
+        act(() => {
+            store.dispatch(setFilterText({ filterText: "" }))
+        })
+
+        await waitFor(() => {
+            expect(screen.queryByText("Flappy Plane")).toBeNull()
+        })
+    })
+
+    it("Should reset filtertext when the exit button is clicked", async () => {
+        const { store } = renderWithStore(<ParameterPage />)
+
+        act(() => {
+            store.dispatch(setFilterText({ filterText: "flappyplane" }))
+        })
+
+        await waitFor(() => {
+            expect(screen.getByText("Flappy Plane")).toBeDefined()
+        })
+
+        act(() => {
+            userEvent.click(screen.getByTestId("fb-exit-button"))
+        })
+
+        await waitFor(() => {
+            expect(screen.getByText("Clear Selection")).toBeDefined()
+        })
+    })
+})
 
 describe("Test tabbed parameter content", () => {
 
