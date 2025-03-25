@@ -1,0 +1,123 @@
+.flappy-plane-game {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #87CEEB, #1E90FF);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plane {
+  position: absolute;
+  width: 60px;
+  height: 40px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff5722" d="M22,16v-2l-8.5-5V3.5C13.5,2.67,12.83,2,12,2s-1.5,0.67-1.5,1.5V9L2,14v2l8.5-2.5V19L8,20.5V22l4-1l4,1v-1.5L13.5,19v-5.5L22,16z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 10;
+  transition: transform 0.1s;
+  transform-origin: center center;
+  transform: rotate(90deg);
+}
+
+.cloud {
+  position: absolute;
+  width: 60px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 5;
+}
+
+.cloud.normal {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ffffff" d="M19.35,10.04C18.67,6.59,15.64,4,12,4C9.11,4,6.6,5.64,5.35,8.04C2.34,8.36,0,10.91,0,14c0,3.31,2.69,6,6,6h13c2.76,0,5-2.24,5-5C24,12.36,21.95,10.22,19.35,10.04z"/></svg>');
+  opacity: 0.9;
+}
+
+.cloud.thunderstorm {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23444444" d="M19.35,10.04C18.67,6.59,15.64,4,12,4C9.11,4,6.6,5.64,5.35,8.04C2.34,8.36,0,10.91,0,14c0,3.31,2.69,6,6,6h13c2.76,0,5-2.24,5-5C24,12.36,21.95,10.22,19.35,10.04z"/><path fill="%23ffeb3b" d="M7,14l1.5-5h2l-1.25,4h2.25L9,19l1-5H7z"/></svg>');
+}
+
+.cloud.collected {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.score {
+  position: absolute;
+  top: 5vh;
+  right: 5vw;
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.start-screen,
+.game-over {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  z-index: 20;
+}
+
+.start-screen h2,
+.game-over h2 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.start-screen p,
+.game-over p {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.fp-button {
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fp-button:hover {
+  background-color: #45a049;
+}
+
+/* Ground styling - simplified for visibility */
+.ground-container {
+  position: absolute; /* Use fixed instead of absolute to ensure it stays at bottom */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 15vh; /* 15% of viewport height */
+  z-index: 8;
+  pointer-events: none;
+}
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: linear-gradient(to bottom, #8B4513, #228B22);
+  z-index: 8;
+}

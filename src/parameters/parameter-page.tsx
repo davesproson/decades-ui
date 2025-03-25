@@ -9,6 +9,17 @@ import { useState } from "react"
 import { removeTab, renameTab, selectTab } from "@/redux/tabsSlice"
 import { Input } from "@/components/ui/input"
 import type  { TabEntry }  from "@/redux/tabsSlice"
+import FlappyPlane from "@/flappyplane/flappy-plane"
+
+const kwikhash = (str: string) => {
+    let hash = 0;
+    for (let i = 0, len = str.length; i < len; i++) {
+        let chr = str.charCodeAt(i);
+        hash = (hash << 5) - hash + chr;
+        hash |= 0;
+    }
+    return hash;
+}
 
 type TabTitleProps = {
     tab: TabEntry,
@@ -84,6 +95,13 @@ const TabbedContent = () => {
 const TabbbedParameterPage = () => {
     const nTabs = useSelector(state => state.tabs.tabs).length
     const tabbedPlots = useSelector(state => state.config.tabbedPlots)
+    const filterText = useSelector(state => state.paramfilter.filterText);
+
+    if (kwikhash(filterText) === -65155874) {
+        return (
+            <FlappyPlane />
+        )
+    }
 
     if (!nTabs || !tabbedPlots) {
         return (
