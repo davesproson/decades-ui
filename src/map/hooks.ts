@@ -41,8 +41,10 @@ const useOpenLayersMap = ({ zoom, center }: OpenLayersMapArgs) => {
                 attribution: false,
                 zoom: false,
                 rotate: false
-            }),
+            })
+
         })
+
 
         olMap.setTarget(mapRef.current)
         setMap(olMap)
@@ -57,13 +59,13 @@ const useOpenLayersMap = ({ zoom, center }: OpenLayersMapArgs) => {
 }
 
 const useAircraftData = () => {
-    const [aircraftData, setAircraftData] = useState<PositionData | null>(null)
-    const [aircraftHistory, setAircraftHistory] = useState<PositionDataHistory>([])
+    const [aircraftData, setAircraftData] = useState<PositionData | null>(null);
+    const [aircraftHistory, setAircraftHistory] = useState<PositionDataHistory>([]);
 
     const params = [
         "gin_latitude", "gin_longitude", "gin_altitude", "gin_heading",
         "gin_speed", "utc_time"
-    ]
+    ];
 
     const updateAircraft = async () => {
         const now = Math.floor(new Date().getTime() / 1000);
@@ -71,7 +73,7 @@ const useAircraftData = () => {
             params: params
         }, now - 2, now - 1);
 
-        let acData: PositionData
+        let acData: PositionData;
         try {
             acData = {
                 lat: data.gin_latitude[data.gin_latitude.length - 1],
@@ -82,62 +84,76 @@ const useAircraftData = () => {
                 time: data.utc_time[data.utc_time.length - 1],
             };
         } catch (e) {
-            console.error('Error updating aircraft data', e)
-            return
+            console.error('Error updating aircraft data', e);
+            return;
         }
 
-        if (acData.lat === badData || acData.lon === badData) return
-        if (acData.lat === null || acData.lon === null) return
-        if (acData.lat === undefined || acData.lon === undefined) return
-        if (isNaN(acData.lat) || isNaN(acData.lon)) return
+        if (acData.lat === badData || acData.lon === badData) return;
+        if (acData.lat === null || acData.lon === null) return;
+        if (acData.lat === undefined || acData.lon === undefined) return;
+        if (isNaN(acData.lat) || isNaN(acData.lon)) return;
 
-        setAircraftData(acData)
-        setAircraftHistory((oldState) => [...oldState, acData])
+        setAircraftData(acData);
+        setAircraftHistory((oldState) => [...oldState, acData]);
+    };
 
-    }
-
-    const initAircraft = async () => {
+    const initAircraft = async (signal: AbortSignal) => {
         const now = Math.floor(new Date().getTime() / 1000);
-        let data = await getData({
-            params: params
-        }, now - 3600 * 4, now - 1);
+        try {
+            let data = await getData({
+                params: params
+            }, now - 3600 * 4, now - 1);
 
-        const acData = {
-            lat: data.gin_latitude[data.gin_latitude.length - 1],
-            lon: data.gin_longitude[data.gin_longitude.length - 1],
-            alt: data.gin_altitude[data.gin_altitude.length - 1],
-            heading: data.gin_heading[data.gin_heading.length - 1],
-            groundSpeed: data.gin_speed[data.gin_speed.length - 1],
-            time: data.utc_time[data.utc_time.length - 1],
-        };
+            if (signal.aborted) return; // Exit if the signal is aborted
 
-        const acHistory = data.gin_latitude.map((_, i) => {
-            return {
-                lat: data.gin_latitude[i],
-                lon: data.gin_longitude[i],
-                alt: data.gin_altitude[i],
-                heading: data.gin_heading[i],
-                groundSpeed: data.gin_speed[i],
-                time: data.utc_time[i],
+            const acData = {
+                lat: data.gin_latitude[data.gin_latitude.length - 1],
+                lon: data.gin_longitude[data.gin_longitude.length - 1],
+                alt: data.gin_altitude[data.gin_altitude.length - 1],
+                heading: data.gin_heading[data.gin_heading.length - 1],
+                groundSpeed: data.gin_speed[data.gin_speed.length - 1],
+                time: data.utc_time[data.utc_time.length - 1],
+            };
+
+            const acHistory = data.gin_latitude.map((_, i) => {
+                return {
+                    lat: data.gin_latitude[i],
+                    lon: data.gin_longitude[i],
+                    alt: data.gin_altitude[i],
+                    heading: data.gin_heading[i],
+                    groundSpeed: data.gin_speed[i],
+                    time: data.utc_time[i],
+                };
+            }).filter((pos) => pos.lat !== badData && pos.lon !== badData)
+                .filter((_pos, i) => i % 3 === 0);
+
+            if (signal.aborted) return; // Exit if the signal is aborted
+
+            setAircraftData(acData);
+            setAircraftHistory(acHistory);
+        } catch (e) {
+            if (!signal.aborted) {
+                console.error('Error initializing aircraft data', e);
             }
-        }).filter((pos) => pos.lat !== badData && pos.lon !== badData)
-            .filter((_pos, i) => i % 3 === 0)
-
-        setAircraftData(acData)
-        setAircraftHistory(acHistory)
-    }
+        }
+    };
 
     useEffect(() => {
-        initAircraft()
-        const interval = setInterval(updateAircraft, 1000)
+        const controller = new AbortController();
+        const { signal } = controller;
+
+        initAircraft(signal);
+
+        const interval = setInterval(updateAircraft, 1000);
 
         return () => {
-            clearInterval(interval)
-        }
-    }, [])
+            controller.abort(); // Cancel any ongoing `initAircraft` call
+            clearInterval(interval); // Clear the interval
+        };
+    }, []);
 
-    return { aircraftData, aircraftHistory }
-}
+    return { aircraftData, aircraftHistory };
+};
 
 const useLayers = () => {
     const [layers, setLayers] = useState<Array<LayerType>>([])

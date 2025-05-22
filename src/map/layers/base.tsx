@@ -25,7 +25,7 @@ const BaseLayer = (props: BaseLayerProps) => {
         state.map.addLayer(layer)
 
         return () => {
-            if(!state.map) {
+            if (!state.map) {
                 console.warn('Attempted to remove layer from map, but map was not set')
                 return
             }
