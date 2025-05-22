@@ -89,7 +89,7 @@ const ConfigViewArea = forwardRef<ConfigHandle<ConfigViewData>, {}>((_props, ref
                 <Input className="mr-1" type="number" placeholder="Number of rows" value={rows} onChange={(e: React.ChangeEvent<HTMLInputElement>) => valPosInt(e, setRows)} />
                 <Input className="ml-1" type="number" placeholder="Number of columns" value={cols} onChange={(e: React.ChangeEvent<HTMLInputElement>) => valPosInt(e, setCols)} />
             </div>
-            
+
             <div className="flex justify-between">
                 <Input className="mr-1" type="text" placeholder="Row % (comma separated)" value={rowPc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setter(e, setRowPc)} />
                 <Input className="ml-1" type="text" placeholder="Col. % (comma separated)" value={colPc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setter(e, setColPc)} />

@@ -17,27 +17,27 @@ export const getMassMixingRatios = (darkMode: boolean) => {
     ];
 
 
-    const massMixes: (number|null)[][][] = []
+    const massMixes: (number | null)[][][] = []
 
-    const p = [200, (300 + pressMax) / 3, pressMax+100];
+    const p = [200, (300 + pressMax) / 3, pressMax + 100];
 
     const massMix = (p: Array<number>, mix: number) => {
         const t: number[] = [];
-        for(let i=0; i<p.length; i++) {
+        for (let i = 0; i < p.length; i++) {
             let vapp = p[i] * (8 / 5) * (mix / 1000);
             t[i] = 1 / ((1 / KELV) - ((RV / L) * Math.log(vapp / 6.11))) - KELV;
         }
         return t
     }
 
-    for(let ml=0; ml<massMixLines.length; ml++) {
+    for (let ml = 0; ml < massMixLines.length; ml++) {
 
-        const xs: (number|null)[] = [],
-              ys: (number|null)[] = [];
+        const xs: (number | null)[] = [],
+            ys: (number | null)[] = [];
 
         const tt = massMix(p, massMixLines[ml]);
 
-        for(let mi=0; mi<p.length; mi++) {
+        for (let mi = 0; mi < p.length; mi++) {
             let temp = tphiToXy(p[mi], tt[mi]);
             xs.push(temp[0]);
             ys.push(temp[1]);

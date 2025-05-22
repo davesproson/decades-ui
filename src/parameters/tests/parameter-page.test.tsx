@@ -10,10 +10,10 @@ import { ParameterPage } from '../parameter-page'
 import { setFilterText } from '@/redux/filterSlice'
 
 
-const mocks = vi.hoisted(() =>{
+const mocks = vi.hoisted(() => {
     return {
         PlotDispatcher: vi.fn(() => <>PlotlyPlot</>),
-        ParameterDispatcher: vi.fn((props) =><>{props.children}</>)
+        ParameterDispatcher: vi.fn((props) => <>{props.children}</>)
     }
 })
 
@@ -101,7 +101,7 @@ describe("Test tabbed parameter tab title", () => {
     })
 })
 
-describe("Test flappyplane easter egg",  async () => {
+describe("Test flappyplane easter egg", async () => {
     beforeEach(() => {
         cleanup();
         mocks.ParameterDispatcher.mockClear();
@@ -114,7 +114,7 @@ describe("Test flappyplane easter egg",  async () => {
         act(() => {
             store.dispatch(setFilterText({ filterText: "flappyplane" }))
         })
-        
+
         await waitFor(() => {
             expect(screen.getByText("Flappy Plane")).toBeDefined()
         })
@@ -154,29 +154,29 @@ describe("Test tabbed parameter content", () => {
     beforeEach(() => {
         cleanup()
     })
-    
+
     it("Should render", () => {
         const { TabbedContent } = testComponents
         renderWithStore(<TabbedContent />)
         expect(screen.getByText("Param List")).toBeDefined()
     })
 
-     it("Should add a plot tab when config added to store", async () => {
-        
-         const { TabbedContent } = testComponents
-         const { id, name, ...rest } = testTab
-         const { store } = renderWithStore(<TabbedContent />)
+    it("Should add a plot tab when config added to store", async () => {
 
-         act(() => {
-  		    store.dispatch(setTabbedPlots(true))
-  	        store.dispatch(addTab(rest))
-         })
+        const { TabbedContent } = testComponents
+        const { id, name, ...rest } = testTab
+        const { store } = renderWithStore(<TabbedContent />)
 
-         await waitFor(() => {
-             expect(screen.getByText("Plot 1")).toBeDefined()
-             expect(mocks.PlotDispatcher).toHaveBeenCalled()
-         })
-     })
+        act(() => {
+            store.dispatch(setTabbedPlots(true))
+            store.dispatch(addTab(rest))
+        })
+
+        await waitFor(() => {
+            expect(screen.getByText("Plot 1")).toBeDefined()
+            expect(mocks.PlotDispatcher).toHaveBeenCalled()
+        })
+    })
 
     it("Should remove a plot tab when config removed from store", async () => {
         const { TabbedContent } = testComponents
@@ -203,8 +203,8 @@ describe("Test tabbed parameter content", () => {
     it("Should switch to a plot when clicked", async () => {
         const user = userEvent.setup()
         const { TabbedContent } = testComponents
-        const { id, name,  ...rest } = testTab
-        
+        const { id, name, ...rest } = testTab
+
         const { store } = renderWithStore(<TabbedContent />)
 
         act(() => {
@@ -220,11 +220,11 @@ describe("Test tabbed parameter content", () => {
             expect(mocks.PlotDispatcher).not.toHaveBeenCalled()
         })
 
-        
+
         act(() => {
             user.click(screen.getByText("Plot 1"))
         })
-        
+
         await waitFor(() => {
             expect(screen.getByText("PlotlyPlot")).toBeDefined()
             expect(mocks.PlotDispatcher).toHaveBeenCalled()

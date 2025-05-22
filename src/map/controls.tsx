@@ -19,7 +19,7 @@ import { Grid, Layers, AppWindow, Pin, Search, ZoomIn, ZoomOut, Wrench } from "l
 useState
 
 
-const ZoomControl = ({size}: {size?: number}) => {
+const ZoomControl = ({ size }: { size?: number }) => {
     const { state } = useContext(MapContext)
 
     const zoom = (delta: number) => {
@@ -99,22 +99,22 @@ const Toolbar = (props: ToolbarProps) => {
         <div className="pointer-events-none z-10 absolute top-auto right-0 left-0 bottom-0 h-[50px] p-3 flex flex-row justify-between mb-1">
             <div>
                 <Button size="sm" variant={layerButtonVariant} className={buttonClass} onClick={() => props.actions.setShowLayersMenu(toggle)}>
-                    <Layers size={15}/>
+                    <Layers size={15} />
                 </Button>
                 <Button size="sm" variant={headerButtonVariant} className={buttonClass} onClick={() => props.actions.setShowHeaderBar(toggle)}>
                     <AppWindow size={15} />
                 </Button>
                 <Button size="sm" variant={graticuleButtonVariant} className={buttonClass} onClick={() => props.actions.setShowGraticule(toggle)}>
-                    <Grid size={15}/>
+                    <Grid size={15} />
                 </Button>
                 <Button size="sm" variant={pinAircraftButtonVariant} className={buttonClass} onClick={() => props.actions.setPinAircraft(toggle)}>
-                    <Pin size={15}/>
+                    <Pin size={15} />
                 </Button>
-                <ZoomControl size={15}/>
+                <ZoomControl size={15} />
             </div>
             <div>
                 <Button size="sm" variant={toolboxButtonVariant} className={buttonClass} onClick={() => props.actions.setShowToolbox(toggle)}>
-                    <Wrench  size={15} />
+                    <Wrench size={15} />
                 </Button>
             </div>
         </div>

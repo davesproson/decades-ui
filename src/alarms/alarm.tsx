@@ -56,7 +56,7 @@ const RuleHoverCard = ({ children, rule }: { children: React.ReactNode, rule: st
 
 const Alarm = (props: AlarmProps) => {
 
-    const {passing, muted, setMuted}  = useAlarm(props)
+    const { passing, muted, setMuted } = useAlarm(props)
     const flashActive = useFlash(600)
 
     let messageClass = passing
@@ -65,7 +65,7 @@ const Alarm = (props: AlarmProps) => {
             ? "bg-gray-200 dark:bg-gray-800"
             : props.muteOnFail
                 ? "bg-background"
-                :   flashActive
+                : flashActive
                     ? props.disableFlash
                         ? "bg-destructive"
                         : "bg-red-700"
@@ -102,7 +102,7 @@ const Alarm = (props: AlarmProps) => {
                 </article>
             </ContextMenuTrigger>
             <ContextMenuContent>
-                <ContextMenuCheckboxItem checked={muted} onCheckedChange={() => {setMuted(x=>!x) }} >
+                <ContextMenuCheckboxItem checked={muted} onCheckedChange={() => { setMuted(x => !x) }} >
                     Muted
                 </ContextMenuCheckboxItem>
             </ContextMenuContent>

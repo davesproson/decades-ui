@@ -143,7 +143,7 @@ describe('Check the correct data URL is returned by getDataUrl', () => {
             quicklook: { qcJob: 123 },
             config: { quickLookMode: false }
         })
-        const url = new URL(getDataUrl({ params: ['param1'], ordvar: 'ordparam'}, 2000, 5000))
+        const url = new URL(getDataUrl({ params: ['param1'], ordvar: 'ordparam' }, 2000, 5000))
         expect(url.searchParams.get('frm')).toBe('2000')
         expect(url.searchParams.get('to')).toBe('5000')
         expect(url.searchParams.getAll('para')).toContain('param1')

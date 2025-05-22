@@ -89,7 +89,7 @@ describe('Test QuicklookSelector (integration)', () => {
 
     it('Should render a list of jobs when jobs are available', async () => {
         mocks.fetch.mockResolvedValue({
-            json: () => Promise.resolve( apiJobs )
+            json: () => Promise.resolve(apiJobs)
         })
         const { getByText } = renderWithStore(<QuicklookSelector />)
         await waitFor(() => {

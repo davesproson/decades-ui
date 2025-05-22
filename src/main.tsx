@@ -6,16 +6,16 @@ import { Provider } from 'react-redux'
 import { base } from './settings'
 import store from './redux/store'
 import { Toaster } from "@/components/ui/toaster"
-import { RouterProvider, createRouter  } from '@tanstack/react-router'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import ChatProvider  from '@/chat/provider'
+import ChatProvider from '@/chat/provider'
 
 // Create a new router instance
-const router = createRouter({ 
-  routeTree, 
-  basepath: base 
+const router = createRouter({
+  routeTree,
+  basepath: base
 })
 
 // Register the router instance for type safety

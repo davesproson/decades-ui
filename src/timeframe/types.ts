@@ -1,6 +1,6 @@
 import { FlightSummaryEntry as RetreivedFlightSummaryEntry, FlightSummaryPoint } from "@/flight-summary/types"
 
-interface FlightSummaryEntry extends RetreivedFlightSummaryEntry { 
+interface FlightSummaryEntry extends RetreivedFlightSummaryEntry {
     stop: FlightSummaryPoint,
 }
 
@@ -9,8 +9,8 @@ interface FlightSummaryEntryProps {
     entry: FlightSummaryEntry
 }
 
-type PlotlyHTMLDivElement = HTMLDivElement & { 
-    on: (cb: string, e:any)=>{},
+type PlotlyHTMLDivElement = HTMLDivElement & {
+    on: (cb: string, e: any) => {},
     removeAllListeners: (listener: string) => void,
 }
 

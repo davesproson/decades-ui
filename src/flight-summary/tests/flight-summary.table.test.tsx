@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
-import  FlightSummary  from "../flight-summary";
+import FlightSummary from "../flight-summary";
 import { testEntry } from "./testdata";
 
 const mocks = vi.hoisted(() => {
     return {
         getFlightSummary: vi.fn(),
         useFlightSummary: vi.fn(),
-        
+
     }
 })
 
@@ -20,7 +20,7 @@ vi.mock('../hooks.ts', async () => {
 
 vi.mock('@tanstack/react-router', () => {
     return {
-        Link: ({to}: {to: string}) => <div data-to={to}>Home</div>
+        Link: ({ to }: { to: string }) => <div data-to={to}>Home</div>
     }
 })
 
@@ -28,8 +28,8 @@ vi.mock('@tanstack/react-router', () => {
 describe("Flight summary table", async () => {
     beforeEach(() => {
         cleanup();
-      });
-    
+    });
+
     it("Should render a message when no flight summary data is available", async () => {
         mocks.getFlightSummary.mockResolvedValue({})
         render(<FlightSummary hasNavbar={false} />);
@@ -45,7 +45,7 @@ describe("Flight summary table", async () => {
 
     it("Should render a single entry correctly", async () => {
         mocks.useFlightSummary.mockImplementation(() => {
-            return {[testEntry.uuid]: testEntry}
+            return { [testEntry.uuid]: testEntry }
         })
         render(<FlightSummary hasNavbar={false} />);
 
@@ -69,8 +69,8 @@ describe("Flight summary table", async () => {
         const highlightClass = "bg-blue-400 dark:bg-blue-600";
         mocks.useFlightSummary.mockImplementation(() => {
             return {
-                [testEntry.uuid]: {...testEntry, ongoing: true},
-                [testEntry.uuid + 1]: {...testEntry, uuid: testEntry.uuid + 1, ongoing: false, start: {time: testEntry.start.time - 1000}, end: {time: testEntry.start.time - 500}}
+                [testEntry.uuid]: { ...testEntry, ongoing: true },
+                [testEntry.uuid + 1]: { ...testEntry, uuid: testEntry.uuid + 1, ongoing: false, start: { time: testEntry.start.time - 1000 }, end: { time: testEntry.start.time - 500 } }
             }
         })
         render(<FlightSummary hasNavbar={false} />);
@@ -84,7 +84,7 @@ describe("Flight summary table", async () => {
     it("Should not render deleted entries", async () => {
         mocks.useFlightSummary.mockImplementation(() => {
             return {
-                [testEntry.uuid]: {...testEntry, deleted: true}
+                [testEntry.uuid]: { ...testEntry, deleted: true }
             }
         })
         render(<FlightSummary hasNavbar={false} />);

@@ -1,6 +1,6 @@
 import { RegistryType, WidgetConfiguration, ConfigWidgetProps } from "./types"
 import { useEffect, useState } from "react"
-import  clockIcon from "@/assets/view-icons/clock.svg"
+import clockIcon from "@/assets/view-icons/clock.svg"
 
 const ClockConfig = () => {
     return (

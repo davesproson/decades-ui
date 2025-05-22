@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/alarms/config')({
-  beforeLoad: () => {}
+  beforeLoad: () => { }
 })

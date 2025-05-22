@@ -6,20 +6,20 @@ export interface ServerState {
 }
 
 export const serverSlice = createSlice({
-	name: 'servers',
-	initialState: {
+    name: 'servers',
+    initialState: {
         // servers: [],
         selectedServer: null
     } as ServerState,
-	reducers: {
-		// setServers: (state, action) => {
+    reducers: {
+        // setServers: (state, action) => {
         //     state.servers = action.payload.servers;
-		// },
-        setSelectedServer: (state, action: PayloadAction<{server: string}>) => {
+        // },
+        setSelectedServer: (state, action: PayloadAction<{ server: string }>) => {
             state.selectedServer = action.payload.server;
         }
-	},
-});   
+    },
+});
 
 export const { setSelectedServer } = serverSlice.actions;
 

@@ -40,9 +40,9 @@ const ChatTime = (props: { time: number }) => {
 }
 
 const stripUrl = (message: string) => message.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '')
-                                             .replace(new RegExp(`(${base}plot\?[\\n\\S]+)`), '')
+    .replace(new RegExp(`(${base}plot\?[\\n\\S]+)`), '')
 
-const MessageUrlComponent = ({message}: {message: string}) => {
+const MessageUrlComponent = ({ message }: { message: string }) => {
     let messageUrl: string = ''
     const rex = /(?:https?|ftp):\/\/([\n\S]+)\/([\n\S]+)/
     const rex2 = new RegExp(`(${base}plot\?[\\n\\S]+)`)
@@ -54,24 +54,24 @@ const MessageUrlComponent = ({message}: {message: string}) => {
         const host = matched[1]
         const path = matched[2]
 
-        if(host !== location.host) {
+        if (host !== location.host) {
             messageUrl = `${proto}://${host}/${path}`
         } else {
             messageUrl = `/${path}`
         }
     } else {
-        if(matched2) {
+        if (matched2) {
             const path = matched2[0]
             messageUrl = path
         }
     }
 
-    if(!(matched || matched2)) return null
+    if (!(matched || matched2)) return null
     return (
         <Button size="tiny" variant="outline" className="ml-2">
             <a target='_blank' rel='noreferrer' href={messageUrl}>
-                <span className="flex"><ExternalLink size={16} className="mr-2"/>
-                View
+                <span className="flex"><ExternalLink size={16} className="mr-2" />
+                    View
                 </span>
             </a>
         </Button>
@@ -93,7 +93,7 @@ const Chat = (props: ChatProps) => {
     const chatRef = useScrollIntoView([state.messages])
     useRegisterChatUser()
     useScrollInhibitor(true)
-    
+
     // Send a chat message using the current message text, via an action
     // on the chat context.
     const sendMessage = () => {
@@ -156,7 +156,7 @@ const Chat = (props: ChatProps) => {
                             <span className="mr-2 font-mono text-muted-foreground"><ChatTime time={message.time} /></span>
                             <Badge className={'mr-2 mb-1 ' + tagType} >{tagText}</Badge>
                             {/* {message.message} */}
-                            {messageText} <MessageUrlComponent message={message.message}/>
+                            {messageText} <MessageUrlComponent message={message.message} />
                         </div>
                     )
                 })}
@@ -170,7 +170,7 @@ const Chat = (props: ChatProps) => {
 
                 <div className="flex">
                     <Button onClick={sendMessage}>
-                        <SendHorizonal className="mr-2"/> Send
+                        <SendHorizonal className="mr-2" /> Send
                     </Button>
                 </div>
             </div>
@@ -198,16 +198,16 @@ const FailedRegistration = (props: { user: ChatUser }) => {
     if (props.user.regState !== null) return null
     return (
         <Alert variant="destructive" className="mt-2 mb-2">
-        {/* <AlertTitle>Heads up!</AlertTitle> */}
-        <AlertDescription>
-        <div className="flex">
-        <CircleAlert className="h-8 w-8" />
-            <span className="mt-2 ml-2">Failed to register user {props.user.username}, try with a different username</span>
-        </div>
-        </AlertDescription>
-      </Alert>
+            {/* <AlertTitle>Heads up!</AlertTitle> */}
+            <AlertDescription>
+                <div className="flex">
+                    <CircleAlert className="h-8 w-8" />
+                    <span className="mt-2 ml-2">Failed to register user {props.user.username}, try with a different username</span>
+                </div>
+            </AlertDescription>
+        </Alert>
     )
-    
+
 }
 
 /**

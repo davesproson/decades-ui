@@ -14,7 +14,7 @@ type ParameterRefreshButtonProps = {
     spin: boolean,
     onClick: () => void
 }
-const ParameterRefreshButton = ({enabled, spin, onClick}: ParameterRefreshButtonProps) => {
+const ParameterRefreshButton = ({ enabled, spin, onClick }: ParameterRefreshButtonProps) => {
     return (
         <Button variant="outline" disabled={!enabled} onClick={onClick}>
             <RefreshCw className={`${spin && "animate-spin"}`} />
@@ -26,27 +26,27 @@ type ParameterFilterInputBoxProps = {
     value: string,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
-const ParameterFilterInputBox = ({value, onChange}: ParameterFilterInputBoxProps) => {
+const ParameterFilterInputBox = ({ value, onChange }: ParameterFilterInputBoxProps) => {
     return (
-        <Input className="align-middle" 
-                   placeholder="Filter parameters..." 
-                   value={value} 
-                   onChange={onChange} 
-                   data-testid="parameter-text-input" />
+        <Input className="align-middle"
+            placeholder="Filter parameters..."
+            value={value}
+            onChange={onChange}
+            data-testid="parameter-text-input" />
     )
 }
 
 type ParameterTextClearButtonProps = {
     onClick: () => void
 }
-const ParameterTextClearButton = ({onClick}: ParameterTextClearButtonProps) => {
+const ParameterTextClearButton = ({ onClick }: ParameterTextClearButtonProps) => {
     return (
-        <Button variant="outline" 
-                    className="ml-2 mr-2"
-                    onClick={onClick}
-                    data-testid="parameter-text-clear-button">
-                Clear Selection
-            </Button>
+        <Button variant="outline"
+            className="ml-2 mr-2"
+            onClick={onClick}
+            data-testid="parameter-text-clear-button">
+            Clear Selection
+        </Button>
     )
 }
 
@@ -69,11 +69,11 @@ export const ParameterFilter = memo(() => {
     }, [lastUpdate, setEnabled])
 
     const setFilter = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(setFilterText({filterText: e.target.value}))
+        dispatch(setFilterText({ filterText: e.target.value }))
     }, [dispatch, setFilterText, filterText])
 
     const clearSelection = useCallback(() => {
-        dispatch(setFilterText({filterText: ""}))
+        dispatch(setFilterText({ filterText: "" }))
         dispatch(unselectAllParams())
     }, [dispatch, setFilterText, unselectAllParams])
 
@@ -87,7 +87,7 @@ export const ParameterFilter = memo(() => {
             if (response.ok) {
                 return response.json()
             }
-            
+
             throw new Error("Failed to fetch parameter availability")
         }).then((data) => {
             const cData = quickLookCompatability(quicklookMode)(data)

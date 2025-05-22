@@ -6,7 +6,7 @@ import { useSelector } from "@store"
 import { forwardRef, useImperativeHandle, useRef } from "react"
 import type { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import { containerStyle } from "./utils"
-import chartIcon  from "@/assets/view-icons/chart.svg"
+import chartIcon from "@/assets/view-icons/chart.svg"
 
 /**
  * A functional component that renders a badge with a text "Yes" or "No" 
@@ -121,7 +121,7 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
         name: "Plot",
         type: "plot",
         configComponent: <ConfigPlotArea ref={ref} />,
-        save (props: ConfigWidgetProps) {
+        save(props: ConfigWidgetProps) {
             props.setData({
                 type: "plot",
                 ...ref.current?.getData()

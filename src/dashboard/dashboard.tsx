@@ -11,12 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import {
-    ContextMenu, 
-    ContextMenuCheckboxItem, 
-    ContextMenuContent, 
-    ContextMenuSub, 
-    ContextMenuSubContent, 
-    ContextMenuSubTrigger, 
+    ContextMenu,
+    ContextMenuCheckboxItem,
+    ContextMenuContent,
+    ContextMenuSub,
+    ContextMenuSubContent,
+    ContextMenuSubTrigger,
     ContextMenuTrigger
 } from "@/components/ui/context-menu";
 
@@ -286,7 +286,7 @@ const PlotHeaderDash = (props: PlotHeaderProps) => {
         params: props.params,
     }
 
-    
+
     const data = useDashboardData(dataOptions)
     if (!availableParams) return <></>
     let filteredParams = availableParams.filter(x => {
@@ -307,16 +307,16 @@ const PlotHeaderDash = (props: PlotHeaderProps) => {
 
     return (
         <div className="flex gap-1 justify-center mt-2">
-        {
-            filteredParams.map((param, _i) => {
-                const paramName = param.ParameterName
-                return (
-                    <Badge>
-                        {param.DisplayText}: {data ? data[paramName][data[paramName].length-1].toFixed(2) : null} {param.DisplayUnits}
-                    </Badge>
-                )
-            })
-        }
+            {
+                filteredParams.map((param, _i) => {
+                    const paramName = param.ParameterName
+                    return (
+                        <Badge>
+                            {param.DisplayText}: {data ? data[paramName][data[paramName].length - 1].toFixed(2) : null} {param.DisplayUnits}
+                        </Badge>
+                    )
+                })
+            }
         </div>
     )
 }

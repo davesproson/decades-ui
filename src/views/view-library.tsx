@@ -36,7 +36,7 @@ const LoadedInfo = (props: LoadedInfoProps) => {
         <Alert className="mt-2">
             <AlertDescription>
                 <div className="flex">
-                    <Check className="mr-2 text-green-600"/>
+                    <Check className="mr-2 text-green-600" />
                     <span className="mt-0.5">
                         This view has been made available. To access it,
                         select <strong className="underline">{props.title}</strong> from the <strong> Views </strong> menu.
@@ -94,7 +94,7 @@ const LibraryCard = (props: LibraryCardProps) => {
                 <h4 className="font-bold">{props.title}</h4>
             </CardHeader>
             <CardContent>
-                 <span className="text-muted-foreground">{props.description}</span>
+                <span className="text-muted-foreground">{props.description}</span>
                 <LoadedInfo loaded={viewIsLoaded} title={props.title} />
                 {viewIsLoaded ? null : button}
             </CardContent>
@@ -124,7 +124,7 @@ const ViewLibrary = () => {
 
     return (
         <Navbar>
-            <DecadesBreadCrumb 
+            <DecadesBreadCrumb
                 crumbs={[
                     { label: "View Library" }
                 ]}

@@ -50,8 +50,8 @@ type ParamsState = {
  * @returns A new axis object with a unique ID, specified units, and default scaling.
  */
 const getNewAxis = (units: string, axes: Array<Axis>): Axis => {
-    for(let i=1; i<axes.length+1; i++) {
-        if(!axes.find(axis => axis.id === i)) {
+    for (let i = 1; i < axes.length + 1; i++) {
+        if (!axes.find(axis => axis.id === i)) {
             return {
                 id: i,
                 units: units,
@@ -104,9 +104,9 @@ const paramFromDecadesParam = (param: DecadesParameter): Parameter => {
  * @param state - The current state containing parameters and axes.
  */
 const manageAxis = (param: Parameter, state: ParamsState) => {
-    if(param.selected) {
+    if (param.selected) {
         const pAxis = state.axes.find(axis => axis.units === param.units)
-        if(!pAxis) {
+        if (!pAxis) {
             const newAxis = getNewAxis(
                 param.units, state.axes
             );
@@ -119,7 +119,7 @@ const manageAxis = (param: Parameter, state: ParamsState) => {
         const axisId = param.axisId;
         param.axisId = null;
         const nParamsOnAxis = state.params.filter(param => param.axisId === axisId).length;
-        if(nParamsOnAxis === 0) {
+        if (nParamsOnAxis === 0) {
             const axisIndex = state.axes.findIndex(axis => axis.id === axisId);
             state.axes.splice(axisIndex, 1);
         }
@@ -134,14 +134,14 @@ const manageAxis = (param: Parameter, state: ParamsState) => {
 // Slice for managing parameters and axes
 export const paramSlice = createSlice({
 
-	name: 'params',
-	initialState: {
+    name: 'params',
+    initialState: {
         params: [],
         axes: [],
         paramSet: '',
         paramsDispatched: false
     } as ParamsState,
-	reducers: {
+    reducers: {
         // Set the dispatched status of the parameters
         setParamsDispatched: (state, action: PayloadAction<boolean>) => {
             state.paramsDispatched = action.payload;
@@ -153,27 +153,27 @@ export const paramSlice = createSlice({
         },
 
         // Add a parameter to the state
-		addParam: (state, action: PayloadAction<Parameter>) => {
-			const param = {
-				id: action.payload.id.toString(),
-				name: action.payload.name,
+        addParam: (state, action: PayloadAction<Parameter>) => {
+            const param = {
+                id: action.payload.id.toString(),
+                name: action.payload.name,
                 raw: action.payload.raw,
                 units: action.payload.units,
-				selected: false,
+                selected: false,
                 status: null
-			} as Parameter;
-			state.params.push(param);
-		},
+            } as Parameter;
+            state.params.push(param);
+        },
 
         // Set the parameters in the state
         setParams: (state, action: PayloadAction<Array<DecadesParameter>>) => {
             let params = action.payload;
-            if(!(params instanceof Array)) {
+            if (!(params instanceof Array)) {
                 console.error("Expected array of parameters");
                 params = []
             }
             state.params = new Array();
-            for(const param of params) {
+            for (const param of params) {
                 const paramToAdd = paramFromDecadesParam(param)
                 state.params.push(paramToAdd);
             }
@@ -188,7 +188,7 @@ export const paramSlice = createSlice({
         },
 
         // Toggle the selected status of a parameter
-        toggleParamSelected: (state, action: PayloadAction<{id: ParameterID}>) => {
+        toggleParamSelected: (state, action: PayloadAction<{ id: ParameterID }>) => {
             const param = state.params.find(param => param.id === action.payload.id);
             if (param) {
                 param.selected = !param.selected;
@@ -208,7 +208,7 @@ export const paramSlice = createSlice({
             state.axes = []
             const rawNames = action.payload
             state.params.forEach(param => {
-                if(rawNames.includes(param.raw)&& param.status) {
+                if (rawNames.includes(param.raw) && param.status) {
                     param.selected = true;
                 }
                 manageAxis(param, state);
@@ -216,10 +216,10 @@ export const paramSlice = createSlice({
         },
 
         // Add a new axis to the state, and assign it to a parameter
-        addNewAxis: (state, action: PayloadAction<{paramId: ParameterID}>) => {
+        addNewAxis: (state, action: PayloadAction<{ paramId: ParameterID }>) => {
             const paramId = action.payload.paramId;
             const param = state.params.find(param => param.id === paramId);
-            if(!param) {
+            if (!param) {
                 console.error(`Could not find param with id ${paramId}`);
                 return;
             }
@@ -227,18 +227,18 @@ export const paramSlice = createSlice({
                 p => p.selected && p.units === param.units
             ).length;
 
-            if(nParamsWithUnit === 1) return
+            if (nParamsWithUnit === 1) return
             const newAxis = getNewAxis(param.units, state.axes);
             state.axes.push(newAxis);
             param.axisId = newAxis.id;
         },
 
         // Select an axis for a parameter
-        selectAxis: (state, action: PayloadAction<{axisId: number, paramId: ParameterID}>) => {
+        selectAxis: (state, action: PayloadAction<{ axisId: number, paramId: ParameterID }>) => {
             const paramId = action.payload.paramId;
             const axisId = action.payload.axisId;
             const param = state.params.find(param => param.id === paramId);
-            if(!param) {
+            if (!param) {
                 console.error(`Could not find param with id ${paramId}`);
                 return;
             }
@@ -256,7 +256,7 @@ export const paramSlice = createSlice({
             const axisId = action.payload.axisId;
             const scaling = action.payload.scaling;
             const axis = state.axes.find(axis => axis.id === axisId);
-            if(!axis) {
+            if (!axis) {
                 console.error(`Could not find axis with id ${axisId}`);
                 return;
             }
@@ -267,11 +267,11 @@ export const paramSlice = createSlice({
         resetParameterStatuses: (state) => {
             state.params.forEach(param => param.status = null);
         }
-	},
+    },
 });
 
 
-export const { 
+export const {
     addParam, setParams, toggleParamSelected, unselectAllParams, addNewAxis,
     selectAxis, setParamStatus, setParamSet, setParamsDispatched, setAxisScaling,
     selectParamsByRawName, resetParameterStatuses

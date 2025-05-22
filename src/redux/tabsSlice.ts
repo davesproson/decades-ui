@@ -2,11 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import { genId } from '@/utils';
 import { PlotURLOptions } from '@/plot/types';
 
-type NamedConfig = {name: string} & (
+type NamedConfig = { name: string } & (
 	PlotURLOptions
 )
 
-export type TabEntry = NamedConfig & {id: string}
+export type TabEntry = NamedConfig & { id: string }
 
 export type TabsState = {
 	tabs: Array<TabEntry>,
@@ -22,7 +22,7 @@ export const tabbedPlotsSlice = createSlice({
 	} as TabsState,
 	reducers: {
 		addTab: (state, action) => {
-			if(!action.payload?.name) {
+			if (!action.payload?.name) {
 				action.payload.name = `Plot ${state.tabs.length + 1}`;
 			}
 			action.payload.id = genId();
@@ -40,9 +40,9 @@ export const tabbedPlotsSlice = createSlice({
 			state.tabs[action.payload.index].name = action.payload.name;
 		}
 	},
-});   
+});
 
-export const { 
+export const {
 	addTab, removeTab, selectTab, renameTab
 } = tabbedPlotsSlice.actions;
 

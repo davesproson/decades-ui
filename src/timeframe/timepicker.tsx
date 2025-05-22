@@ -19,29 +19,29 @@ const TimePicker = (props: TimePickerProps) => {
     const customTimeframe = useSelector(state => state.options.customTimeframe)
 
     const isOngoing = (!useCustomTimeframe) || customTimeframe.end === null
-    
+
     const buttonVariant = isOngoing ? "default" : "outline"
 
     const toggleOngoing = () => {
-        if(customTimeframe.end === null) {
-            dispatch(setCustomTimeframe({end: new Date().getTime()}))
+        if (customTimeframe.end === null) {
+            dispatch(setCustomTimeframe({ end: new Date().getTime() }))
         } else {
-            dispatch(setCustomTimeframe({end: null}))
+            dispatch(setCustomTimeframe({ end: null }))
         }
     }
 
     const startTime = useCustomTimeframe
         ? customTimeframe.start || new Date().getTime() - (60000 * 30)
-        : getTimeLims(timeframes.find(x=>x.selected)?.value || "30mins")[0] * 1000
-    
+        : getTimeLims(timeframes.find(x => x.selected)?.value || "30mins")[0] * 1000
+
     const endTime = useCustomTimeframe
         ? customTimeframe.end || new Date().getTime()
-        : getTimeLims(timeframes.find(x=>x.selected)?.value || "30mins")[1] * 1000
-    
+        : getTimeLims(timeframes.find(x => x.selected)?.value || "30mins")[1] * 1000
+
     const time = props.boundary === "start" ? startTime : endTime
 
     const ongoingButton = props.allowOngoing
-        ? <Button variant={buttonVariant} className={"mt-2 " + (isOngoing ?  "" : "")} onClick={toggleOngoing}>Ongoing?</Button>
+        ? <Button variant={buttonVariant} className={"mt-2 " + (isOngoing ? "" : "")} onClick={toggleOngoing}>Ongoing?</Button>
         : null
 
     const hours = props.boundary === "start"
@@ -58,12 +58,12 @@ const TimePicker = (props: TimePickerProps) => {
 
     const setTime = (unit: 'Hours' | 'Minutes' | 'Seconds', value: string) => {
         let sValue: string | number = value
-        if(sValue === "") sValue = "0"
+        if (sValue === "") sValue = "0"
         const date = new Date(time)
         date[`setUTC${unit}`](parseInt(sValue))
         dispatch(setCustomTimeframe({
             ...customTimeframe,
-            ...{[props.boundary]: date.getTime()}
+            ...{ [props.boundary]: date.getTime() }
         }))
     }
 
@@ -71,44 +71,44 @@ const TimePicker = (props: TimePickerProps) => {
 
     const timeSelector = (isOngoing && props.boundary === 'end') ? null : (
         <div className="flex mt-2">
-            <Input  type="number" 
-                    className="w-[5em]"
-                    value={padToTwo(hours)} 
-                    onChange={(e)=>{setTime('Hours', e.target.value)}}
-                    min="0"
-                    max="23" 
-                    role="textbox" />
+            <Input type="number"
+                className="w-[5em]"
+                value={padToTwo(hours)}
+                onChange={(e) => { setTime('Hours', e.target.value) }}
+                min="0"
+                max="23"
+                role="textbox" />
 
             <span className="m-2">:</span>
 
-            <Input  type="number"
-                    className="w-[5em]"
-                    value={padToTwo(minutes)}
-                    onChange={(e)=>{setTime("Minutes", e.target.value)}}
-                    min="0"
-                    max="59" 
-                    role="textbox"/>
-                        
+            <Input type="number"
+                className="w-[5em]"
+                value={padToTwo(minutes)}
+                onChange={(e) => { setTime("Minutes", e.target.value) }}
+                min="0"
+                max="59"
+                role="textbox" />
+
             <span className="m-2">:</span>
 
-            <Input  type="number"
-                    className="w-[5em] mr-2"
-                    value={padToTwo(seconds)}
-                    onChange={(e)=>{setTime("Seconds", e.target.value)}}
-                    min="0"
-                    max="59" 
-                    role="textbox"/>
+            <Input type="number"
+                className="w-[5em] mr-2"
+                value={padToTwo(seconds)}
+                onChange={(e) => { setTime("Seconds", e.target.value) }}
+                min="0"
+                max="59"
+                role="textbox" />
         </div>
     )
 
     return (
         <>
             <CardContent>
-            <p>{props.title}</p>
-            <span className="flex flex-col lg:flex-row">
-                {timeSelector}
-                {ongoingButton}
-            </span>
+                <p>{props.title}</p>
+                <span className="flex flex-col lg:flex-row">
+                    {timeSelector}
+                    {ongoingButton}
+                </span>
             </CardContent>
         </>
     )

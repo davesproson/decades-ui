@@ -22,13 +22,13 @@ export const useQuickLookTimeframe = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if(!quickLookMode) {
-            dispatch(setTimeframe({value: '30min'}))
+        if (!quickLookMode) {
+            dispatch(setTimeframe({ value: '30min' }))
             return
         }
 
         // If there is no quicklook job, return early
-        if(!qcJob) return
+        if (!qcJob) return
 
         // Build the query URL
         const dataURL = new URL(apiEndpoints.quicklook_data)
@@ -37,22 +37,22 @@ export const useQuickLookTimeframe = () => {
 
         // Fetch the data and set the custom timeframe
         fetch(dataURL)
-        .then(response => response.json())
-        .then(data => {
-            const time = data.utc_time
-            const startTime = time[0] * 1000
-            const endTime = time[time.length - 1] * 1000
-            dispatch(setCustomTimeframe({start: startTime, end: endTime}))
-            dispatch(setDataTimeSpan({start: startTime, end: endTime}))
+            .then(response => response.json())
+            .then(data => {
+                const time = data.utc_time
+                const startTime = time[0] * 1000
+                const endTime = time[time.length - 1] * 1000
+                dispatch(setCustomTimeframe({ start: startTime, end: endTime }))
+                dispatch(setDataTimeSpan({ start: startTime, end: endTime }))
 
-            // Set the basetime to the start of the day on which the flight
-            // started
-            const baseTime = (time[0] - (time[0] % (24 * 3600))) * 1000
-            dispatch(setBasetime(baseTime))
-        })
-        .catch(e => {
-            console.error("Error fetching quicklook timeframe:", e)
-        })  
+                // Set the basetime to the start of the day on which the flight
+                // started
+                const baseTime = (time[0] - (time[0] % (24 * 3600))) * 1000
+                dispatch(setBasetime(baseTime))
+            })
+            .catch(e => {
+                console.error("Error fetching quicklook timeframe:", e)
+            })
     }, [qcJob, quickLookMode])
 }
 

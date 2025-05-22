@@ -16,5 +16,5 @@ interface CountUpTimerConfig {
 
 type TimerConfig = CountDownTimerConfig | CountUpTimerConfig;
 
-    
+
 export type { TimerConfig }

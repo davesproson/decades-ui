@@ -12,8 +12,8 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
     const [configs, setConfigs] = useState<Array<GaugeConfig> | null>(null)
 
     useEffect(() => {
-        if(configs !== null) return
-        if(!parameters) return
+        if (configs !== null) return
+        if (!parameters) return
         const _cf = configsIn.map(config => {
             if (!parameters) return config
             const decadesParam = parameters.find(
@@ -33,11 +33,11 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
     }, [parameters])
 
     useEffect(() => {
-        if(!configs) return
+        if (!configs) return
         const params = configs.map(config => config.parameter)
         const interval = setInterval(() => {
-            if(!(document.visibilityState === "visible")) return
-            getData({params: params}).then(data => {
+            if (!(document.visibilityState === "visible")) return
+            getData({ params: params }).then(data => {
                 const _cf = configs.map(config => {
                     const value = data[config.parameter]
                     return {
@@ -54,7 +54,7 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
     return configs
 }
 
-interface UseGaugeWidgetReturnType  {
+interface UseGaugeWidgetReturnType {
     min: string,
     max: string,
     dangerBelow: string,
@@ -65,15 +65,15 @@ interface UseGaugeWidgetReturnType  {
     setDangerAbove: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
-const useGaugeWidget = (config: GaugeConfig & {position: number}): UseGaugeWidgetReturnType => {
+const useGaugeWidget = (config: GaugeConfig & { position: number }): UseGaugeWidgetReturnType => {
     const dispatch = useDispatch()
     const [min, setMin] = useState<string>(config?.min?.toString() || "")
     const [max, setMax] = useState<string>(config?.max?.toString() || "")
     const [dangerBelow, setDangerBelow] = useState<string>(config?.dangerBelow?.toString() || "")
     const [dangerAbove, setDangerAbove] = useState<string>(config?.dangerAbove?.toString() || "")
-    
+
     useEffect(() => {
-  
+
         const configToThunk: GaugeConfig = {
             parameter: config.parameter,
             min: nullNaN(parseFloat(min)),
@@ -83,7 +83,7 @@ const useGaugeWidget = (config: GaugeConfig & {position: number}): UseGaugeWidge
             value: null,
         }
 
-        dispatch(updateNthGauge({position: config.position, config: configToThunk}))
+        dispatch(updateNthGauge({ position: config.position, config: configToThunk }))
     }, [min, max, dangerBelow, dangerAbove])
 
     const parse = (e: React.ChangeEvent<HTMLInputElement>, fn: (x: string) => void) => {
@@ -93,7 +93,7 @@ const useGaugeWidget = (config: GaugeConfig & {position: number}): UseGaugeWidge
             e.target.classList.add("is-danger")
         } else {
             e.target.classList.remove("is-danger")
-            
+
         }
     }
 

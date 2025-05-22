@@ -14,7 +14,7 @@ type HeaderElementProps = {
 
 const HeaderElement = ({ title, value, unit, hide }: HeaderElementProps) => {
     const TitleElement = () => title ? <p className="whitespace-nowrap overflow-hidden text-sm font-mono m-auto text-muted-foreground">{title.toUpperCase()}</p> : null
-    const UnitElement = () =>unit ? <p className="whitespace-nowrap overflow-hidden text-sm font-mono text-muted-foreground m-auto mot-[-5px]">{unit.toUpperCase()}</p> : null
+    const UnitElement = () => unit ? <p className="whitespace-nowrap overflow-hidden text-sm font-mono text-muted-foreground m-auto mot-[-5px]">{unit.toUpperCase()}</p> : null
     const ValueElement = () => <p className="whitespace-nowrap overflow-hidden text-[2em] m-auto font-sans mot-[-8px]">{value}</p>
     const NoDataElement = () => <p className="whitespace-nowrap overflow-hidden text-[1em] m-auto font-sans mot-[-8px]">No Data</p>
 
@@ -38,9 +38,9 @@ const HeaderElement = ({ title, value, unit, hide }: HeaderElementProps) => {
 
 const MapHeader = () => {
     const { aircraftData } = useContext(DataContext)
-    const [ flightNumber, setFlightNumber ] = useState<string>('----')
+    const [flightNumber, setFlightNumber] = useState<string>('----')
 
-    const filterBad = (x: number, unit: string, conversion: (x:number)=>string) => {
+    const filterBad = (x: number, unit: string, conversion: (x: number) => string) => {
         if (x === badData) return {
             value: 'No Data',
             unit: ''
@@ -50,9 +50,9 @@ const MapHeader = () => {
             unit: unit
         }
     }
-    
+
     useEffect(() => {
-        const updateFlightNumber = () => getFlightNumber().then(x=>setFlightNumber(x))
+        const updateFlightNumber = () => getFlightNumber().then(x => setFlightNumber(x))
         updateFlightNumber()
         const interval = setInterval(() => {
             updateFlightNumber()
@@ -60,13 +60,13 @@ const MapHeader = () => {
         return () => clearInterval(interval)
     }, [])
 
-    if(!aircraftData) return null
+    if (!aircraftData) return null
 
     const lat = ddToDmm(aircraftData.lat, ['North', 'South'])
     const lon = ddToDmm(aircraftData.lon, ['East', 'West'])
-    const alt = filterBad(aircraftData.alt || 0, 'ft', x=>metresToFeet(x).toFixed(0))
-    const heading = filterBad(aircraftData.heading || 0, 'Degrees', x=>Math.floor(x).toString().padStart(3, '0'))
-    const speed = filterBad(aircraftData.groundSpeed || 0, 'knots', x=>msToKnots(x).toFixed(0))
+    const alt = filterBad(aircraftData.alt || 0, 'ft', x => metresToFeet(x).toFixed(0))
+    const heading = filterBad(aircraftData.heading || 0, 'Degrees', x => Math.floor(x).toString().padStart(3, '0'))
+    const speed = filterBad(aircraftData.groundSpeed || 0, 'knots', x => msToKnots(x).toFixed(0))
 
     return (
         <div className="relative bg-background p-3 z-10 rounded-md h-[110px] m-4">

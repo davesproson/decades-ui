@@ -70,30 +70,30 @@ const DefaultToolboxContent = ({ state, actions, toggle }: ToolboxProps & { togg
     const lineDrawActive = state.drawMode === "LineString"
     const circleDrawActive = state.drawMode === "Circle"
     const polygonDrawActive = state.drawMode === "Polygon"
-    
+
 
     return (
         <>
             <ToolBoxSection title="Flags">
                 <Button size="sm" className="flex-1 mr-1" onClick={addFlag}>Drop</Button>
                 <Button size="sm" className="flex-1 mr-1" onClick={toggle}>Add</Button>
-                <Button size="sm" variant={deleteFlagActive?"success":"default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.DELETE_FLAG)}>Remove</Button>
+                <Button size="sm" variant={deleteFlagActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.DELETE_FLAG)}>Remove</Button>
                 <Button size="sm" variant="destructive" className="flex-1 mr-1" onClick={() => actions.setFlags([])}>Clear</Button>
             </ToolBoxSection>
             <ToolBoxSection title="Measure">
-                <Button size="sm" variant={measureFromAircraft?"success":"default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.ADD_AIRCRAFT_MEASURE)}>From 146</Button>
-                <Button size="sm" variant={lineMeasureActive?"success":"default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.START_MEASUREMENT)}>Line</Button>
+                <Button size="sm" variant={measureFromAircraft ? "success" : "default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.ADD_AIRCRAFT_MEASURE)}>From 146</Button>
+                <Button size="sm" variant={lineMeasureActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.START_MEASUREMENT)}>Line</Button>
                 <Button size="sm" variant="destructive" className="flex-1 mr-1" onClick={clearMeasurements}>Clear</Button>
             </ToolBoxSection>
             <ToolBoxSection title="Wind">
-                <Button size="sm" variant={state.showWindVane?"success":"default"} className="flex-1 mr-1" onClick={() => actions.setShowWindVane(x => !x)}>Vane</Button>
+                <Button size="sm" variant={state.showWindVane ? "success" : "default"} className="flex-1 mr-1" onClick={() => actions.setShowWindVane(x => !x)}>Vane</Button>
                 <Button size="sm" className="flex-1 mr-1" onClick={dropDrifter}>Drop Drifter</Button>
                 <Button size="sm" variant="destructive" className="flex-1 mr-1" onClick={() => actions.setDrifters([])}>Clear Drifters</Button>
             </ToolBoxSection>
             <ToolBoxSection title="Draw">
-                <Button size="sm" variant={lineDrawActive?"success":"default"} className="flex-1 mr-1" onClick={() => setDrawMode("LineString")}>Line</Button>
-                <Button size="sm" variant={circleDrawActive?"success":"default"} className="flex-1 mr-1" onClick={() => setDrawMode("Circle")}>Circle</Button>
-                <Button size="sm" variant={polygonDrawActive?"success":"default"} className="flex-1 mr-1" onClick={() => setDrawMode("Polygon")}>Polygon</Button>
+                <Button size="sm" variant={lineDrawActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => setDrawMode("LineString")}>Line</Button>
+                <Button size="sm" variant={circleDrawActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => setDrawMode("Circle")}>Circle</Button>
+                <Button size="sm" variant={polygonDrawActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => setDrawMode("Polygon")}>Polygon</Button>
                 <Button size="sm" variant="destructive" className="flex-1 mr-1" onClick={() => setDrawMode(DecadesMapModality.DELETE_DRAWING)}>Clear</Button>
             </ToolBoxSection>
         </>

@@ -42,7 +42,7 @@ const QuicklookSelectorNoFlights = ({ onClick }: { onClick: () => void }) => {
 }
 
 const QuicklookSelectorFlightList = ({ jobs, onJobSelected }: { jobs: QuicklookJob[] | null, onJobSelected: (job: QuicklookJob) => void }) => {
-    if(jobs === null) {
+    if (jobs === null) {
         console.error("QuicklookSelectorFlightList: jobs is null")
         return null
     }

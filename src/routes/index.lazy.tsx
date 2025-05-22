@@ -8,7 +8,7 @@ import Navbar from '@/navbar'
 import { ParameterPage } from '@/parameters/parameter-page'
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { IndexSearch } from '.'
-import  Loader  from '@/components/loader'
+import Loader from '@/components/loader'
 import { ModeSelector } from "@/modeSelect"
 import QuicklookSelector from '@/quicklook/quicklook'
 import { enableQuicklook } from '@/settings'
@@ -46,11 +46,11 @@ function Index() {
       setTheme('dark')
   }, [darkMode, setTheme])
 
-  if(!modeSelected && enableQuicklook) {
+  if (!modeSelected && enableQuicklook) {
     return <ModeSelector />
   }
 
-  if(modeSelected && quickLookMode && !qcJob && enableQuicklook) {
+  if (modeSelected && quickLookMode && !qcJob && enableQuicklook) {
     return <QuicklookSelector />
   }
 

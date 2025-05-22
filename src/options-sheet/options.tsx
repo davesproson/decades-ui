@@ -30,29 +30,29 @@ const OptionsSheet = () => {
                     <SheetTitle> Global Options</SheetTitle>
                 </SheetHeader>
 
-                    <ThemeSelect />
+                <ThemeSelect />
 
-                    <When condition={enableQuicklook}>
+                <When condition={enableQuicklook}>
+                    <Separator className="my-4" />
+                    <QuicklookSwitch />
+                </When>
+
+                <LiveDataOnly>
+                    <When condition={enableChat}>
                         <Separator className="my-4" />
-                        <QuicklookSwitch />
+                        <ChatSwitch />
                     </When>
+                </LiveDataOnly>
 
-                    <LiveDataOnly>
-                        <When condition={enableChat}>
-                            <Separator className="my-4" />
-                            <ChatSwitch />
-                        </When>
-                    </LiveDataOnly>
+                <When condition={enableTabbedPlots}>
+                    <Separator className="my-4" />
+                    <TabbedPlotsSwitch />
+                </When>
 
-                    <When condition={enableTabbedPlots}>
-                        <Separator className="my-4" />
-                        <TabbedPlotsSwitch />
-                    </When>
-
-                    <LiveDataOnly>
-                        <Separator className="my-4" />
-                        <ParamSetSelector />
-                    </LiveDataOnly>
+                <LiveDataOnly>
+                    <Separator className="my-4" />
+                    <ParamSetSelector />
+                </LiveDataOnly>
 
             </SheetContent>
         </Sheet>

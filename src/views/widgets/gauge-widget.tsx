@@ -16,7 +16,7 @@ const ConfigGaugeArea = forwardRef((_props, ref) => {
             }
         }
     })
-    
+
     return (
         <div className="mt-2">
             Add one or more gauges to the view. See gauge configuration for more details.

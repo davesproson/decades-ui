@@ -33,8 +33,8 @@ export type OptionsState = {
 };
 
 export const optionsSlice = createSlice({
-	name: 'options',
-	initialState: {
+    name: 'options',
+    initialState: {
         swapOrientation: false,
         plotStyle: {
             options: ['line', 'scatter'],
@@ -46,12 +46,12 @@ export const optionsSlice = createSlice({
         server: undefined,
         colorVariable: null,
         timeframes: [
-            {selected: false, value: 'all', label: 'All'},
-            {selected: false, value: '2hr', label: '2 hours'},
-            {selected: false, value: '1hr', label: '1 hour'},
-            {selected: true, value: '30min', label: '30 minutes'},
-            {selected: false, value: '5min', label: '5 minutes'},
-            {selected: false, value: '1min', label: '1 minute'},
+            { selected: false, value: 'all', label: 'All' },
+            { selected: false, value: '2hr', label: '2 hours' },
+            { selected: false, value: '1hr', label: '1 hour' },
+            { selected: true, value: '30min', label: '30 minutes' },
+            { selected: false, value: '5min', label: '5 minutes' },
+            { selected: false, value: '1min', label: '1 minute' },
         ],
         useCustomTimeframe: false,
         customTimeframe: {
@@ -60,7 +60,7 @@ export const optionsSlice = createSlice({
         },
         mask: false
     } as OptionsState,
-	reducers: {
+    reducers: {
         toggleSwapOrientation: (state) => {
             state.swapOrientation = !state.swapOrientation;
         },
@@ -80,23 +80,23 @@ export const optionsSlice = createSlice({
         togglePlotMask: (state) => {
             state.mask = !state.mask;
         },
-        setTimeframe: (state, action: PayloadAction<{value: string}>) => {
- 
+        setTimeframe: (state, action: PayloadAction<{ value: string }>) => {
+
             const matchedTimeframe = state.timeframes.find(
-                x=>x.value===action.payload.value
+                x => x.value === action.payload.value
             )
 
-            if(!matchedTimeframe) {
+            if (!matchedTimeframe) {
                 console.error(`Invalid timeframe value: ${action.payload.value}`);
                 return;
             }
 
-            for(const timeframe of state.timeframes) {
+            for (const timeframe of state.timeframes) {
                 timeframe.selected = false;
             }
 
             matchedTimeframe.selected = true;
-            
+
 
             state.useCustomTimeframe = false;
             state.customTimeframe = {
@@ -105,19 +105,19 @@ export const optionsSlice = createSlice({
             }
         },
         setCustomTimeframe: (state, action: PayloadAction<CustomTimeframeSetter>) => {
-            for(const x of state.timeframes) {
+            for (const x of state.timeframes) {
                 x.selected = false;
             }
             state.useCustomTimeframe = true;
 
-            if(action.payload.start !== null && action.payload.start != undefined) {
+            if (action.payload.start !== null && action.payload.start != undefined) {
                 state.customTimeframe.start = action.payload.start;
             }
-            if(action.payload.end !== undefined) {
+            if (action.payload.end !== undefined) {
                 state.customTimeframe.end = action.payload.end;
-                if(state.customTimeframe.start === null){
+                if (state.customTimeframe.start === null) {
                     state.customTimeframe.start = (
-                        (action.payload.end || new Date().getTime()) - 30*60*1000
+                        (action.payload.end || new Date().getTime()) - 30 * 60 * 1000
                     )
                 }
             }
@@ -131,11 +131,11 @@ export const optionsSlice = createSlice({
         setColorVariable: (state, action) => {
             state.colorVariable = action.payload;
         }
-	},
+    },
 });
 
 
-export const { 
+export const {
     toggleSwapOrientation, toggleScrollingWindow, toggleDataHeader, togglePlotStyle,
     togglePlotMask,
     setTimeframe, setServer, setOrdinateAxis, setCustomTimeframe, setColorVariable

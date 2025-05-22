@@ -24,7 +24,7 @@ const AlarmsConfigArea = forwardRef<ConfigHandle<Array<AlarmProps>>, {}>((_props
                 {Object.values(alarms.alarms).map((alarm) => (
                     <li key={alarm.id}>{alarm.name}</li>
                 ))}
-            
+
             </ul>
         </>
     )
@@ -45,7 +45,7 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
         },
         icon: alarmIcon,
         tooltip: 'Be alerted when data are out of spec',
-        component: AlarmList 
+        component: AlarmList
     })
 }
 

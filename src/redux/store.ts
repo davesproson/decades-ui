@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { 
+import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
   useSelector as useReduxSelector
@@ -16,7 +16,7 @@ import quicklookReducer from './quicklookSlice'
 import alarmReducer from './alarmSlice'
 import tabbedPlotsReducer from './tabsSlice'
 
-export const createStore = () => 
+export const createStore = () =>
   configureStore({
     reducer: {
       vars: paramReducer,

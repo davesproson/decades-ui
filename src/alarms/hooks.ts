@@ -18,8 +18,8 @@ const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListPr
 
     useEffect(() => {
         try {
-            const urlAlarms = searchParams.getAll("alarm").map(x=>JSON.parse(decode(x)))
-            setAlarms(urlAlarms.map((a, _i) => ({...a, id: a.name})))
+            const urlAlarms = searchParams.getAll("alarm").map(x => JSON.parse(decode(x)))
+            setAlarms(urlAlarms.map((a, _i) => ({ ...a, id: a.name })))
         } catch (e) {
             alert("Error parsing alarms specified in URL")
             setSearchParams(new URLSearchParams())
@@ -30,25 +30,25 @@ const useAlarmUrl = (setAlarms: React.Dispatch<AlarmProps[]>, props: AlarmListPr
 
 
     const removeAlarm = (id: any/*TODO ?*/) => {
-        const alarms = searchParams.getAll("alarm").map(x=>JSON.parse(decode(x)))
-                                                   .filter(x=>x.name !== id)
-        
+        const alarms = searchParams.getAll("alarm").map(x => JSON.parse(decode(x)))
+            .filter(x => x.name !== id)
+
         const newSearchParams = new URLSearchParams()
-        for(let alarm of alarms) {
+        for (let alarm of alarms) {
             newSearchParams.append("alarm", encode(JSON.stringify(alarm)))
         }
         setSearchParams(newSearchParams)
     }
 
-    const alarmParams: {[key: string]: any} = {}
-    for(let k of searchParams.keys()) {
-        if(k !== "alarm") {
+    const alarmParams: { [key: string]: any } = {}
+    for (let k of searchParams.keys()) {
+        if (k !== "alarm") {
             alarmParams[k] = searchParams.getAll(k)
-            if(alarmParams[k].length === 1) alarmParams[k] = alarmParams[k][0]
+            if (alarmParams[k].length === 1) alarmParams[k] = alarmParams[k][0]
         }
     }
-    
-    if(props.alarms) {
+
+    if (props.alarms) {
         return [null, {}]
     }
 
@@ -63,18 +63,18 @@ const useAlarm = (props: AlarmProps) => {
     const [muted, setMuted] = useState(false)
 
     useEffect(() => {
-        if(muted) {
+        if (muted) {
             setPassing(undefined)
             return
         }
 
         const runAlarms = async () => {
-                
+
             const end = Math.floor(new Date().getTime() / 1000)
             const start = end - (props.interval || 5)
 
             let data: DecadesDataResponse
-            const dataOut: {[key: string]: number|null} = {}
+            const dataOut: { [key: string]: number | null } = {}
 
             const options: AlarmOptions = {
                 params: props.parameters,
@@ -87,13 +87,13 @@ const useAlarm = (props: AlarmProps) => {
                 setPassing(alarmValue)
                 return
             }
-            
-            for(let param of Object.keys(data)) {
+
+            for (let param of Object.keys(data)) {
                 try {
                     dataOut[param] = data[param].filter((d) => d !== null)
-                                             .filter((d) => d !== badData)
-                                             .reverse()[0]
-                    if(data[param] === undefined) throw("No data")
+                        .filter((d) => d !== badData)
+                        .reverse()[0]
+                    if (data[param] === undefined) throw ("No data")
                 } catch (e) {
                     dataOut[param] = null
                     const alarmValue = props.failOnNoData ? false : undefined
@@ -101,9 +101,9 @@ const useAlarm = (props: AlarmProps) => {
                     return
                 }
             }
-            
+
             try {
-                const passing = evaluate(props.rule, {...dataOut})
+                const passing = evaluate(props.rule, { ...dataOut })
                 setPassing(passing)
             } catch (e) {
                 console.log("Error evaluating alarm rule")
@@ -112,23 +112,23 @@ const useAlarm = (props: AlarmProps) => {
                 const alarmValue = props.failOnNoData ? false : undefined
                 setPassing(alarmValue)
             }
-            
+
         }
 
         runAlarms()
-        
+
         const interval = setInterval(runAlarms, props.interval ? props.interval * 1000 : 5000)
         return () => clearInterval(interval)
     }, [setPassing, muted])
 
-    return {passing, muted, setMuted }
+    return { passing, muted, setMuted }
 }
 
 const useFlash = (delay: number) => {
     const [flash, setFlash] = useState(false)
 
     useEffect(() => {
-        const interval = setInterval(() => setFlash(x=>!x), delay)
+        const interval = setInterval(() => setFlash(x => !x), delay)
         return () => clearInterval(interval)
     }, [delay, setFlash])
 

@@ -7,7 +7,7 @@ interface DashboardProps {
     params: Array<string>,
     size: "large" | "small",
     useURL: boolean,
-    limits?: {param: string, min: number, max: number}[],
+    limits?: { param: string, min: number, max: number }[],
     server?: string,
 }
 

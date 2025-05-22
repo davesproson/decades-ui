@@ -1,8 +1,9 @@
-import { 
+import {
     // AlarmConfig, AlarmViewConfig, ClockViewConfig, DashboardViewConfig,
     // HeadingViewConfig, MapViewConfig, PitchViewConfig, PlotViewConfig, RollViewConfig, TephigramViewConfig, TimerViewConfig, URLViewConfig, 
-     version3View, version3ViewElement } from "./schema"
-     
+    version3View, version3ViewElement
+} from "./schema"
+
 import { z } from "zod"
 
 interface Version2View {
@@ -71,7 +72,7 @@ type LibraryView = Version3LibraryView | Version2LibraryView | Version1LibraryVi
 
 type LibraryViews = Array<LibraryView>
 
-export type { 
+export type {
     LibraryViews,
     LibraryView,
     Version3ViewElement,

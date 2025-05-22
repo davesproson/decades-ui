@@ -2,7 +2,7 @@ import React, { useRef, forwardRef, useEffect } from 'react'
 import { usePlot, usePlotOptions } from './hooks'
 import { PlotHeaderDash } from '../dashboard/dashboard'
 import { plotHeaderDefaults } from '../settings'
-import  Loader from '../components/loader'
+import Loader from '../components/loader'
 import { PlotURLOptions } from "./types"
 import { useDispatch } from 'react-redux'
 import { setQcJob } from '@/redux/quicklookSlice'
@@ -31,17 +31,17 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
     const dash = props.parameters
         ? <PlotHeaderDash
             params={Array(...new Set([...props.parameters, ...plotHeaderDefaults]))}
-          />
+        />
         : null
 
-    const style: React.CSSProperties = props.style || {     
+    const style: React.CSSProperties = props.style || {
         top: "0px",
         left: "0px",
         right: "0px",
-        bottom: "0px",  
+        bottom: "0px",
         position: "absolute",
         display: "flex",
-        flexDirection: "column",  
+        flexDirection: "column",
     }
 
     return (
@@ -131,7 +131,7 @@ type PlotDispatcherProps = Partial<PlotURLOptions> & {
  * The component conditionally renders the Plot component with the appropriate parameters and styles.
  */
 const PlotDispatcher = (props?: PlotDispatcherProps) => {
-    
+
     const ref = useRef<HTMLDivElement>(null)
     const options = usePlotOptions(props);
     const loadDone = usePlot(options, ref)
@@ -139,7 +139,7 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
 
     useEffect(() => {
         const job = options?.job
-        if(!job) {
+        if (!job) {
             dispatch(setQuickLookMode(false))
             return
         }
@@ -147,18 +147,18 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
         dispatch(setQuickLookMode(true))
     }, [options?.job, dispatch, setQcJob, setQuickLookMode])
 
-    if(!options) return <></>
-    if(!props) return <></>
+    if (!options) return <></>
+    if (!props) return <></>
 
-    const headerParams = options.header 
+    const headerParams = options.header
         ? options.params
         : null
 
-    return <Plot ref={ref} 
-        parameters={headerParams} 
-        loadDone={loadDone} 
+    return <Plot ref={ref}
+        parameters={headerParams}
+        loadDone={loadDone}
         style={props.containerStyle}
-    /> 
+    />
 }
 
 export default PlotDispatcher

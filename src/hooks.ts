@@ -19,7 +19,7 @@ export const useScrollInhibitor = (stopScroll: boolean) => {
     }, [stopScroll])
 }
 
-export const useParameterPresets = (): {[key: string]: string[]} => {
+export const useParameterPresets = (): { [key: string]: string[] } => {
     const quickLookMode = useSelector((state) => state.config.quickLookMode)
     return quickLookMode ? presetsQuicklook : presets
 }

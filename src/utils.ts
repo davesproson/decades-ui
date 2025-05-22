@@ -10,7 +10,7 @@ export const nullNaN = (x: number) => isNaN(x) ? null : x
 
 export const ddToDmm = (dd: number, hemisphereOpts: Array<string>) => {
 
-    if(dd === badData) {
+    if (dd === badData) {
         return {
             coord: 'No Data',
             hemisphere: ''
@@ -109,7 +109,7 @@ export const localStorageWithExpiry = {
 //         throw new Error(`Environment variable ${key} is not a number`)
 //     }
 //     return value
- 
+
 // }
 
 /**
@@ -119,7 +119,7 @@ export const localStorageWithExpiry = {
  * @param options - the fetch options
  * @returns the fetch response
  */
-export const authFetch = async (url: string|URL, options?: RequestInit): Promise<Response> => {
+export const authFetch = async (url: string | URL, options?: RequestInit): Promise<Response> => {
     const modOptions: RequestInit = {
         ...options,
         credentials: "include",
@@ -134,7 +134,7 @@ export const authFetch = async (url: string|URL, options?: RequestInit): Promise
     if (response.status === 403) {
         // Show error page
     }
-    
+
     if (response.status === 401) {
         // Redirect to login page
         const redirectUrl = encodeURIComponent(window.location.href)
@@ -162,7 +162,7 @@ export const getFlightNumber = async () => {
  * @returns the ID
  */
 export const genId = () => {
-    const a = Math.random().toString(36).substring(2,7)
-    const b = Math.random().toString(36).substring(2,7)
+    const a = Math.random().toString(36).substring(2, 7)
+    const b = Math.random().toString(36).substring(2, 7)
     return a + b
 }

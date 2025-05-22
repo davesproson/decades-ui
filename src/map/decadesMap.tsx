@@ -49,8 +49,8 @@ function getFeatureType(feature: FeatureType): React.FC<any> {
     }
 }
 
-const getFeatureOrLayerColor = (feature: FeatureType, layer: LayerType):  { color?: string } => {
-    let color: {color?: string} = {}
+const getFeatureOrLayerColor = (feature: FeatureType, layer: LayerType): { color?: string } => {
+    let color: { color?: string } = {}
     if (feature.type === 'poi') {
         color = feature.color
             ? { color: feature.color }

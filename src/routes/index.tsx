@@ -8,6 +8,6 @@ export type IndexSearch = {
 
 export const Route = createFileRoute('/')({
   staleTime: Infinity,
-  beforeLoad: () => {},
+  beforeLoad: () => { },
 })
 

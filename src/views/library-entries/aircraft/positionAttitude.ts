@@ -88,8 +88,8 @@ export const positionAttitude: LibraryView = {
                         "type": "map",
                         "url": ''
                         // "url": onLuxe()
-                            // ? "http://192.168.101.105/gluxe/position"
-                            // : "https://www.faam.ac.uk/gluxe/position"
+                        // ? "http://192.168.101.105/gluxe/position"
+                        // : "https://www.faam.ac.uk/gluxe/position"
                     },
                     {
                         "type": "view",

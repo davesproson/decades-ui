@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
-import { 
+import {
     canSlide,
     getAxesArray,
     getTimeLims,
@@ -24,31 +24,31 @@ const getOptions = (options: Partial<PlotURLOptions>) => {
         timeframe: '30mins',
         mask: false,
     }
-    return {...defaultOptions, ...options}
+    return { ...defaultOptions, ...options }
 }
 
 describe('PlotIsOngoing should return true if the plot is ongoing', () => {
 
 
     it('Should return true if the timeframe is 30min', () => {
-        expect(plotIsOngoing(getOptions({timeframe: '30mins'}))).toBe(true)
+        expect(plotIsOngoing(getOptions({ timeframe: '30mins' }))).toBe(true)
     })
     it('Should return true if the timeframe is 1sec', () => {
-        expect(plotIsOngoing(getOptions({timeframe: '1sec'}))).toBe(true)
+        expect(plotIsOngoing(getOptions({ timeframe: '1sec' }))).toBe(true)
     })
     it('Should return true if the timeframe custom but only one value given', () => {
-        expect(plotIsOngoing(getOptions({timeframe: '123456,'}))).toBe(true)
+        expect(plotIsOngoing(getOptions({ timeframe: '123456,' }))).toBe(true)
     })
     it('Should return false if start and end times are given', () => {
-        expect(plotIsOngoing(getOptions({timeframe: '123456,123457'}))).toBe(false)
+        expect(plotIsOngoing(getOptions({ timeframe: '123456,123457' }))).toBe(false)
     })
 })
 
 describe('paramFromRawName should give the correct param', () => {
     const testParams = [
-        {ParameterIdentifier: '101', ParameterName: 'temp', DisplayText: 'Temperature', DisplayUnits: '°C', available: null},
-        {ParameterIdentifier: '102', ParameterName: 'wind', DisplayText: 'Wind', DisplayUnits: 'knots', available: null},
-        {ParameterIdentifier: '103', ParameterName: 'humidity', DisplayText: 'Humidity', DisplayUnits: '%', available: null},
+        { ParameterIdentifier: '101', ParameterName: 'temp', DisplayText: 'Temperature', DisplayUnits: '°C', available: null },
+        { ParameterIdentifier: '102', ParameterName: 'wind', DisplayText: 'Wind', DisplayUnits: 'knots', available: null },
+        { ParameterIdentifier: '103', ParameterName: 'humidity', DisplayText: 'Humidity', DisplayUnits: '%', available: null },
     ]
 
     it('Should return the correct parameter when it exists', () => {
@@ -73,7 +73,7 @@ describe('getTimeLims should return the correct time limits for a given time spe
         vi.setSystemTime(new Date(2020, 1, 2, 3, 4, 5));
     });
 
-    
+
     it('Should return the correct time limits for a 30min timeframe', () => {
         const date = Math.floor(new Date().getTime() / 1000)
         expect(getTimeLims('30mins')).toEqual([date - 30 * 60, date])
@@ -110,30 +110,30 @@ describe('getTimeLims should return the correct time limits for a given time spe
 describe('canSlide should return true if the plot can be slid', () => {
 
     it('Should return true if the timeframe is 30min', () => {
-        expect(canSlide(getOptions({timeframe: '30mins'}))).toBe(true)
+        expect(canSlide(getOptions({ timeframe: '30mins' }))).toBe(true)
     })
     it('Should return true if the timeframe is 1sec', () => {
-        expect(canSlide(getOptions({timeframe: '1sec'}))).toBe(true)
+        expect(canSlide(getOptions({ timeframe: '1sec' }))).toBe(true)
     })
     it('Should return true if the timeframe custom but only one value given', () => {
-        expect(canSlide(getOptions({timeframe: '123456,'}))).toBe(true)
+        expect(canSlide(getOptions({ timeframe: '123456,' }))).toBe(true)
     })
     it('Should return false if start and end times are given', () => {
-        expect(canSlide(getOptions({timeframe: '123456,123457'}))).toBe(false)
+        expect(canSlide(getOptions({ timeframe: '123456,123457' }))).toBe(false)
     })
 })
 
 describe('slideLength should return the correct time limits for a given options set', () => {
     it('Should return the correct time limits for a 30min timeframe', () => {
-        expect(slideLength(getOptions({timeframe: '30mins'}))).toEqual((30 * 60).toString())
+        expect(slideLength(getOptions({ timeframe: '30mins' }))).toEqual((30 * 60).toString())
     })
 
     it('Should return the correct time limits for a 30sec timeframe', () => {
-        expect(slideLength(getOptions({timeframe: '30sec'}))).toEqual('30')
+        expect(slideLength(getOptions({ timeframe: '30sec' }))).toEqual('30')
     })
 
     it('Should return the correct time limits for a 1 hour timeframe', () => {
-        expect(slideLength(getOptions({timeframe: '1hour'}))).toEqual((60 * 60).toString())
+        expect(slideLength(getOptions({ timeframe: '1hour' }))).toEqual((60 * 60).toString())
     })
 
     // TODO: What if the plot isn't ongoing?
@@ -178,7 +178,7 @@ describe('Ensure the correct Y-axis is returned for a given plot configuration',
     it('Should return the correct Y-axis for a plot with multiple parameters on the same axis different axes', () => {
         const options = getOptions({
             params: ['temp', 'wind', 'humidity', 'pressure', 'dew_point'],
-            axes: ['temp,wind', 'humidity,pressure','dew_point']
+            axes: ['temp,wind', 'humidity,pressure', 'dew_point']
         })
         expect(getYAxis(options, 'wind')).toEqual('y')
         expect(getYAxis(options, 'temp')).toEqual('y')
@@ -228,7 +228,7 @@ describe('Ensure the correct X-axis is returned for a given plot configuration',
     it('Should return the correct X-axis for a plot with multiple parameters on the same axis different axes', () => {
         const options = getOptions({
             params: ['temp', 'wind', 'humidity', 'pressure', 'dew_point'],
-            axes: ['temp,wind', 'humidity,pressure','dew_point']
+            axes: ['temp,wind', 'humidity,pressure', 'dew_point']
         })
         expect(getXAxis(options, 'wind')).toEqual('x')
         expect(getXAxis(options, 'temp')).toEqual('x')
@@ -239,12 +239,12 @@ describe('Ensure the correct X-axis is returned for a given plot configuration',
 })
 
 
-const getVars = ({selectedParams, axes}: {selectedParams: string[], axes?: any[]}) => {
+const getVars = ({ selectedParams, axes }: { selectedParams: string[], axes?: any[] }) => {
     return {
         params: [
-            {id: 100, name: 'Temperature', raw: 'temp', units: '°C', selected: selectedParams.includes('temp'), axisId: 1, status: null},
-            {id: 101, name: 'Dew Point', raw: 'dew', units: '°C', selected: selectedParams.includes('dew'), axisId: 1, status: null},
-            {id: 101, name: 'PotTemp', raw: 'theta', units: '°C', selected: selectedParams.includes('theta'), axisId: 2, status: null},
+            { id: 100, name: 'Temperature', raw: 'temp', units: '°C', selected: selectedParams.includes('temp'), axisId: 1, status: null },
+            { id: 101, name: 'Dew Point', raw: 'dew', units: '°C', selected: selectedParams.includes('dew'), axisId: 1, status: null },
+            { id: 101, name: 'PotTemp', raw: 'theta', units: '°C', selected: selectedParams.includes('theta'), axisId: 2, status: null },
         ],
         axes: axes || [],
         paramSet: 'default',

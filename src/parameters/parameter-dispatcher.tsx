@@ -3,7 +3,7 @@ import { useDispatchParameters } from "@/hooks"
 import { useSelector } from "@/redux/store"
 
 
-export const ParameterDispatcher = ({children}: {children: React.ReactNode}) => {
+export const ParameterDispatcher = ({ children }: { children: React.ReactNode }) => {
     useDispatchParameters()
     const paramsDispatched = useSelector(state => state.vars.paramsDispatched)
 

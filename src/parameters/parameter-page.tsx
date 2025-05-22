@@ -8,7 +8,7 @@ import { X } from "lucide-react"
 import { useState, lazy, Suspense } from "react"
 import { removeTab, renameTab, selectTab } from "@/redux/tabsSlice"
 import { Input } from "@/components/ui/input"
-import type  { TabEntry }  from "@/redux/tabsSlice"
+import type { TabEntry } from "@/redux/tabsSlice"
 import Loader from "@/components/loader"
 
 // import FlappyPlane from "@/flappyplane/flappy-plane"
@@ -59,7 +59,7 @@ const TabbedContent = () => {
     const tabs = useSelector(state => state.tabs.tabs)
     const selectedTab = useSelector(state => state.tabs.selectedTab)
     const dispatch = useDispatch()
-    
+
     return (
         <Tabs value={selectedTab} onValueChange={(value) => { dispatch(selectTab(value)) }} className="w-full z-50">
             <div className="flex w-full justify-center m-auto">
@@ -68,10 +68,10 @@ const TabbedContent = () => {
                     {
                         tabs.map((tab, index) => (
                             <TabsTrigger key={index} value={tab.id}>
-                                <TabTitle 
-                                    tab={tab} 
-                                    onChangeTitle={(e)=> dispatch(renameTab({ index, name: e.target.value }))} 
-                                    onRemove={() => dispatch(removeTab(index))}/>
+                                <TabTitle
+                                    tab={tab}
+                                    onChangeTitle={(e) => dispatch(renameTab({ index, name: e.target.value }))}
+                                    onRemove={() => dispatch(removeTab(index))} />
                             </TabsTrigger>
                         ))
                     }

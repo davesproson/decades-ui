@@ -88,7 +88,7 @@ const AxisSelectorItem = (props: AxisSelectorItemProps) => {
         <div className="flex">
             <Select value={props.param.axisId?.toString()} onValueChange={changeAxis}>
                 <SelectTrigger className="w-[300px] mr-2">
-                    <SelectValue  placeholder="Select axis..." />
+                    <SelectValue placeholder="Select axis..." />
                 </SelectTrigger>
                 <SelectContent>
                     {axesOptions}

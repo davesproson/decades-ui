@@ -25,7 +25,7 @@ describe('onLuxe returns true for the 192.168.101.* domain', () => {
         expect(onLuxe()).toBe(true)
     })
 
-    
+
     it('should return false for when host is localhost', () => {
         global.window = new JSDOM(`<!DOCTYPE html>`, {
             url: 'http://localhost'
@@ -33,7 +33,7 @@ describe('onLuxe returns true for the 192.168.101.* domain', () => {
         expect(onLuxe()).toBe(false)
     })
 
-    
+
     it('should return false for when host is 96.1.4.2', () => {
         global.window = new JSDOM(`<!DOCTYPE html>`, {
             url: 'http://96.1.4.2'

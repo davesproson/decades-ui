@@ -3,5 +3,5 @@ import { RollIndicator } from '@/roll-indicator/roll-indicator'
 
 export const Route = createFileRoute('/roll')({
   component: () => <RollIndicator standalone={true} />,
-  beforeLoad: () => {}
+  beforeLoad: () => { }
 })

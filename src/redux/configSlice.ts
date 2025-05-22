@@ -21,9 +21,9 @@ export const configSlice = createSlice({
 		setDarkMode: (state, action) => {
 			state.darkMode = action.payload;
 		},
-        toggleDarkMode: (state) => {
-            state.darkMode = !state.darkMode;
-        },
+		toggleDarkMode: (state) => {
+			state.darkMode = !state.darkMode;
+		},
 		setQuickLookMode: (state, action) => {
 			state.quickLookMode = action.payload;
 		},
@@ -46,9 +46,9 @@ export const configSlice = createSlice({
 			state.showOptionsDrawer = !state.showOptionsDrawer;
 		}
 	},
-});   
+});
 
-export const { 
+export const {
 	setDarkMode, toggleDarkMode,
 	setQuickLookMode, toggleQuickLookMode,
 	setModeSelected, setTabbedPlots, toggleTabbedPlots,

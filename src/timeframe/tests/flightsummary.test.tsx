@@ -39,7 +39,7 @@ describe("Test FlightSummarySelector component", () => {
 
     beforeEach(() => {
         mocks.fetch.mockClear()
-        cleanup()   
+        cleanup()
     })
 
 
@@ -50,14 +50,14 @@ describe("Test FlightSummarySelector component", () => {
 
     it("Should render a run correctly", async () => {
         mocks.fetch.mockImplementation(() => {
-            return Promise.resolve({json: () => {return {0: RunFlightSummary}}})
+            return Promise.resolve({ json: () => { return { 0: RunFlightSummary } } })
         })
         renderWithStore(<FlightSummarySelector />)
 
         await waitFor(() => {
             const from = new Date(RunFlightSummary.start.time * 1000).toLocaleTimeString()
             const to = new Date(RunFlightSummary.stop.time * 1000).toLocaleTimeString()
-            const timeString = `from ${from} until ${to}` 
+            const timeString = `from ${from} until ${to}`
             expect(screen.getByText(timeString)).toBeDefined()
             expect(screen.getByText(RunFlightSummary.event)).toBeDefined()
             expect(screen.getByTestId('fs-run-icon')).toBeDefined()
@@ -66,14 +66,14 @@ describe("Test FlightSummarySelector component", () => {
 
     it("Should render a profile correctly", async () => {
         mocks.fetch.mockImplementation(() => {
-            return Promise.resolve({json: () => {return {0: ProfileFlightSummary}}})
+            return Promise.resolve({ json: () => { return { 0: ProfileFlightSummary } } })
         })
         renderWithStore(<FlightSummarySelector />)
 
         await waitFor(() => {
             const from = new Date(RunFlightSummary.start.time * 1000).toLocaleTimeString()
             const to = new Date(RunFlightSummary.stop.time * 1000).toLocaleTimeString()
-            const timeString = `from ${from} until ${to}` 
+            const timeString = `from ${from} until ${to}`
             expect(screen.getByText(timeString)).toBeDefined()
             expect(screen.getByText(ProfileFlightSummary.event)).toBeDefined()
             expect(screen.getByTestId('fs-profile-icon')).toBeDefined()
@@ -82,14 +82,14 @@ describe("Test FlightSummarySelector component", () => {
 
     it("Should render an orbit correctly", async () => {
         mocks.fetch.mockImplementation(() => {
-            return Promise.resolve({json: () => {return {0: OrbitFlightSummary}}})
+            return Promise.resolve({ json: () => { return { 0: OrbitFlightSummary } } })
         })
         renderWithStore(<FlightSummarySelector />)
 
         await waitFor(() => {
             const from = new Date(RunFlightSummary.start.time * 1000).toLocaleTimeString()
             const to = new Date(RunFlightSummary.stop.time * 1000).toLocaleTimeString()
-            const timeString = `from ${from} until ${to}` 
+            const timeString = `from ${from} until ${to}`
             expect(screen.getByText(timeString)).toBeDefined()
             expect(screen.getByText(OrbitFlightSummary.event)).toBeDefined()
             expect(screen.getByTestId('fs-orbit-icon')).toBeDefined()
@@ -98,10 +98,14 @@ describe("Test FlightSummarySelector component", () => {
 
     it("Should not render a deleted entry", async () => {
         mocks.fetch.mockImplementation(() => {
-            return Promise.resolve({json: () => {return {
-                0: DeletedFlightSummary,
-                1: RunFlightSummary,
-            }}})
+            return Promise.resolve({
+                json: () => {
+                    return {
+                        0: DeletedFlightSummary,
+                        1: RunFlightSummary,
+                    }
+                }
+            })
         })
         renderWithStore(<FlightSummarySelector />)
 

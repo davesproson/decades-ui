@@ -6,13 +6,13 @@ export interface ParamFilterState {
 
 export const paramFilterSlice = createSlice({
 	name: 'paramfilter',
-	initialState: {filterText: ""} as ParamFilterState,
+	initialState: { filterText: "" } as ParamFilterState,
 	reducers: {
-		setFilterText: (state, action: PayloadAction<{filterText: string}>) => {
+		setFilterText: (state, action: PayloadAction<{ filterText: string }>) => {
 			state.filterText = action.payload.filterText;
 		}
 	},
-});   
+});
 
 export const { setFilterText } = paramFilterSlice.actions;
 

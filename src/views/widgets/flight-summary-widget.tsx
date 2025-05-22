@@ -1,5 +1,5 @@
 import type { RegistryType, WidgetConfiguration, ConfigWidgetProps } from "./types"
-import FlightSummary  from "@/flight-summary/flight-summary"
+import FlightSummary from "@/flight-summary/flight-summary"
 import flightSummaryIcon from "@/assets/view-icons/flight-summary.svg"
 
 const FltSumConfig = () => {

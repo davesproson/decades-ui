@@ -62,7 +62,7 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
 
     // Create a websocket connection to the chat server.
     const { sendMessage, lastMessage, readyState } = useWebSocket(
-        wsAddress, 
+        wsAddress,
         {
             retryOnError: true,
             onError: (e) => console.error(e),
@@ -78,7 +78,7 @@ const ChatProvider = (props: { children: React.ReactNode }) => {
                     // status code when the user is not authenticated and the
                     // server is configured to require authentication.
                     // In this case, disable chat and redirect to the login page.
-                    if(state.config.chatActive) {
+                    if (state.config.chatActive) {
                         actions.toggleChatEnabled()
                     }
                     window.location.href = `${apiEndpoints.login}?next=${base}`

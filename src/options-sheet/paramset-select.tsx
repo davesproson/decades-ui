@@ -23,7 +23,7 @@ export const ParamSetSelector = () => {
     const paramSet = useSelector(state => state.vars.paramSet);
 
     return (
-        <Select value={paramSet || "default"} onValueChange={(x)=>{
+        <Select value={paramSet || "default"} onValueChange={(x) => {
             const serverParamSet = x === "default" ? "" : x
             dispatch(setParamSet(serverParamSet))
             dispatch(setParamsDispatched(false))
@@ -32,7 +32,7 @@ export const ParamSetSelector = () => {
                 Select Parameter Set...
             </SelectTrigger>
             <SelectContent>
-               <SelectGroup>
+                <SelectGroup>
                     <SelectLabel>Parameter Set</SelectLabel>
                     {PARAMETER_SETS.map((set, i) => (
                         <SelectItem

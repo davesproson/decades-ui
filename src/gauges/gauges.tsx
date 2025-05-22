@@ -14,8 +14,8 @@ const Gauge = (props: GaugeConfig) => {
     const title = `${props.longName || props.parameter} (${props.units || "?"})`
 
     const steps = []
-    if(props.dangerBelow) steps.push({ range: [props.min, props.dangerBelow], color: "#aa0000" })
-    if(props.dangerAbove) steps.push({ range: [props.dangerAbove, props.max], color: "#aa0000" })
+    if (props.dangerBelow) steps.push({ range: [props.min, props.dangerBelow], color: "#aa0000" })
+    if (props.dangerAbove) steps.push({ range: [props.dangerAbove, props.max], color: "#aa0000" })
 
     var data = [
         {
@@ -47,8 +47,8 @@ const Gauge = (props: GaugeConfig) => {
     }, [props.value, ref])
 
     const getTextColor = () => {
-        if(props.value === null) return "red"
-        if(props.value < (props.dangerBelow || -9e99) || props.value > (props.dangerAbove || 9e99)) return "red"
+        if (props.value === null) return "red"
+        if (props.value < (props.dangerBelow || -9e99) || props.value > (props.dangerAbove || 9e99)) return "red"
         return darkMode ? "lightgray" : "black"
     }
 

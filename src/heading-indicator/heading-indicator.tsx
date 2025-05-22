@@ -23,7 +23,7 @@ const HeadingIndicatorGraphic = (props: HeadingIndicatorGraphicProps) => {
         }
     }
 
-    const headingIndicator = props.heading === undefined 
+    const headingIndicator = props.heading === undefined
         ? null
         : <img src={headingIndicatorSvg} style={getStyle(-props.heading)}></img>
 

@@ -457,14 +457,14 @@ const AdvancedViewConfig = () => {
                     })
                     return
                 }
-                
+
                 dispatch(setAdvancedConfig(config))
                 dispatch(saveView({ ...config, id: config.id || v4() }))
             } catch (e) {
                 console.error("Error parsing config file", e)
             }
         };
-      };
+    };
 
     return (
         <TooltipProvider delayDuration={0} >

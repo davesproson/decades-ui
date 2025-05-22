@@ -3,12 +3,12 @@ import { getData } from "@/data/utils"
 import { badData } from "@/settings"
 
 const useRollIndicator = () => {
-    const [roll, setRoll] = useState<number|undefined>(0)
+    const [roll, setRoll] = useState<number | undefined>(0)
 
     useEffect(() => {
         const params = ["gin_roll"]
         const interval = setInterval(() => {
-            if(!(document.visibilityState === "visible")) return
+            if (!(document.visibilityState === "visible")) return
             getData({ params: params }).then(data => {
                 const r = data["gin_roll"].filter(x => x !== badData).reverse()[0]
                 setRoll(r)
@@ -20,7 +20,7 @@ const useRollIndicator = () => {
     return { roll }
 }
 
-const useRollResizer = (): [React.RefObject<HTMLDivElement>, {[key: string]: number}] => {
+const useRollResizer = (): [React.RefObject<HTMLDivElement>, { [key: string]: number }] => {
     const ref = useRef<HTMLDivElement>(null)
     const [widthOrHeight, setWidthOrHeight] = useState<{ [key: string]: number }>({ width: 0 })
 

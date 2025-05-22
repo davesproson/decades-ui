@@ -36,7 +36,7 @@ export const numberEnv = (key: string, defaultValue: number) => {
         throw new Error(`Environment variable ${key} is not a number`)
     }
     return value
- 
+
 }
 
 // The deployment mode of the application. Expectss "ground", "dev" or "prod"
@@ -127,7 +127,7 @@ export const presets = {
         "neph_total_red"
     ],
     'Turbulence Probe (hPa)': [
-        "turb_probe_pitot_static", 
+        "turb_probe_pitot_static",
         "turb_probe_attack_diff",
         "turb_probe_sideslip_diff"
     ]
@@ -146,7 +146,7 @@ export const presetsQuicklook = {
         'TAT_DI_R'
     ],
     'Neph. Total Scatter (Mm-1)': [
-        'TSC_REDU',  
+        'TSC_REDU',
         'TSC_GRNU',
         'TSC_BLUU'
     ],

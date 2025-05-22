@@ -22,9 +22,9 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
     const darkMode = useDarkMode()
     const [xData, setXData] = useState<Array<number>>([])
     const [yData, setYData] = useState<Array<number>>([])
-    const timeData = xData.map(x=>new Date(x*1000))
+    const timeData = xData.map(x => new Date(x * 1000))
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe)
-    const timeframe = useSelector(state => state.options.timeframes.find(x=>x.selected))
+    const timeframe = useSelector(state => state.options.timeframes.find(x => x.selected))
     const customTimeframe = useSelector(state => state.options.customTimeframe)
     const quicklookMode = useSelector(state => state.config.quickLookMode)
     const qcJob = useSelector(state => state.quicklook.qcJob)
@@ -40,18 +40,18 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
 
     const timeLimits: [Date, Date] = [
         startTime ? new Date(startTime) : timeData[0],
-        endTime ? new Date(endTime) : timeData[timeData.length-1]
+        endTime ? new Date(endTime) : timeData[timeData.length - 1]
     ]
 
     const layout: Partial<Plotly.Layout> = {
         plot_bgcolor: darkMode ? "#0a0a0a" : "white",
         paper_bgcolor: darkMode ? "#0a0a0a" : "white",
-        margin: { t:0, l:0, r:10, b: 0 },
+        margin: { t: 0, l: 0, r: 10, b: 0 },
         xaxis: {
             range: timeLimits,
             fixedrange: true,
             rangeslider: {
-                range: [timeData[0], timeData[timeData.length-1]],
+                range: [timeData[0], timeData[timeData.length - 1]],
                 thickness: .2,
             },
             type: 'date',
@@ -65,14 +65,14 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
             autorange: true,
         },
     }
-    
+
     /**
      * This first effect is responsible for creating the Plotly plot and
      * updating it when the data change. It also listens for changes in the
      * x-axis range and updates the custom timeframe accordingly.
      */
     useEffect(() => {
-        if(!ref?.current) return
+        if (!ref?.current) return
 
         // Create the Plotly plot
         Plotly.newPlot(ref.current, [{
@@ -80,12 +80,12 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
             y: yData,
             type: 'scatter',
             mode: 'lines',
-            line: {color: (darkMode ? "white": "black"), width: 3},
-        }], layout as any, {responsive: true, displayModeBar: false})
+            line: { color: (darkMode ? "white" : "black"), width: 3 },
+        }], layout as any, { responsive: true, displayModeBar: false })
 
         // Listen for changes in the x-axis range...
         ref.current.on('plotly_relayout', (event: any) => {
-            if(!event['xaxis.range']) return
+            if (!event['xaxis.range']) return
             const limits = {
                 start: new Date(event['xaxis.range'][0]).getTime(),
                 end: new Date(event['xaxis.range'][1]).getTime(),
@@ -96,7 +96,7 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
 
         return () => {
             // Remove the Plotly plot when the component unmounts
-            if(!ref.current) return
+            if (!ref.current) return
             ref.current.removeAllListeners('plotly_relayout')
             Plotly.purge(ref.current)
         }
@@ -125,7 +125,7 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
         }, ...timeLims).then((data: DecadesDataResponse) => {
             // ...filter out bad data...
             data[altitudeParam] = data[altitudeParam].map((x: number) => {
-                if(x === badData) return NaN
+                if (x === badData) return NaN
                 return x
             })
             // ...and update the xData and yData states
@@ -138,12 +138,12 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
      * This effect updates the Plotly plot when the custom timeframe changes.
      */
     useEffect(() => {
-        if(!ref.current) return
+        if (!ref.current) return
         Plotly.relayout(ref.current, layout as any)
     }, [timeLimits])
 
     // Return true if the data is loaded, false otherwise
-    if(xData.length === 0) return false
+    if (xData.length === 0) return false
     return true
 }
 

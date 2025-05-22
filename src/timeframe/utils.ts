@@ -15,7 +15,7 @@ const nowSecs = () => {
  */
 const getTimeLims = (tf: string): [number, number] => {
 
-    if(tf.includes(",")) {
+    if (tf.includes(",")) {
         const times = tf.split(",")
         let startTime = parseInt(times[0])
         let endTime
@@ -32,12 +32,12 @@ const getTimeLims = (tf: string): [number, number] => {
     if (tf === 'all') {
         return [0, end]
     }
-    
+
     let multiplier = 1
-    if(tf.includes('h')) {
+    if (tf.includes('h')) {
         multiplier = 60 * 60
     }
-    if(tf.includes('m')) {
+    if (tf.includes('m')) {
         multiplier = 60
     }
 

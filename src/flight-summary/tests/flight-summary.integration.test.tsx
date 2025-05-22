@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => {
     return {
         getFlightSummary: vi.fn(),
         useFlightSummary: vi.fn(),
-        
+
     }
 })
 
@@ -23,7 +23,7 @@ describe("Flight Summary Integration", async () => {
     it("Should show the dialog when an entry is clicked, and hide it when closed", async () => {
 
         mocks.useFlightSummary.mockImplementation(() => {
-            return {[testEntry.uuid]: testEntry}
+            return { [testEntry.uuid]: testEntry }
         })
         render(<FlightSummary hasNavbar={false} />);
         expect(screen.queryAllByTestId("fs-evt-start-time")).toHaveLength(0);

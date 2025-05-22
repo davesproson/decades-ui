@@ -13,8 +13,8 @@ interface TephigramOptions {
  * The definition of a background trace (i.e. a line on the tephigram).
  */
 interface UnlabelledBackgroundTrace {
-    x: Array<number|null>,
-    y: Array<number|null>,
+    x: Array<number | null>,
+    y: Array<number | null>,
     showlegend: boolean,
     hoverinfo: string,
     mode: string,
@@ -67,7 +67,7 @@ interface TephigramData {
 
 }
 
-export type { 
+export type {
     TephigramOptions,
     LabelledBackgroundTrace,
     UnlabelledBackgroundTrace,

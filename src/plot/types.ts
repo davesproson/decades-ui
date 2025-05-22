@@ -23,6 +23,6 @@ interface _PlotInternalOptions extends PlotURLOptions {
     plotStyle?: string,
     data_header?: boolean,
 }
-interface PlotInternalOptions extends Omit<_PlotInternalOptions, 'style'|'header'> {}
+interface PlotInternalOptions extends Omit<_PlotInternalOptions, 'style' | 'header'> { }
 
 export type { PlotURLOptions, PlotInternalOptions }

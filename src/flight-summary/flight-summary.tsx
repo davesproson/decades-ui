@@ -57,7 +57,7 @@ export const Info = ({ entry, clearEntry }: { entry: FlightSummaryEntry | null, 
                     </TableBody>
                 </Table>
                 {entry.comment && <p>{entry.comment}</p>}
-                 <Button onClick={() => clearEntry()} className="mt-2">Close</Button>
+                <Button onClick={() => clearEntry()} className="mt-2">Close</Button>
             </AlertDialogContent>
         </AlertDialog>
     )

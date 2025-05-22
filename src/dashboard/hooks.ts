@@ -6,33 +6,33 @@ import type { DashboardOptions } from './types';
 import type { DecadesDataResponse } from '@/data/types';
 
 const useDashboardUrl = () => {
-    const params = useSelector(state => state.vars.params);
-    const selectedParams = params.filter(param => param.selected)
-                                 .map(param => param.raw)
-    
-    const url = new URL(window.location.origin)
-    url.pathname = `${siteBase}dash`
-    url.searchParams.set('params', selectedParams.join(','))
+  const params = useSelector(state => state.vars.params);
+  const selectedParams = params.filter(param => param.selected)
+    .map(param => param.raw)
 
-    return url
+  const url = new URL(window.location.origin)
+  url.pathname = `${siteBase}dash`
+  url.searchParams.set('params', selectedParams.join(','))
+
+  return url
 }
 
 const useDashboardData = (dataOptions: DashboardOptions) => {
-    const [data, setData] = useState<DecadesDataResponse>()
+  const [data, setData] = useState<DecadesDataResponse>()
 
-    useEffect(() => {
-        getData(dataOptions).then(data => setData(data))
-                            .catch(() => setData({'utc_time': []}))
-                            
-        const interval = setInterval(() => {
-            if(!(document.visibilityState === "visible")) return
-            getData(dataOptions).then(data => setData(data))
-                                .catch(() => setData({'utc_time': []}))
-        }, 1000)
-        return () => clearInterval(interval)
-    }, [setData])
+  useEffect(() => {
+    getData(dataOptions).then(data => setData(data))
+      .catch(() => setData({ 'utc_time': [] }))
 
-    return data
+    const interval = setInterval(() => {
+      if (!(document.visibilityState === "visible")) return
+      getData(dataOptions).then(data => setData(data))
+        .catch(() => setData({ 'utc_time': [] }))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [setData])
+
+  return data
 }
 
 // useDimensions.js

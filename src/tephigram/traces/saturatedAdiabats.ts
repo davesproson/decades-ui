@@ -12,8 +12,8 @@ import { L, KELV, RV, RD, CP, SALRMin, SALRMax, dSALR } from './constants';
  *===================================================================*/
 export const getSatAdiabats = (darkMode: boolean) => {
     const getAdiabatGradient = (
-            p: number, t1: number, dp: number, nostop: boolean
-        ) => {
+        p: number, t1: number, dp: number, nostop: boolean
+    ) => {
 
         const t = t1 + KELV;
         const lsbc = (L / RV) * ((1 / KELV) - (1 / t));
@@ -24,7 +24,7 @@ export const getSatAdiabats = (darkMode: boolean) => {
         const gradi = nume / deno;
         let dt = dp * gradi;
 
-        if((t1 + dt < -50.0) && !nostop) {
+        if ((t1 + dt < -50.0) && !nostop) {
             dt = -50 - t1;
             dp = dt / gradi;
         }
@@ -33,10 +33,10 @@ export const getSatAdiabats = (darkMode: boolean) => {
     }
 
     const salrs = [],
-          dp_above = -5
+        dp_above = -5
 
 
-    for(let temp=SALRMin; temp<=SALRMax; temp+=dSALR) {
+    for (let temp = SALRMin; temp <= SALRMax; temp += dSALR) {
         const scratch = [];
         let pr_old = 1100;
         let t_old = temp;
@@ -44,13 +44,13 @@ export const getSatAdiabats = (darkMode: boolean) => {
         scratch.push(tphiToXy(pr_old, t_old));
 
         const xs = [],
-              ys = [];
+            ys = [];
 
-        for(let i=0;i<=198;i++){
+        for (let i = 0; i <= 198; i++) {
             const scratch2 = getAdiabatGradient(pr_old, t_old, dp_above, false);
             t_old = t_old + scratch2[1];
             pr_old = pr_old + scratch2[0];
-            const a = tphiToXy(pr_old,t_old);
+            const a = tphiToXy(pr_old, t_old);
 
             xs.push(a[0]);
             ys.push(a[1]);
@@ -63,7 +63,7 @@ export const getSatAdiabats = (darkMode: boolean) => {
 
     const traces: Array<UnlabelledBackgroundTrace> = [];
     salrs.forEach((t) => {
-        traces.push({                   
+        traces.push({
             x: t[0],
             y: t[1],
             showlegend: false,

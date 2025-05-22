@@ -72,7 +72,7 @@ export type DecadesMapState = {
     layers: Array<LayerType>,
     flags: Array<MapFlag>,
     mapModes: Array<DecadesMapModality>
-    overlay: MapFlag & {x: number, y: number} | null,
+    overlay: MapFlag & { x: number, y: number } | null,
     aircraftMeasures: Array<PositionData>,
     measurements: Array<Array<Position>>,
     drawMode: DrawModeType,
@@ -89,7 +89,7 @@ export type DecadesMapActions = {
     setFlags: Dispatch<SetStateAction<Array<MapFlag>>>,
     setPinAircraft: Dispatch<SetStateAction<boolean>>,
     toggleMapMode: (mode: DecadesMapModality) => void,
-    setOverlay: Dispatch<SetStateAction<MapFlag & {x: number, y: number} | null>>,
+    setOverlay: Dispatch<SetStateAction<MapFlag & { x: number, y: number } | null>>,
     setAircraftMeasures: Dispatch<SetStateAction<Array<PositionData>>>,
     setMeasurements: Dispatch<SetStateAction<Array<Array<Position>>>>,
     setDrawMode: Dispatch<SetStateAction<DrawModeType>>

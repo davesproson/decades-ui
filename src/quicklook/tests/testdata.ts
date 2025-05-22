@@ -13,7 +13,7 @@ export const apiJobs: QuicklookJobResponse = {
         flight_date: '2022-01-02',
         flight_project: 'Test 2',
         url: 'http://test.com/a/b/c/d/2'
-}]
+    }]
 }
 
 export const internalJobs = apiJobs.results.map(apiJobToInteralJob)

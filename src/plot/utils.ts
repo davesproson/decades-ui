@@ -1,6 +1,6 @@
 import type { GetDataOptions, GetDataPlotOptions } from "@/data/types"
-import { 
-    wsProtocol, apiEndpoints, badData, useWebSocketData 
+import {
+    wsProtocol, apiEndpoints, badData, useWebSocketData
 } from '@/settings'
 
 import type { PlotURLOptions } from './types'
@@ -19,7 +19,7 @@ import { nowSecs } from "@/timeframe/utils"
  * @returns Whether the plot is ongoing
  */
 const plotIsOngoing = (options: GetDataPlotOptions) => {
-    const custom = options.timeframe.includes(',') 
+    const custom = options.timeframe.includes(',')
     const customOngoing = custom && options.timeframe.split(',')[1] === ''
     const defined = !custom
     return customOngoing || defined
@@ -34,7 +34,7 @@ const plotIsOngoing = (options: GetDataPlotOptions) => {
  */
 const paramFromRawName = (rawName: string, parameters: Array<DecadesParameter>) => {
     const param = parameters.find(x => x.ParameterName === rawName)
-    if(!param) {
+    if (!param) {
         return {
             ParameterIdentifier: rawName,
             ParameterName: rawName,
@@ -54,7 +54,7 @@ const paramFromRawName = (rawName: string, parameters: Array<DecadesParameter>) 
  */
 const getTimeLims = (tf: string): [number, number] => {
 
-    if(tf.includes(",")) {
+    if (tf.includes(",")) {
         const times = tf.split(",")
         let startTime = parseInt(times[0])
         let endTime
@@ -71,12 +71,12 @@ const getTimeLims = (tf: string): [number, number] => {
     if (tf === 'all') {
         return [0, end]
     }
-    
+
     let multiplier = 1
-    if(tf.includes('h')) {
+    if (tf.includes('h')) {
         multiplier = 60 * 60
     }
-    if(tf.includes('m')) {
+    if (tf.includes('m')) {
         multiplier = 60
     }
 
@@ -109,10 +109,10 @@ const canSlide = (options: PlotURLOptions) => {
 const slideLength = (options: PlotURLOptions) => {
     let tf = options.timeframe
     let multiplier = 1
-    if(tf.includes('h')) {
+    if (tf.includes('h')) {
         multiplier = 60 * 60
     }
-    if(tf.includes('m')) {
+    if (tf.includes('m')) {
         multiplier = 60
     }
 
@@ -150,7 +150,7 @@ const slideLength = (options: PlotURLOptions) => {
  * // result will be a tuple containing filtered and mapped xData and yData arrays.
  */
 const filterData = (options: PlotURLOptions, data: DataType) => {
-    
+
     const ordVarIsBad = data[options.ordvar].map(x => x === badData)
 
     /**
@@ -164,10 +164,10 @@ const filterData = (options: PlotURLOptions, data: DataType) => {
      * @returns The transformed data
      */
     const timeMap = (data: number | null) => {
-        return options.ordvar === 'utc_time' 
+        return options.ordvar === 'utc_time'
             ? data === null
                 ? null
-                : data * 1000 
+                : data * 1000
             : data
     }
 
@@ -176,14 +176,14 @@ const filterData = (options: PlotURLOptions, data: DataType) => {
         return data === badData ? null : data
     }
 
-    let yData: Array<Array<number|null>> = []
-    let xData: Array<Array<number|null>> = []
-    let cData: Array<Array<number|null>> = []
+    let yData: Array<Array<number | null>> = []
+    let xData: Array<Array<number | null>> = []
+    let cData: Array<Array<number | null>> = []
 
-    if(!options.job) {
+    if (!options.job) {
         // If the job is not specified, we're in real-time mode, so filter out bad data
         // withouth mapping it to null
-        for(const param of options.params) {
+        for (const param of options.params) {
             const paramIsBad = data[param].map(x => x === badData)
             const cDataIsBad = options.caxis
                 ? data[options.caxis].map(x => x === badData)
@@ -193,18 +193,18 @@ const filterData = (options: PlotURLOptions, data: DataType) => {
 
             yData.push(data[param].filter((_x, i) => !isBad[i]))
             xData.push(data[options.ordvar].filter((_x, i) => !isBad[i]).map(timeMap))
-            if(options.caxis) {
+            if (options.caxis) {
                 cData.push(data[options.caxis].filter((_x, i) => !isBad[i]))
             }
-            
+
         }
     } else {
         // When the job is specified, we're in quicklook mode, so map bad data to null
         // so we can mask flagged data
-        for(const param of options.params) {
+        for (const param of options.params) {
             yData.push(data[param].map(badDataMap))
             xData.push(data[options.ordvar].map(badDataMap).map(timeMap))
-            if(options.caxis) {
+            if (options.caxis) {
                 cData.push(data[options.caxis].map(badDataMap))
             }
         }
@@ -230,21 +230,21 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
     // but leaving missing data in the plot causes issues with data < 1 Hz, or
     // data with regular gaps, e.g. the GIN data reformatted by the prtaft DLU.
     let [xData, yData, cData] = filterData(options, data)
-    
-    if(options.swapxy) {
+
+    if (options.swapxy) {
         [yData, xData] = [xData, yData]
     }
-    
+
     // TODO: This causes unexpected behaviour when the data are not actually 1 Hz
     const maxTraceLength = canSlide(options) ? parseInt(slideLength(options)) : undefined
-    
-    import('plotly.js-dist-min').then(Plotly => { 
-        
+
+    import('plotly.js-dist-min').then(Plotly => {
+
         Plotly.extendTraces(ref.current, {
             y: yData, x: xData
         }, [...Array(yData.length).keys()], maxTraceLength)
-        
-        if(options.caxis && options.params.length === 1) {
+
+        if (options.caxis && options.params.length === 1) {
             const currentData = ref.current.data
             const newColorArray: Array<number> = [...currentData[0].marker.color, ...cData[0]]
 
@@ -267,10 +267,10 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
  * @returns The y axis for the parameter
  */
 function getYAxis(options: PlotURLOptions, param: string) {
-    for(let i=0; i<options.axes.length; i++) {
+    for (let i = 0; i < options.axes.length; i++) {
         const paramsOnAxis = options.axes[i].split('|')[0].split(",")
-        if(paramsOnAxis.includes(param)) {
-            return i ? 'y' + (i+1) : 'y'
+        if (paramsOnAxis.includes(param)) {
+            return i ? 'y' + (i + 1) : 'y'
         }
     }
 }
@@ -284,10 +284,10 @@ function getYAxis(options: PlotURLOptions, param: string) {
  * @returns The x axis for the parameter
  */
 function getXAxis(options: PlotURLOptions, param: string) {
-    for(let i=0; i<options.axes.length; i++) {
+    for (let i = 0; i < options.axes.length; i++) {
         const paramsOnAxis = options.axes[i].split('|')[0].split(",")
-        if(paramsOnAxis.includes(param)) {
-            return i ? 'x' + (i+1) : 'x'
+        if (paramsOnAxis.includes(param)) {
+            return i ? 'x' + (i + 1) : 'x'
         }
     }
 }
@@ -308,20 +308,20 @@ interface StartDataArgs {
     ref: any,
     signal: any
 }
-const startDataWS = ({options, callback, ref, signal}: StartDataArgs) => {
+const startDataWS = ({ options, callback, ref, signal }: StartDataArgs) => {
 
-    if(!callback) callback = updatePlot
+    if (!callback) callback = updatePlot
 
     const server = options.server ? options.server : location.host
     const url = `${wsProtocol}://${server}${apiEndpoints.data_ws}`
-    let consolidatedData: {[key: string]: Array<number>} = {}
+    let consolidatedData: { [key: string]: Array<number> } = {}
 
     const ws = new WebSocket(url)
 
     ws.onopen = () => ws.send([options.ordvar, ...options.params].join(','))
 
     ws.onmessage = (event) => {
-        if(signal.abort) {
+        if (signal.abort) {
             console.log('Aborting data fetch (WS) due to signal')
             ws.close()
             return
@@ -333,9 +333,9 @@ const startDataWS = ({options, callback, ref, signal}: StartDataArgs) => {
 
         // If we have a new time, just move on and assume that any data that hasn't 
         // arrived yet is not going to arrive, so insert bad data for it
-        if(oldTime && (newTime > oldTime)) {
-            for(const param of [options.ordvar, ...options.params]) {
-                if(!Object.keys(consolidatedData).includes(param)) {
+        if (oldTime && (newTime > oldTime)) {
+            for (const param of [options.ordvar, ...options.params]) {
+                if (!Object.keys(consolidatedData).includes(param)) {
                     consolidatedData[param] = [badData]
                 }
             }
@@ -350,17 +350,17 @@ const startDataWS = ({options, callback, ref, signal}: StartDataArgs) => {
 
         // Check if we have all the data we need to update the plot
         let sendData = true
-        for(const param of [options.ordvar, ...options.params]) {
-            if(!(Object.keys(consolidatedData).includes(param))) {
+        for (const param of [options.ordvar, ...options.params]) {
+            if (!(Object.keys(consolidatedData).includes(param))) {
                 sendData = false
             }
         }
 
         // If we have all the data, update the plot
-        if(sendData) {
-            if(!callback) callback = updatePlot
+        if (sendData) {
+            if (!callback) callback = updatePlot
             callback(options, consolidatedData, ref)
-            consolidatedData = {utc_time: [newTime]}
+            consolidatedData = { utc_time: [newTime] }
         }
     }
 }
@@ -383,24 +383,24 @@ interface StartDataExtendedArgs extends StartDataArgs {
  * @param args.signal - The signal object to abort the data fetch
  * @returns void
  */
-const startData = ({options, start, end, callback, ref, signal}: StartDataExtendedArgs) => {
+const startData = ({ options, start, end, callback, ref, signal }: StartDataExtendedArgs) => {
 
-    if(!callback) callback = updatePlot
+    if (!callback) callback = updatePlot
 
     const url = getDataUrl(options, start, end)
 
-    if(signal.abort) {
-        console.log('Aborting data fetch due to signal') 
+    if (signal.abort) {
+        console.log('Aborting data fetch due to signal')
         return
     }
 
-    const callOpts = {options: options, callback: callback, ref: ref, signal: signal}
+    const callOpts = { options: options, callback: callback, ref: ref, signal: signal }
     let newStart = start;
 
-    if(!(document.visibilityState === 'visible')) {
+    if (!(document.visibilityState === 'visible')) {
         setTimeout(() => {
-            startData({...callOpts, start: newStart})
-        }, 1000) 
+            startData({ ...callOpts, start: newStart })
+        }, 1000)
         return
     }
 
@@ -411,9 +411,9 @@ const startData = ({options, start, end, callback, ref, signal}: StartDataExtend
      * @param {Object} data - The data object
      * @returns {boolean} - True if all the latest data points are bad data, false otherwise
      */
-    const allLatestDataBad = (data: {[key: string]: Array<number>}) => {
-        for(const param of Object.keys(data)) {
-            if(data[param][data[param].length-1] !== badData) {
+    const allLatestDataBad = (data: { [key: string]: Array<number> }) => {
+        for (const param of Object.keys(data)) {
+            if (data[param][data[param].length - 1] !== badData) {
                 return false
             }
         }
@@ -426,33 +426,33 @@ const startData = ({options, start, end, callback, ref, signal}: StartDataExtend
             .then(response => response.json())
             .then(data => {
 
-                if(allLatestDataBad(data)) {
-                    for(const param of Object.keys(data)) {
+                if (allLatestDataBad(data)) {
+                    for (const param of Object.keys(data)) {
                         data[param].pop()
                     }
                 }
 
-                if(!callback) callback = updatePlot
+                if (!callback) callback = updatePlot
                 callback(options, data, ref)
 
                 // GTFO if using websockets
-                if(useWebSocketData) return startDataWS({options, callback, ref, signal})
-                
-                newStart = data.utc_time[data.utc_time.length-1] + 1 || start
-                
+                if (useWebSocketData) return startDataWS({ options, callback, ref, signal })
+
+                newStart = data.utc_time[data.utc_time.length - 1] + 1 || start
+
                 setTimeout(() => {
-                    startData({...callOpts, start: newStart})
-                }, 1000)      
+                    startData({ ...callOpts, start: newStart })
+                }, 1000)
             }).catch(e => {
                 console.log('Error fetching data', e)
                 setTimeout(() => {
-                    startData({...callOpts, start: newStart})
-                }, 1000)   
+                    startData({ ...callOpts, start: newStart })
+                }, 1000)
             })
-    } catch(e) {
+    } catch (e) {
         setTimeout(() => {
-            startData({...callOpts, start: newStart})
-        }, 1000) 
+            startData({ ...callOpts, start: newStart })
+        }, 1000)
     }
 }
 
@@ -466,10 +466,10 @@ const startData = ({options, start, end, callback, ref, signal}: StartDataExtend
  * @returns A promise that resolves to the data
  */
 const getData = async (
-        options: GetDataOptions, start?: number, end?: number
-    ): Promise<DecadesDataResponse> => {
+    options: GetDataOptions, start?: number, end?: number
+): Promise<DecadesDataResponse> => {
 
-    if(start===undefined) start = nowSecs() - 5
+    if (start === undefined) start = nowSecs() - 5
 
     const url = getDataUrl(options, start, end)
 
@@ -512,30 +512,30 @@ const getAxesArray = (vars: ParamsState) => {
     const params = vars.params
 
     let axesObj: TempAxisContainer = {}
-    for(const ax of vars.axes) {
+    for (const ax of vars.axes) {
         axesObj[ax.id] = {
             params: [],
             scaling: ax.scaling
         }
     }
 
-    for(const param of params.filter(x=>x.selected)) {
-        if(!param.axisId) continue
+    for (const param of params.filter(x => x.selected)) {
+        if (!param.axisId) continue
         axesObj[param.axisId].params.push(
             param.raw
         )
     }
 
-    return Object.values(axesObj).map(x=>{
+    return Object.values(axesObj).map(x => {
         let retval = x?.params?.join(',')
-        if(x?.scaling?.auto === false) {
+        if (x?.scaling?.auto === false) {
             retval += `|${x.scaling.min}:${x.scaling.max}`
         }
         return retval
     })
 }
 
-export { 
+export {
     getData, startData, paramFromRawName, getYAxis, getXAxis, getTimeLims, updatePlot,
     plotIsOngoing, getAxesArray, canSlide, slideLength
 }

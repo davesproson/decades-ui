@@ -274,8 +274,8 @@ const Timers = ({ initialTimers }: { initialTimers?: Array<TimerConfig> }) => {
     }, [])
 
     const toggleDirection = () => {
-        setDirection(d => d.direction === "row" 
-            ? { direction: "col", switchText: "Horizontal" } 
+        setDirection(d => d.direction === "row"
+            ? { direction: "col", switchText: "Horizontal" }
             : { direction: "row", switchText: "Vertical" })
     }
 

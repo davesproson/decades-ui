@@ -7,11 +7,11 @@ type DecadesDataResponse = {
     [key: string]: Array<number>
 }
 
-type DummyExtras = {ordvar?: string, job?: string}
-type GetDataOptions =  PlotURLOptions 
-                        | TephigramOptions
-                        | (DashboardOptions & DummyExtras)
-                        // | (AlarmOptions & DummyExtras)
+type DummyExtras = { ordvar?: string, job?: string }
+type GetDataOptions = PlotURLOptions
+    | TephigramOptions
+    | (DashboardOptions & DummyExtras)
+// | (AlarmOptions & DummyExtras)
 type GetDataPlotOptions = PlotURLOptions | TephigramOptions
 
 export type { GetDataOptions, GetDataPlotOptions, DecadesDataResponse }

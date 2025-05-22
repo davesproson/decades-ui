@@ -12,7 +12,7 @@ const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
     const dispatch = useDispatch()
 
     const setTimeframe = (start: number, end: number) => {
-        dispatch(setCustomTimeframe({start: start, end: end}))
+        dispatch(setCustomTimeframe({ start: start, end: end }))
     }
 
     const formatTime = (time: number) => {
@@ -30,34 +30,34 @@ const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
     const isOrbit = props.entry.event.startsWith("Orbit")
 
     const tagStyle = (() => {
-        if(isRun) {
+        if (isRun) {
             return "text-green-600"
         }
-        if(isProfile) {
+        if (isProfile) {
             return "text-blue-400"
         }
-        if(isOrbit) {
+        if (isOrbit) {
             return "text-pink-600"
         }
         return ""
     })()
 
     const icon = (() => {
-        if(isOrbit) {
-            return <Circle size={16} className="mr-2" data-testid="fs-orbit-icon"/>
+        if (isOrbit) {
+            return <Circle size={16} className="mr-2" data-testid="fs-orbit-icon" />
         }
-        if(isRun) {
-            return <MoveRight size={16} className="mr-2" data-testid="fs-run-icon"/>
+        if (isRun) {
+            return <MoveRight size={16} className="mr-2" data-testid="fs-run-icon" />
         }
-        if(isProfile) {
-            return <MoveUpRight size={16} className="mr-2" data-testid="fs-profile-icon"/>
+        if (isProfile) {
+            return <MoveUpRight size={16} className="mr-2" data-testid="fs-profile-icon" />
         }
         return null
     })()
 
     return (
-        <Button variant="ghost" className={tagStyle} onClick={()=>setTimeframe(fromMs, toMs)}>
-           {icon} <strong className="mr-2"><span>{props.entry.event}</span>:</strong> from {from} until {to}
+        <Button variant="ghost" className={tagStyle} onClick={() => setTimeframe(fromMs, toMs)}>
+            {icon} <strong className="mr-2"><span>{props.entry.event}</span>:</strong> from {from} until {to}
         </Button>
     )
 }
@@ -65,17 +65,17 @@ const FlightSummaryEntrySelector = (props: FlightSummaryEntryProps) => {
 const FlightSummarySelector = () => {
     const fs = useFlightSummary()
 
-    const filterFlightSummary = (fs: FlightSummary | undefined)  => {
+    const filterFlightSummary = (fs: FlightSummary | undefined) => {
         const arrFs = Object.values(fs || {})
-        if(!arrFs) {
+        if (!arrFs) {
             return []
         }
-        const asArray = Object.values(arrFs).sort(x=>-x?.start?.time) 
-        
+        const asArray = Object.values(arrFs).sort(x => -x?.start?.time)
+
         // Need the manual type assertion here because the filter function
         // is not smart enough to know that the filter function will remove
         // all undefined values
-        return asArray.filter(x=>(x?.start?.time && x?.stop?.time && !x.deleted)) as FlightSummaryEntry[]
+        return asArray.filter(x => (x?.start?.time && x?.stop?.time && !x.deleted)) as FlightSummaryEntry[]
     }
 
     const filtered = filterFlightSummary(fs)
@@ -85,18 +85,18 @@ const FlightSummarySelector = () => {
             <CardHeader>
                 <CardTitle>
                     Flight Summary
-              </CardTitle>
-          </CardHeader>
-        <CardContent>
-            <ul>
-            {filtered.map((x, i) => (
-                <li key={i}>
-                    <FlightSummaryEntrySelector id={i} entry={x}/>
-                </li>)
-            )}
-            </ul>
-        </CardContent>
-    </Card>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ul>
+                    {filtered.map((x, i) => (
+                        <li key={i}>
+                            <FlightSummaryEntrySelector id={i} entry={x} />
+                        </li>)
+                    )}
+                </ul>
+            </CardContent>
+        </Card>
     )
 }
 

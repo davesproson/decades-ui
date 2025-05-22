@@ -95,7 +95,7 @@ const RollIndicatorGraphic = (props: RollIndicatorGraphicProps) => {
         if (props.roll !== undefined) {
             r = props.roll
         }
-        
+
         if (!props.fwdAspect) {
             r = -r
         }
@@ -135,7 +135,7 @@ const RollIndicator = (props: RollIndicatorProps) => {
     }
 
     return (
-        <div ref={ref} style={containerStyle} onClick={()=>setFwdAspect(x=>!x)}>
+        <div ref={ref} style={containerStyle} onClick={() => setFwdAspect(x => !x)}>
             <FlexCenter>
                 <RollIndicatorGraphic
                     roll={castRoll(data.roll)}

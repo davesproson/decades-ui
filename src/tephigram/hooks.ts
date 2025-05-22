@@ -20,24 +20,24 @@ const useTephiUrl = () => {
 
     const origin = window.location.origin
     const selectedParams = params.filter(param => param.selected)
-                                    .map(param => param.raw)
-    
+        .map(param => param.raw)
+
     let timeframe = ""
-    if(useCustomTimeframe) {
+    if (useCustomTimeframe) {
         let start = customTimeframe.start
         let end = customTimeframe.end
-        if(start) start /= 1000
-        if(end) end /= 1000
+        if (start) start /= 1000
+        if (end) end /= 1000
         timeframe = `${start},`
         timeframe += end ? end : ""
     } else {
-        timeframe = plotOptions.timeframes.find(x=>x.selected)?.value || "30min";
+        timeframe = plotOptions.timeframes.find(x => x.selected)?.value || "30min";
     }
-    
+
     const tephiUrl = new URL(`${siteBase}tephigram`, origin)
     tephiUrl.searchParams.set("params", selectedParams.join(','))
     tephiUrl.searchParams.set("timeframe", timeframe)
-    if(qcJob && quickLookMode) {
+    if (qcJob && quickLookMode) {
         tephiUrl.searchParams.set("job", qcJob.toString())
     }
 
@@ -47,9 +47,9 @@ const useTephiUrl = () => {
 const useTephiAvailable = () => {
     const params = useSelector(state => state.vars.params);
     const selectedParams = params.filter(param => param.selected)
-                                    .map(param => param.raw)
+        .map(param => param.raw)
     const quickLookMode = useSelector(state => state.config.quickLookMode)
-    
+
     const required_temps = quickLookMode
         ? ['TAT_DI_R', 'TAT_ND_R']
         : ['deiced_true_air_temp_c', 'nondeiced_true_air_temp_c']
@@ -61,14 +61,14 @@ const useTephiAvailable = () => {
     let has_required_temps = false
     let has_required_humids = false
 
-    for(const param of selectedParams) {
-        if(!required_humids.includes(param) && !required_temps.includes(param)) {
+    for (const param of selectedParams) {
+        if (!required_humids.includes(param) && !required_temps.includes(param)) {
             return false
         }
-        if(required_temps.includes(param)) {
+        if (required_temps.includes(param)) {
             has_required_temps = true
         }
-        if(required_humids.includes(param)) {
+        if (required_humids.includes(param)) {
             has_required_humids = true
         }
     }
@@ -86,16 +86,16 @@ const useTephiAvailable = () => {
  * @returns The normalized data
  */
 const normalizeTephiData = (data: TephigramData) => {
-    if('PS_RVSM' in data) {
+    if ('PS_RVSM' in data) {
         data.static_pressure = [...data.PS_RVSM]
         delete data.PS_RVSM
     } else {
         return data
     }
-    for(const key in data) {
-        if(key === 'static_pressure' || key === 'utc_time') continue
-        data[key] = data[key].map(x=>{
-            if(x === badData) return x
+    for (const key in data) {
+        if (key === 'static_pressure' || key === 'utc_time') continue
+        data[key] = data[key].map(x => {
+            if (x === badData) return x
             return x - 273.15
         })
     }
@@ -136,61 +136,61 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
                 name: p,
                 line: {
                     width: 5,
-                    color: colors[i%colors.length]
+                    color: colors[i % colors.length]
                 }
             });
         });
 
         import('plotly.js-dist-min').then((Plotly) => {
-            if(!ref.current) {
+            if (!ref.current) {
                 console.warn("No ref for tephigram plot")
                 return
             }
-            Plotly.newPlot(ref.current, plotTraces  ,  {
-                margin: {t: 0, l: 0, r: 0, b: 0},   
+            Plotly.newPlot(ref.current, plotTraces, {
+                margin: { t: 0, l: 0, r: 0, b: 0 },
                 plot_bgcolor: darkMode ? "#0a0a0a" : "white",
                 paper_bgcolor: darkMode ? "#0a0a0a" : "white",
-                legend: {   
-                    font: { 
-                        size: 8,   
+                legend: {
+                    font: {
+                        size: 8,
                         color: darkMode ? "white" : "#0a0a0a"
-                    },  
-                    x: 0,   
-                    y: 0    ,
+                    },
+                    x: 0,
+                    y: 0,
                     bgcolor: darkMode ? "#0a0a0a" : "white",
-                },  
-                yaxis: {    
-                    range: [1678, 1820],    
-                    showline: false,    
-                    ticks: '',  
-                    showgrid: false,    
-                    showticklabels: false   
-                },  
-                xaxis: {    
-                    range: [1600, 1780],    
-                    showline: false,    
-                    ticks: '',  
-                    showgrid: false,    
-                    showticklabels: false   
-                }   
-            }, {    
-                displayModeBar:false,   
+                },
+                yaxis: {
+                    range: [1678, 1820],
+                    showline: false,
+                    ticks: '',
+                    showgrid: false,
+                    showticklabels: false
+                },
+                xaxis: {
+                    range: [1600, 1780],
+                    showline: false,
+                    ticks: '',
+                    showgrid: false,
+                    showticklabels: false
+                }
+            }, {
+                displayModeBar: false,
                 responsive: true,
                 displaylogo: false
             })
         });
 
-        
+
         getData(options, ...getTimeLims(options.timeframe))
-            .then(data=>{
+            .then(data => {
                 const normalizedData = normalizeTephiData(data as TephigramData)
                 populateTephigram(n, normalizedData, ref)
             })
-            
-        if(plotIsOngoing(options)) {
+
+        if (plotIsOngoing(options)) {
             const interval = setInterval(() => {
-                if(!(document.visibilityState === "visible")) return
-                getData(options).then(data=>{
+                if (!(document.visibilityState === "visible")) return
+                getData(options).then(data => {
                     const normalizedData = normalizeTephiData(data as TephigramData)
                     populateTephigram(n, normalizedData, ref)
                 })

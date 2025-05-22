@@ -13,43 +13,43 @@ const FlappyPlane: React.FC = () => {
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
-  
+
   // Game physics constants
   const gravity = 0.2;
   const jumpPower = -4;
   const cloudSpeed = 3;
   const cloudGenerationInterval = 50;
   const groundHeight = 15; // ground height as percentage of viewport height
-  
+
   // Enemy plane constants
   const enemyPlaneSpeed = cloudSpeed * 1.5; // Enemy planes move faster than clouds
   const enemyPlaneGenerationInterval = 200; // Less frequent than clouds
   const enemyCollisionMultiplier = 2.5; // Enlarged collision box for enemy planes
-  
+
   // Danger area constants
   const dangerAreaSpeed = cloudSpeed; // Same speed as clouds
   const dangerAreaGenerationInterval = 350; // Less frequent than clouds and enemy planes
-  
+
   // Viewport size state with initial measurements
   const [viewportSize, setViewportSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
   });
-  
+
   // Enemy plane state
   const [enemyPlanes, setEnemyPlanes] = useState<Array<{
     left: number,
     top: number,
     id: number
   }>>([]);
-  
+
   // Danger area state
   const [dangerAreas, setDangerAreas] = useState<Array<{
     left: number,
     height: number,
     id: number
   }>>([]);
-  
+
   // Refs for values that don't need to trigger re-renders
   const gameRef = useRef<HTMLDivElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
@@ -61,37 +61,37 @@ const FlappyPlane: React.FC = () => {
   const gameStartTimeRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
   const isRunningRef = useRef<boolean>(false);
-  
+
   // Use refs for position and velocity to avoid re-renders
   const planePositionRef = useRef({ top: window.innerHeight / 2, rotation: 0 });
   const velocityRef = useRef(0);
-  
+
   // Use state for clouds to make them visible in the DOM
-  const [clouds, setClouds] = useState<Array<{ 
-    left: number, 
-    top: number, 
-    isThunderstorm: boolean, 
-    collected: boolean, 
-    id: number 
+  const [clouds, setClouds] = useState<Array<{
+    left: number,
+    top: number,
+    isThunderstorm: boolean,
+    collected: boolean,
+    id: number
   }>>([]);
-  
+
   // State for rendering planes and clouds
   const [renderTrigger, setRenderTrigger] = useState(0);
-  
+
   // Calculate ground position in pixels
   const getGroundYPosition = useCallback(() => {
     return viewportSize.height - (viewportSize.height * groundHeight / 100);
   }, [viewportSize.height]);
 
-  
+
   // Enhanced window resize handler
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       setViewportSize({ width, height });
-      
+
       // Also update plane position if game is running to keep it in view
       if (gameStarted && !gameOver) {
         const groundY = getGroundYPosition();
@@ -101,23 +101,23 @@ const FlappyPlane: React.FC = () => {
         };
       }
     };
-    
+
     // Add resize listener
     window.addEventListener('resize', handleResize);
-    
+
     // Initial call to ensure proper size on first render
     handleResize();
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [gameStarted, gameOver, getGroundYPosition]);
-  
+
   // Get the horizontal plane position (centered)
   const getPlaneHorizontalPosition = () => {
     return viewportSize.width / 2 - 30; // 30 is half of plane width
   };
-  
+
   // Cleanup function to ensure game loop is properly cancelled
   const cleanupGameLoop = useCallback(() => {
     if (gameLoopRef.current) {
@@ -126,20 +126,20 @@ const FlappyPlane: React.FC = () => {
     }
     isRunningRef.current = false;
   }, []);
-  
+
   // Start the game
   const startGame = useCallback(() => {
     // Ensure any existing game loop is properly cleaned up
     cleanupGameLoop();
-    
+
     // Reset all state
     setGameStarted(true);
     setGameOver(false);
     setScore(0);
     setClouds([]);
-    setEnemyPlanes([]); 
+    setEnemyPlanes([]);
     setDangerAreas([]); // Reset danger areas
-    
+
     // Reset all refs with viewport-aware positioning
     planePositionRef.current = { top: viewportSize.height / 2, rotation: 0 };
     velocityRef.current = 0;
@@ -150,11 +150,11 @@ const FlappyPlane: React.FC = () => {
     gameStartTimeRef.current = performance.now();
     lastUpdateTimeRef.current = performance.now();
     isRunningRef.current = true;
-    
+
     // Force a render update
     setRenderTrigger(prev => prev + 1);
   }, [cleanupGameLoop, viewportSize.height]);
-  
+
   // Jump function - modified to not restart when game over
   const jump = useCallback(() => {
     if (gameStarted && !gameOver && isRunningRef.current) {
@@ -164,13 +164,13 @@ const FlappyPlane: React.FC = () => {
       startGame();
     }
   }, [gameStarted, gameOver, jumpPower, startGame]);
-  
+
   // Create a new cloud with viewport-aware positioning
   const createCloud = useCallback(() => {
     // Make sure clouds don't appear too close to the ground
     const groundY = getGroundYPosition();
     const maxCloudHeight = groundY - 60; // Keep clouds away from ground
-    
+
     return {
       left: viewportSize.width,
       top: Math.random() * maxCloudHeight,
@@ -179,82 +179,82 @@ const FlappyPlane: React.FC = () => {
       id: cloudIdCounter.current++
     };
   }, [viewportSize, getGroundYPosition]);
-  
+
   // Create a new enemy plane
   const createEnemyPlane = useCallback(() => {
     const groundY = getGroundYPosition();
     // Allow enemy planes to fly at different heights
     const minHeight = 40; // Keep a minimum distance from top
     const maxHeight = groundY - 80; // Keep some distance from ground
-    
+
     return {
       left: viewportSize.width,
       top: minHeight + Math.random() * (maxHeight - minHeight),
       id: enemyPlaneIdCounter.current++
     };
   }, [viewportSize, getGroundYPosition]);
-  
+
   // Create a new danger area
   const createDangerArea = useCallback(() => {
     const groundY = getGroundYPosition();
-    
+
     // Randomize the height, between 10% and 30% of the available space
     const minHeight = groundY * 0.1;
     const maxHeight = groundY * 0.6;
     const height = minHeight + Math.random() * (maxHeight - minHeight);
-    
+
     return {
       left: viewportSize.width,
       height: height,
       id: dangerAreaIdCounter.current++
     };
   }, [viewportSize, getGroundYPosition]);
-  
+
   // Animation loop with requestAnimationFrame
   const animationLoop = useCallback(() => {
     if (!isRunningRef.current) return;
-    
+
     const now = performance.now();
     const deltaTime = Math.min((now - lastUpdateTimeRef.current) / 16.67, 2);
     lastUpdateTimeRef.current = now;
-    
+
     frameCount.current++;
-    
+
     // Get ground position
     const groundY = getGroundYPosition();
-    
+
     // Update plane position with direct DOM manipulation for smoother animation
     const planeDom = planeRef.current;
     velocityRef.current = velocityRef.current + (gravity * deltaTime);
-    
+
     // Limit plane movement to stay above ground
     const newTop = Math.max(0, Math.min(
       planePositionRef.current.top + (velocityRef.current * deltaTime),
       groundY - 40 // Keep plane above ground (40px is plane height)
     ));
-    
+
     // Calculate rotation based on velocity - adjusted for 90 degree base rotation
     planePositionRef.current = {
       top: newTop,
       rotation: Math.min(Math.max(90 + (velocityRef.current * 15), 15), 165)
     };
-    
+
     if (planeDom) {
       planeDom.style.top = `${planePositionRef.current.top}px`;
       planeDom.style.transform = `rotate(${planePositionRef.current.rotation}deg)`;
     }
-    
+
     // Generate new clouds
     const timeSinceStart = now - gameStartTimeRef.current;
     if (timeSinceStart > 500 && frameCount.current % cloudGenerationInterval === 0) {
       setClouds(prev => [...prev, createCloud()]);
     }
-    
+
     // Generate new enemy planes - less frequently than clouds
     if (timeSinceStart > 1500 && frameCount.current % enemyPlaneGenerationInterval === 0) {
       setEnemyPlanes(prev => [...prev, createEnemyPlane()]);
     }
-    
+
     // Generate new danger areas - even less frequently
     if (timeSinceStart > 2000 && frameCount.current % dangerAreaGenerationInterval === 0) {
       // Only add a new danger area 40% of the time to keep them rare
@@ -262,27 +262,27 @@ const FlappyPlane: React.FC = () => {
         setDangerAreas(prev => [...prev, createDangerArea()]);
       }
     }
-    
+
     // Update clouds and check collisions
     if (timeSinceStart > 1000) {
       setClouds(prevClouds => {
         const gameElement = gameRef.current;
         const planeElement = planeRef.current;
-        
+
         if (!gameElement || !planeElement) return prevClouds;
-        
+
         const planeRect = planeElement.getBoundingClientRect();
         const gameRect = gameElement.getBoundingClientRect();
-        
+
         // Check boundary and ground collisions
         if (
-            planePositionRef.current.top <= 0 || 
-            planePositionRef.current.top >= (groundY - 40)
+          planePositionRef.current.top <= 0 ||
+          planePositionRef.current.top >= (groundY - 40)
         ) {
           setGameOver(true);
           isRunningRef.current = false;
         }
-        
+
         return prevClouds
           .map(cloud => {
             // Move cloud left
@@ -290,7 +290,7 @@ const FlappyPlane: React.FC = () => {
               ...cloud,
               left: cloud.left - (cloudSpeed * deltaTime)
             };
-            
+
             // Check for collision if not already collected
             if (!cloud.collected) {
               const cloudRect = {
@@ -299,7 +299,7 @@ const FlappyPlane: React.FC = () => {
                 right: updatedCloud.left + gameRect.left + 20,
                 bottom: updatedCloud.top + gameRect.top + 20
               };
-              
+
               if (
                 planeRect.right > cloudRect.left &&
                 planeRect.left < cloudRect.right &&
@@ -318,19 +318,19 @@ const FlappyPlane: React.FC = () => {
                 }
               }
             }
-            
+
             return updatedCloud;
           })
           .filter(cloud => cloud.left > -60); // Remove clouds that are off-screen
       });
-      
+
       // Update enemy planes and check collisions
       setEnemyPlanes(prevEnemyPlanes => {
         if (!gameRef.current || !planeRef.current) return prevEnemyPlanes;
-        
+
         const planeRect = planeRef.current.getBoundingClientRect();
         const gameRect = gameRef.current.getBoundingClientRect();
-        
+
         return prevEnemyPlanes
           .map(enemyPlane => {
             // Move enemy plane left - faster than clouds
@@ -338,19 +338,19 @@ const FlappyPlane: React.FC = () => {
               ...enemyPlane,
               left: enemyPlane.left - (enemyPlaneSpeed * deltaTime)
             };
-            
+
             // Get the enemy plane's actual dimensions
             const enemyWidth = 60;
             const enemyHeight = 40;
-            
+
             // Calculate the enlarged collision box (2.5x)
             const collisionWidth = enemyWidth * enemyCollisionMultiplier;
             const collisionHeight = enemyHeight * enemyCollisionMultiplier;
-            
+
             // Offset to center the collision box around the enemy plane
             const widthOffset = (collisionWidth - enemyWidth) / 2;
             const heightOffset = (collisionHeight - enemyHeight) / 2;
-            
+
             // Create the collision rectangle
             const enemyRect = {
               left: updatedEnemyPlane.left + gameRect.left - widthOffset,
@@ -358,7 +358,7 @@ const FlappyPlane: React.FC = () => {
               right: updatedEnemyPlane.left + gameRect.left + enemyWidth + widthOffset,
               bottom: updatedEnemyPlane.top + gameRect.top + enemyHeight + heightOffset
             };
-            
+
             // Check for collision with player plane
             if (
               planeRect.right > enemyRect.left &&
@@ -370,19 +370,19 @@ const FlappyPlane: React.FC = () => {
               setGameOver(true);
               isRunningRef.current = false;
             }
-            
+
             return updatedEnemyPlane;
           })
           .filter(enemyPlane => enemyPlane.left > -80); // Remove enemy planes that are off-screen
       });
-      
+
       // Update danger areas and check collisions
       setDangerAreas(prevDangerAreas => {
         if (!gameRef.current || !planeRef.current) return prevDangerAreas;
-        
+
         const planeRect = planeRef.current.getBoundingClientRect();
         const gameRect = gameRef.current.getBoundingClientRect();
-        
+
         return prevDangerAreas
           .map(dangerArea => {
             // Move danger area left - same speed as clouds
@@ -390,8 +390,8 @@ const FlappyPlane: React.FC = () => {
               ...dangerArea,
               left: dangerArea.left - (dangerAreaSpeed * deltaTime)
             };
-            
-            
+
+
             // Create the danger area rectangle
             const dangerRect = {
               left: updatedDangerArea.left + gameRect.left,
@@ -399,7 +399,7 @@ const FlappyPlane: React.FC = () => {
               right: updatedDangerArea.left + gameRect.left + 100, // Danger areas are 100px wide
               bottom: groundY + gameRect.top
             };
-            
+
             // Check for collision with player plane
             if (
               planeRect.right > dangerRect.left &&
@@ -411,26 +411,26 @@ const FlappyPlane: React.FC = () => {
               setGameOver(true);
               isRunningRef.current = false;
             }
-            
+
             return updatedDangerArea;
           })
           .filter(dangerArea => dangerArea.left > -100); // Remove danger areas that are off-screen
       });
     }
-    
+
     // Request next frame if still running
     if (isRunningRef.current) {
       gameLoopRef.current = requestAnimationFrame(animationLoop);
     }
   }, [createCloud, createEnemyPlane, createDangerArea, getGroundYPosition, enemyPlaneSpeed, dangerAreaSpeed]);
-  
+
   // Main game effect - controls starting and stopping the game loop
   useEffect(() => {
     if (!gameStarted || gameOver) {
       cleanupGameLoop();
       return;
     }
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' || e.key === ' ' || e.key === 'ArrowUp') {
         jump();
@@ -440,22 +440,22 @@ const FlappyPlane: React.FC = () => {
         dispatch(setFilterText({ filterText: '' }));
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
-    
+
     // Ensure we have the proper run state
     isRunningRef.current = true;
     lastUpdateTimeRef.current = performance.now();
-    
+
     // Start animation directly
     gameLoopRef.current = requestAnimationFrame(animationLoop);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       cleanupGameLoop();
     };
   }, [gameStarted, gameOver, jump, cleanupGameLoop, animationLoop]);
-  
+
   // Ensure visibility change doesn't cause issues
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -467,21 +467,21 @@ const FlappyPlane: React.FC = () => {
         gameLoopRef.current = requestAnimationFrame(animationLoop);
       }
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [gameStarted, gameOver, cleanupGameLoop, animationLoop]);
-  
+
   // Calculate plane horizontal position
   const planeLeft = getPlaneHorizontalPosition();
-  
+
   // Return with explicit dimensions to ensure proper filling of the viewport
   return (
-    <div 
-      className="flappy-plane-game" 
+    <div
+      className="flappy-plane-game"
       ref={gameRef}
       onClick={jump}  // This will only handle jumps during gameplay or initial start
       style={{
@@ -495,7 +495,7 @@ const FlappyPlane: React.FC = () => {
         <div className="mountains"></div>
       </div>
 
-      <button className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={()=>dispatch(setFilterText({ filterText: '' }))} data-testid="fp-exit-button">
+      <button className="fp-button" style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 99, backgroundColor: 'red' }} onClick={() => dispatch(setFilterText({ filterText: '' }))} data-testid="fp-exit-button">
         Exit
       </button>
 
@@ -506,7 +506,7 @@ const FlappyPlane: React.FC = () => {
           zIndex: 8
         }}
       />
-      
+
       {/* Danger Areas */}
       {dangerAreas.map(dangerArea => (
         <div
@@ -521,20 +521,20 @@ const FlappyPlane: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* Plane */}
-      <div 
+      <div
         key={`plane-${renderTrigger}`}
         className="plane"
         ref={planeRef}
-        style={{ 
+        style={{
           top: `${planePositionRef.current.top}px`,
           left: `${planeLeft}px`,
           transform: `rotate(${planePositionRef.current.rotation}deg)`,
           zIndex: 10
         }}
       />
-      
+
       {/* Enemy Planes */}
       {enemyPlanes.map(enemyPlane => (
         <div key={`enemy-${enemyPlane.id}`}>
@@ -559,7 +559,7 @@ const FlappyPlane: React.FC = () => {
           */}
         </div>
       ))}
-      
+
       {/* Clouds */}
       {clouds.map(cloud => (
         <div
@@ -572,10 +572,10 @@ const FlappyPlane: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* Score counter */}
       <div className="score" style={{ zIndex: 15 }}>{score}</div>
-      
+
       {/* Start screen */}
       {!gameStarted && !gameOver && (
         <div className="start-screen">
@@ -584,10 +584,10 @@ const FlappyPlane: React.FC = () => {
           <p>Sample the clouds, but avoid thunderclouds and danger zones, and give other aircraft a wide berth!</p>
         </div>
       )}
-      
+
       {/* Game over screen - button now stops event propagation */}
       {gameOver && (
-        <div 
+        <div
           className="game-over"
           onClick={(e) => e.stopPropagation()}  // Prevent clicks from reaching the game area  // Prevent key events from reaching the game area
         >

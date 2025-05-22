@@ -9,10 +9,10 @@ const Spaced = (props: { children: React.ReactNode }) => {
 
 const SpacedText = (props: { text: string }) => {
     return props.text.split('').map((c, i) => <Spaced key={i}>{c}</Spaced>);
-    
+
 }
 
-const DecadesBanner = ({text}: {text?: string}) => {
+const DecadesBanner = ({ text }: { text?: string }) => {
     return (
         <div className="flex flex-row gap-[10px] h-[100px] w-full justify-around items-center p-[0.5em]">
             <div className="flex w-full justify-around fixed max-w-[80%]">

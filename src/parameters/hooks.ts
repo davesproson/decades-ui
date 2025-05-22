@@ -20,7 +20,7 @@ export const useParameterEndpoint = (withAvailability: boolean) => {
     const quickLookJob = useSelector(state => state.quicklook.qcJob);
 
     if (quickLookMode) {
-        if(!quickLookJob)
+        if (!quickLookJob)
             throw new Error("No quicklook job selected")
         return `${apiEndpoints.quicklook_jobs}/${quickLookJob}/`
     }

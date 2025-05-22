@@ -6,7 +6,7 @@ type ViewType = (
 )
 type ViewConfigTabType = "BASIC" | "ADVANCED" | "JSON"
 
-interface AdvancedConfig  {
+interface AdvancedConfig {
     type: ViewType,
     rows: number,
     columns: number,
@@ -50,27 +50,27 @@ const addPlots = (state: ViewState) => {
 }
 
 export const viewSlice = createSlice({
-	name: 'view',
-	initialState: {
+    name: 'view',
+    initialState: {
         nRows: 1,
         nCols: 1,
         plots: [""],
         savedViews: [],
-        advancedConfig: {...emptyAdvancedConfig},
+        advancedConfig: { ...emptyAdvancedConfig },
         advancedConfigSaved: true,
         viewConfigTab: "ADVANCED"
     } as ViewState,
-	reducers: {
+    reducers: {
         setViewConfigTab: (state, action: PayloadAction<ViewConfigTabType>) => {
-            if(!["BASIC", "ADVANCED", "JSON"].includes(action.payload)) {
+            if (!["BASIC", "ADVANCED", "JSON"].includes(action.payload)) {
                 state.viewConfigTab = "BASIC";
                 return
             }
             state.viewConfigTab = action.payload;
         },
         setAdvancedConfig: (state, action: PayloadAction<AdvancedConfig | null>) => {
-            if(action.payload === null) {
-                state.advancedConfig = {...emptyAdvancedConfig};
+            if (action.payload === null) {
+                state.advancedConfig = { ...emptyAdvancedConfig };
                 return;
             }
             state.advancedConfig = action.payload;
@@ -78,7 +78,7 @@ export const viewSlice = createSlice({
         setAdvancedConfigSaved: (state, action: PayloadAction<boolean>) => {
             state.advancedConfigSaved = action.payload;
         },
-		addColumn: (state) => {
+        addColumn: (state) => {
             state.nCols += 1;
             addPlots(state);
         },
@@ -98,12 +98,12 @@ export const viewSlice = createSlice({
                 reducePlots(state);
             }
         },
-        setPlot: (state, action: PayloadAction<{index: number, url: string}>) => {
+        setPlot: (state, action: PayloadAction<{ index: number, url: string }>) => {
             const plots = [...state.plots];
             plots[action.payload.index] = action.payload.url;
             state.plots = plots;
         },
-        setConfig: (state, action: PayloadAction<{nRows: number, nCols: number, plots: Array<string>}>) => {
+        setConfig: (state, action: PayloadAction<{ nRows: number, nCols: number, plots: Array<string> }>) => {
             state.nRows = action.payload.nRows;
             state.nCols = action.payload.nCols;
             state.plots = action.payload.plots;
@@ -118,11 +118,11 @@ export const viewSlice = createSlice({
             savedViews.push(action.payload);
             state.savedViews = savedViews;
         },
-        loadSavedView: (state, action: PayloadAction<{id: string}>) => {
+        loadSavedView: (state, action: PayloadAction<{ id: string }>) => {
             const savedView = state.savedViews.find(x => x.id === action.payload.id);
             const version = savedView.version;
 
-            switch(version) {
+            switch (version) {
                 // TODO: add support for version 1 (is this worth it now?)
                 case 2:
                     state.nRows = savedView.nRows;
@@ -136,10 +136,10 @@ export const viewSlice = createSlice({
         clearSavedViews: (state) => {
             state.savedViews = [];
         }
-	},
-});   
+    },
+});
 
-export const { 
+export const {
     addColumn, addRow, removeColumn, removeRow, setPlot, reset, saveView, loadSavedView,
     setConfig, clearSavedViews, setAdvancedConfig, setAdvancedConfigSaved, setViewConfigTab
 } = viewSlice.actions;

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { ChatConfig, IncomingChatMessage, ChatUser,  MessageResponse } from "./types"
+import { ChatConfig, IncomingChatMessage, ChatUser, MessageResponse } from "./types"
 import { useLocalStorage } from "usehooks-ts"
 import { base } from "../settings"
 import { useToast } from "@/components/ui/use-toast"
@@ -28,7 +28,7 @@ export const useScrollIntoView = (deps: any[]) => {
  * @returns the user and a function to set the user
  */
 export const useChatUser = (initialUser: ChatUser | null) => {
-    if(!initialUser) initialUser = { username: '', id: '', regState: null }
+    if (!initialUser) initialUser = { username: '', id: '', regState: null }
     const [user, setUser] = useLocalStorage<ChatUser>('VistaChatUser', initialUser)
 
     return [user, setUser] as const
@@ -100,7 +100,7 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
                 const regState = parsedMessage.id ? true : null
                 setUser({
                     username: parsedMessage.username,
-                    id:  userId,
+                    id: userId,
                     regState: regState
                 })
             }
@@ -113,15 +113,15 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
      * is not hidden, a toast notification is shown.
      */
     useEffect(() => {
-        
+
         // If chatNotify is false, clear the toast message
-        if(!config.chatNotify) {
+        if (!config.chatNotify) {
             setToastMessage(null)
             return
         }
 
         // If the document is hidden, clear the toast message
-        if(document.hidden) {
+        if (document.hidden) {
             setToastMessage(null)
             return
         }
@@ -146,7 +146,7 @@ export const useMessageHandler = (lastMessage: MessageEvent<any> | null) => {
     }, [toastMessage, config])
 
     useEffect(() => {
-        if(!config.chatActive) {
+        if (!config.chatActive) {
             setMessages([])
         }
     }, [config.chatActive])
@@ -172,7 +172,7 @@ export const useChatResizer = (embedded: boolean) => {
      * the bounding rect.
      */
     useEffect(() => {
-        if(!embedded || rect) return
+        if (!embedded || rect) return
 
         const containerSize = containerRef.current?.getBoundingClientRect()
 
@@ -184,9 +184,9 @@ export const useChatResizer = (embedded: boolean) => {
     /**
      * A effect which adds a listener to the window resize event if the
      * chat is embedded and thus needs to be actively resized.
-     */    
+     */
     useEffect(() => {
-        if(!embedded) return
+        if (!embedded) return
         const listener = () => setRect(null)
         // Unset the rect when the window resizes
         window.addEventListener('resize', listener)

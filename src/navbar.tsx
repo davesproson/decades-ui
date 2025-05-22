@@ -136,7 +136,7 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                             return (
                                 <MenubarItem key={preset} onClick={() => selectParameters(presets[preset])} disabled={noneAvailable}>
                                     {(!allAvailable && someAvailable) && <TriangleAlert className="text-orange-500 mr-2" />}
-                                    {noneAvailable &&  <OctagonX className="text-red-500 mr-2" />}
+                                    {noneAvailable && <OctagonX className="text-red-500 mr-2" />}
                                     {preset}
                                 </MenubarItem>
                             )

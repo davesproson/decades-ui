@@ -26,7 +26,7 @@ const ConfigDashboardArea = React.forwardRef<ConfigHandle<ConfigDashboardData>, 
     const paramOptions = useSelector(state => state.vars)
 
     const paramList = paramOptions.params.filter(x => x.selected).map(x => {
-        return <Badge  is="info" className={"mr-1"} >{x.raw}</Badge>
+        return <Badge is="info" className={"mr-1"} >{x.raw}</Badge>
     })
 
     useImperativeHandle(ref, () => {
@@ -69,12 +69,12 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
         icon: dashboardIcon,
         tooltip: 'Display a dashboard - realtime parameter values',
         component: (props: DashboardProps) => {
-            return  <Redash {...props} useURL={false} />
+            return <Redash {...props} useURL={false} />
         }
-            // if(useNewDashboard) {
-            //     return
-            // }
-            // return <Dashboard {...props} useURL={false} />
+        // if(useNewDashboard) {
+        //     return
+        // }
+        // return <Dashboard {...props} useURL={false} />
         // }
     })
 }

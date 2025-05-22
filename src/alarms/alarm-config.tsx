@@ -55,20 +55,20 @@ const AlarmConfigPanel = (props: AlarmProps) => {
             {expanded && <>
                 <CardContent>
                     <Label htmlFor="params">Parameters</Label>
-                    <Input className="mb-4" id="params" placeholder="Enter a comma-separated list of required parameters" value={props.parameters.join(",")} onChange={(e) => dispatch(modifyAlarm({id:props.id, parameters: e.target.value.split(',')}))}/>
+                    <Input className="mb-4" id="params" placeholder="Enter a comma-separated list of required parameters" value={props.parameters.join(",")} onChange={(e) => dispatch(modifyAlarm({ id: props.id, parameters: e.target.value.split(',') }))} />
 
                     <Label htmlFor="rule">Rule</Label>
-                    <Input className="mb-4" id="rule" placeholder="Enter a rule using mathjs logic" value={props.rule} onChange={(e) => dispatch(modifyAlarm({id: props.id, rule: e.target.value}))} />
+                    <Input className="mb-4" id="rule" placeholder="Enter a rule using mathjs logic" value={props.rule} onChange={(e) => dispatch(modifyAlarm({ id: props.id, rule: e.target.value }))} />
 
                     <div className="flex justify-between">
                         <div className="flex flex-col flex-1 mr-2 mt-2">
                             <Label className="mb-1" htmlFor="rule">Passing Text</Label>
-                            <Input className="mb-4" id="rule" placeholder="Text when alarm is passing" value={props.passingText} onChange={e => dispatch(modifyAlarm({id: props.id, passingText: e.target.value }))}/>
+                            <Input className="mb-4" id="rule" placeholder="Text when alarm is passing" value={props.passingText} onChange={e => dispatch(modifyAlarm({ id: props.id, passingText: e.target.value }))} />
                         </div>
 
                         <div className="flex flex-col flex-1 ml-2 mt-2">
                             <Label className="mb-1" htmlFor="rule">Failing Text</Label>
-                            <Input className="mb-4" id="rule" placeholder="Text when alarm is failing" value={props.failingText} onChange={e => dispatch(modifyAlarm({id: props.id, failingText: e.target.value}))}/>
+                            <Input className="mb-4" id="rule" placeholder="Text when alarm is failing" value={props.failingText} onChange={e => dispatch(modifyAlarm({ id: props.id, failingText: e.target.value }))} />
                         </div>
                     </div>
 

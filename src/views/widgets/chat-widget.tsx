@@ -12,7 +12,7 @@ const ChatConfig = () => {
 }
 
 const useChatWidget = (registry: RegistryType<WidgetConfiguration>) => {
-    if(!enableChat) return
+    if (!enableChat) return
     registry.register({
         name: "Chat",
         type: "chat",

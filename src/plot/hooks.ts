@@ -59,9 +59,9 @@ interface OptionsState {
  * @returns {string} The URL for the plot
  */
 const getUrl = (options: OptionsState) => {
-    
+
     // Convert the axes options to an array of strings
-    const axisStrings = options.axes.map(x=>([] as Array<string>).concat(x).join(','))
+    const axisStrings = options.axes.map(x => ([] as Array<string>).concat(x).join(','))
 
     // Iniitialise the URL
     const url = new URL(`${siteBase}plot`, window.location.origin)
@@ -74,12 +74,12 @@ const getUrl = (options: OptionsState) => {
     url.searchParams.set("data_header", options.dataHeader.toString())
     url.searchParams.set("style", options.plotStyle)
     url.searchParams.set("ordvar", options.ordinateAxis)
-    if(options.server) url.searchParams.set("server", options.server)
-    if(options.job) url.searchParams.set("job", options.job.toString())
-    if(options.caxis) url.searchParams.set("caxis", options.caxis)
-    if(options.mask) url.searchParams.set("mask", options.mask.toString())
+    if (options.server) url.searchParams.set("server", options.server)
+    if (options.job) url.searchParams.set("job", options.job.toString())
+    if (options.caxis) url.searchParams.set("caxis", options.caxis)
+    if (options.mask) url.searchParams.set("mask", options.mask.toString())
     // url.searchParams.set("server", options.server)
-    for(const axStr of axisStrings) {
+    for (const axStr of axisStrings) {
         url.searchParams.append("axis", axStr)
     }
 
@@ -97,7 +97,7 @@ const getUrl = (options: OptionsState) => {
  * @returns {string} The URL for the plot
  * 
  */
-const usePlotUrl = (override:{[key: string]: any}={}) => {
+const usePlotUrl = (override: { [key: string]: any } = {}) => {
 
     // Initialise local state
     const [plotUrl, setPlotUrl] = useState<URL>();
@@ -110,13 +110,13 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
     const qcJob = useSelector(state => state.quicklook.qcJob);
     const quickLookMode = useSelector(state => state.config.quickLookMode);
     const useCustomTimeframe = useSelector(state => state.options.useCustomTimeframe);
-    
+
     // Get the parameters
     const params = vars.params
-    
+
     // Get the selected parameters
     const selectedParams = params.filter(param => param.selected)
-                                 .map(param => param.raw)
+        .map(param => param.raw)
 
     // Given a key, return the value from the override object if it exists, or
     // the value from the plot options otherwise
@@ -128,11 +128,11 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
         // Get the timeframe
         // We really need a more formalised way of dealing with seconds vs milliseconds
         let timeframe: string | undefined = ""
-        if(useCustomTimeframe) {
+        if (useCustomTimeframe) {
             // A custom timeframe has been selected, this is represented as a start,stop
             // time in milliseconds. If the stop time is not set, we leave it blank, and
             // the plot will update as new data comes in
-            
+
             const start = plotOptions?.customTimeframe?.start ? plotOptions.customTimeframe.start / 1000 : 0
             const end = plotOptions.customTimeframe.end ? plotOptions.customTimeframe.end / 1000 : ""
             timeframe = `${start},${end}`
@@ -140,12 +140,12 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
             // A preset timeframe has been selected, this is represented as a string
             // timeframe = plotOptions.timeframes.find(x=>x.selected).value;
             timeframe = plotOptions.timeframes.find(x => x.selected)?.value;
-            if(!timeframe) timeframe = "30min"
+            if (!timeframe) timeframe = "30min"
         }
-        
+
         // Build the axes array
         let axes = getAxesArray(vars)
-        
+
         // Update the plot URL whenever the plot options change
         const optionSet: OptionsState = {
             timeframe: overridden("timeframe", timeframe),
@@ -163,7 +163,7 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
 
         // We don't want to unset qcJob if we're toggling between quicklook and
         // live mode, so we only set it if we're in quicklook mode
-        if(quickLookMode) {
+        if (quickLookMode) {
             optionSet.job = overridden("job", qcJob)
         }
 
@@ -194,7 +194,7 @@ const usePlotUrl = (override:{[key: string]: any}={}) => {
  * @returns {boolean} Whether the plot has finished initialising. 
  */
 const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElement>) => {
-    
+
     // Custom hooks
     const params = useGetParameters();
     const quicklookMode = useSelector(state => state.config.quickLookMode)
@@ -206,41 +206,41 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 
     const darkMode = useDarkMode()
 
-    const server = options?.server 
+    const server = options?.server
     let plotLoadedAt = Math.floor(new Date().getTime() / 1000)
-    
+
     // This effect starts the plot data fetching process. It only runs once,
     // when the plot is first initialised, indicated by the initDone flag.
     useEffect(() => {
         // Ensure that options are set. This is more for typesafety than anything
-        if(!options) return
+        if (!options) return
 
         // If the plot is already initialised, do nothing
-        if(!initDone) return
+        if (!initDone) return
 
         // A signal to abort the data fetching process
-        const signal = {abort: false}
+        const signal = { abort: false }
 
         // Get the start and end times for the plot, based on the timeframe
         const [start, end] = getTimeLims(options.timeframe)
 
         // Start the data fetching process
-        startData({options: options, start: start, end: end, ref: ref, signal: signal})
+        startData({ options: options, start: start, end: end, ref: ref, signal: signal })
 
         // If the plot is not ongoing, abort the data fetching process immediately
-        if(!plotIsOngoing(options)) signal.abort = true
+        if (!plotIsOngoing(options)) signal.abort = true
 
         // Cleanup - abort the data fetching process if the component is unmounted
-        return () => {signal.abort = true}
- 
+        return () => { signal.abort = true }
+
     }, [initDone])
 
     // This godforsaken effect is responsible for loading the plot. It runs
     useEffect(() => {
-    
+
         // If params or server are not set, do nothing
-        if(!params) return
-        if(!options) return
+        if (!params) return
+        if (!options) return
 
         // The number of axes to include in the plot
         const numAxes = options.axes.length;
@@ -257,7 +257,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             },
             title: {
                 text: options.caxis ? `${colorParam?.DisplayText} (${colorParam?.DisplayUnits})` : null,
-                font: {size: 12}
+                font: { size: 12 }
             },
             legend: {
                 font: {
@@ -266,15 +266,15 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                 },
                 bgcolor: darkMode ? darkBg + 'cc' : "#ffffffcc",
                 // This is dispicable, sorry future me
-                x: options.swapxy 
-                    ? 0 
-                    : numAxes > 2 
-                        ? 0.05 
+                x: options.swapxy
+                    ? 0
+                    : numAxes > 2
+                        ? 0.05
                         : 0,
-                y: options.swapxy 
-                    ? numAxes > 2 
-                        ? .95 
-                        : 1 
+                y: options.swapxy
+                    ? numAxes > 2
+                        ? .95
+                        : 1
                     : 1
             },
             margin: {
@@ -282,8 +282,8 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             },
             modebar: {
                 remove: ["sendDataToCloud", "lasso", "lasso2d", "select", "select2d", "zoom", "pan",
-                         "zoomIn2d", "zoomOut2d", "autoScale2d",
-                         "hoverClosestCartesian"]
+                    "zoomIn2d", "zoomOut2d", "autoScale2d",
+                    "hoverClosestCartesian"]
             }
         }
 
@@ -297,12 +297,12 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         layout[_ordAxis] = {
             linecolor: "black",
             mirror: true,
-            domain: [offsetStart, 1-offsetEnd],
+            domain: [offsetStart, 1 - offsetEnd],
         }
 
         // Set the title of the ordinate axis, and set the date attribute if 
         // we're plotting a timeseries
-        if(options.ordvar.includes('utc_time')) {
+        if (options.ordvar.includes('utc_time')) {
             layout[_ordAxis].type = "date";
             layout[_ordAxis].title = "Time";
         } else {
@@ -311,37 +311,37 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         }
 
         layout[_ordAxis].linecolor = darkBg ? "gray" : "black";
-        if(darkMode) layout[_ordAxis].gridcolor = "gray";
+        if (darkMode) layout[_ordAxis].gridcolor = "gray";
 
         // Extract the ranges from the axes options. If no range is specified,
         // set the range to null.
         // Ranges are specified in the format "<axis>|min:max"
         const ranges = options.axes.map((axis: string) => {
             let rangeString: string | string[] = axis.split("|")[1]
-            if(rangeString) {
+            if (rangeString) {
                 rangeString = rangeString.split(":")
                 return [rangeString[0], rangeString[1]]
             }
             return null
         })
 
-        for(let i=0; i<numAxes; i++) {
+        for (let i = 0; i < numAxes; i++) {
             let _axisTitle;
-    
+
             let currentAxes = options.axes[i].split("|")[0]
 
             // If there's more than one variable on a axis, label axis, axis2 etc.
             // Otherwise we can label with the DisplayName / DisplayUnits
-            if(currentAxes.split(",").length > 1) {
+            if (currentAxes.split(",").length > 1) {
                 let _unit = paramFromRawName(currentAxes.split(",")[0], params)?.DisplayUnits || "Unknown units"
-                _axisTitle = options.swapxy ? `X-axis ${i+1} (${_unit})` : `Y-axis ${i+1} (${_unit})`;
+                _axisTitle = options.swapxy ? `X-axis ${i + 1} (${_unit})` : `Y-axis ${i + 1} (${_unit})`;
             } else {
                 const _param = paramFromRawName(currentAxes, params)
                 _axisTitle = `${_param?.DisplayText || 'y-axis'} (${_param?.DisplayUnits || 'Unknown units'})`;
             }
-    
+
             let _axisName = options.swapxy ? "xaxis" : "yaxis";
-    
+
             // We add coordinate axes alternatively to the left and right, or bottom and
             // top is swapAxes is true.
             let _side = i % 2 ? (options.swapxy ? "top" : "right") : (options.swapxy ? "bottom" : "left");
@@ -349,13 +349,13 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 
             // If we're plotting more than two axes, we need to set the anchor and
             // position of the current axis. 
-            let anchor = i > 1 
-                ? "free" 
+            let anchor = i > 1
+                ? "free"
                 : options.swapxy ? "y" : "x";
 
             // Axes are referred to as xaxis, xaxis2, xaxis3 etc. in plotly.
-            if(i) {
-                _axisName += (i+1);
+            if (i) {
+                _axisName += (i + 1);
                 _overlaying = options.swapxy ? "x" : "y"
             }
 
@@ -363,7 +363,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             let position = anchor === "free"
                 ? (i === 2 ? 0 : 1)
                 : null;
-    
+
             // Add the current axis to the layout.
             layout[_axisName] = {
                 title: _axisTitle,
@@ -380,7 +380,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             }
 
             // If a range is specified for the current axis, set it.
-            if(ranges[i]) {
+            if (ranges[i]) {
                 layout[_axisName].range = ranges[i]
             }
 
@@ -415,9 +415,9 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         const traces: PlotlyTrace[] = [];
 
         // For each parameter, add a trace to the plot
-        for(var i=0; i<options.params.length; i++) {
+        for (var i = 0; i < options.params.length; i++) {
             var opts = {
-                type: options.style, 
+                type: options.style,
                 name: paramFromRawName(options.params[i], params)?.DisplayText || options.params[i],
                 x: [],
                 y: [],
@@ -425,16 +425,16 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                 xaxis: options.swapxy ? getXAxis(options, options.params[i]) : 'x',
                 line: {},
             } as PlotlyTrace
-            
+
             // Use markers if the style is scatter, or if a colour axis is set
-            if(options.style === "scatter" || options.caxis) {
+            if (options.style === "scatter" || options.caxis) {
                 opts.mode = "markers";
             } else {
                 opts.mode = "lines";
             }
 
             // If the colour axis is set, configure the marker to use the colour axis
-            if(options.caxis) {
+            if (options.caxis) {
                 opts.marker = {
                     color: [],
                     size: 10,
@@ -450,10 +450,10 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             // You wouldn't like them when they're angry.
             try {
                 const paramName = paramFromRawName(options.params[i], params).DisplayText
-                if(paramName.toLowerCase().includes('red')) opts.line.color = '#DD0000';
-                if(paramName.toLowerCase().includes('green')) opts.line.color = '#00DD00';
-                if(paramName.toLowerCase().includes('blue')) opts.line.color = '#0000DD';
-            } catch(e) {
+                if (paramName.toLowerCase().includes('red')) opts.line.color = '#DD0000';
+                if (paramName.toLowerCase().includes('green')) opts.line.color = '#00DD00';
+                if (paramName.toLowerCase().includes('blue')) opts.line.color = '#0000DD';
+            } catch (e) {
                 console.error('Error setting line colour', e)
             }
 
@@ -495,29 +495,29 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
                     name: "Clear plot",
                     icon: null,
                     click: () => {
-                        for(let t of traces) {
-                            t.x = [t.x[t.x.length-1]];
-                            t.y = [t.y[t.y.length-1]];
+                        for (let t of traces) {
+                            t.x = [t.x[t.x.length - 1]];
+                            t.y = [t.y[t.y.length - 1]];
                         }
                     }
                 }
             ]
-        } 
+        }
 
-        if(chatState.config.chatActive && chatState.connectionStatus === 'Open' && !quicklookMode) {
+        if (chatState.config.chatActive && chatState.connectionStatus === 'Open' && !quicklookMode) {
             config.modeBarButtonsToAdd.push({
                 name: "Share plot",
                 icon: ShareIcon as any,
                 click: () => {
                     const url = new URL(window.location.href)
                     const [staticStart, now] = getTimeLims(options.timeframe)
-                    if(staticStart < plotLoadedAt) plotLoadedAt = staticStart
+                    if (staticStart < plotLoadedAt) plotLoadedAt = staticStart
                     url.searchParams.set("timeframe", `${plotLoadedAt},${now}`)
                     chatActions.sendChat(`Shared a plot: ${url.pathname}${url.search}`)
                 }
             })
         }
-        
+
         import('plotly.js-dist-min').then(Plotly => {
             setLoadDone(true);
             // @ts-ignore - assign the icons to the modebar buttons which are initially null
@@ -527,7 +527,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 
             // @ts-ignore - plotly typing is a pain in the hole
             Plotly.newPlot(ref.current, traces, layout, config)
-                .then(()=>setInitDone(true))
+                .then(() => setInitDone(true))
         })
 
     }, [params, server, setInitDone, setLoadDone])
@@ -557,11 +557,11 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
  */
 const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
 
-    if(!options) return undefined
+    if (!options) return undefined
 
     const searchParams = new URLSearchParams(window.location.search)
-    
-    const urlJob = (()=>{
+
+    const urlJob = (() => {
         return searchParams.get('job') === null
             ? null
             : parseInt(searchParams.get('job') || "") || null
@@ -570,10 +570,10 @@ const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
 
     const opts: PlotURLOptions = {
         params: options.params
-            || (()=>{
-                    const sparams: string | null = searchParams.get("params")
-                    return sparams ? sparams.split(",") : []
-                })(),
+            || (() => {
+                const sparams: string | null = searchParams.get("params")
+                return sparams ? sparams.split(",") : []
+            })(),
         axes: options.axes || searchParams.getAll('axis') || [],
         timeframe: options.timeframe || (searchParams.get('timeframe') || "30min"),
         swapxy: options.swapxy || (searchParams.get('swapxy') === 'true' || false),
@@ -584,7 +584,7 @@ const usePlotOptions = (options: Partial<PlotInternalOptions> | undefined) => {
         ordvar: options.ordvar || (searchParams.get('ordvar') || "utc_time"),
         mask: options.mask || (searchParams.get('mask') === 'true' || false),
     }
-    if(job) opts.job = job || null
+    if (job) opts.job = job || null
 
     return opts
 }
@@ -601,20 +601,20 @@ const usePlotInternalOptions = () => {
     let job: number | null = null;
     let timeframe: string | null = null;
 
-    if(quickLookMode) {
+    if (quickLookMode) {
         job = qcJob
     }
 
-    if(useCustomTimeframe) {
+    if (useCustomTimeframe) {
         let start = plotOptions.customTimeframe.start
-        let end = plotOptions.customTimeframe.end 
-        if(start) start = start / 1000
-        if(end) end = end / 1000
+        let end = plotOptions.customTimeframe.end
+        if (start) start = start / 1000
+        if (end) end = end / 1000
         timeframe = `${start},${end}`
     } else {
-        timeframe = plotOptions.timeframes.find(x=>x.selected)?.value || "30min"
+        timeframe = plotOptions.timeframes.find(x => x.selected)?.value || "30min"
     }
-    
+
     return {
         timeframe: timeframe,
         swapxy: plotOptions.swapOrientation,
@@ -622,7 +622,7 @@ const usePlotInternalOptions = () => {
         style: plotOptions.plotStyle.value,
         header: plotOptions.dataHeader,
         ordvar: plotOptions.ordinateAxis,
-        params: params.filter(x=>x.selected).map(x=>x.raw),
+        params: params.filter(x => x.selected).map(x => x.raw),
         axes: getAxesArray({
             params: params,
             axes: axisOptions,

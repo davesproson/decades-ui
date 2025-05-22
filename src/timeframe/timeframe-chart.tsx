@@ -14,16 +14,16 @@ const TimeframeSelectorPlot = () => {
     const ref = useRef<PlotlyHTMLDivElement>(null)
     const gotData = useSelectorPlot(ref)
 
-    if(!gotData) return (
+    if (!gotData) return (
         <Alert className="mt-2">
-        <Hourglass className="h-4 w-4" />
-        <AlertTitle>Loading altitude data...</AlertTitle>
-      </Alert>
+            <Hourglass className="h-4 w-4" />
+            <AlertTitle>Loading altitude data...</AlertTitle>
+        </Alert>
     )
-    return  (
+    return (
         <Card className="mt-2" data-testid="timeframe-selector-chart">
             <CardContent>
-                <div ref={ref} style={{height:"200px"}} />
+                <div ref={ref} style={{ height: "200px" }} />
             </CardContent>
         </Card>
     )

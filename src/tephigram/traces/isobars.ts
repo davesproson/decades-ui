@@ -18,7 +18,7 @@ export const getIsobars = (
     pressMin: number, pressMax: number, dPress: number, darkMode: boolean
 ) => {
 
-    const isobars: (number|null)[][][] = [];
+    const isobars: (number | null)[][][] = [];
 
     for (let press = pressMax; press >= pressMin; press -= dPress) {
         const xs: (number | null)[] = [],
@@ -38,7 +38,7 @@ export const getIsobars = (
 
     isobars.forEach((t, i) => {
         const _pres = pressMax - (i) * dPress;
-        let _line: {color: string, width: number, dash: string};
+        let _line: { color: string, width: number, dash: string };
         if (_pres === 1000 || _pres === 500 || _pres === 250) {
             _line = {
                 color: darkMode ? "cyan" : '#0000aa',

@@ -7,15 +7,15 @@ export type AlarmID = {
 }
 
 export const alarmSlice = createSlice({
-	name: 'alarms',
-	initialState: {
-        alarms: {} as {[key:string]: AlarmProps}
+    name: 'alarms',
+    initialState: {
+        alarms: {} as { [key: string]: AlarmProps }
     },
-	reducers: {
-        addAlarm: (state, action: {type: string} & {payload: AlarmProps}) => {
+    reducers: {
+        addAlarm: (state, action: { type: string } & { payload: AlarmProps }) => {
             state.alarms[action.payload.id] = action.payload;
         },
-        removeAlarm: (state, action: {type: string, payload: AlarmID}) => {
+        removeAlarm: (state, action: { type: string, payload: AlarmID }) => {
             delete state.alarms[action.payload.id];
         },
         addNewAlarm: (state) => {
@@ -31,8 +31,8 @@ export const alarmSlice = createSlice({
                 failOnNoData: true,
                 disableFlash: false,
             }
-	    },
-        modifyAlarm: (state, action: {payload: Partial<AlarmProps> & AlarmID, type:string}) => {
+        },
+        modifyAlarm: (state, action: { payload: Partial<AlarmProps> & AlarmID, type: string }) => {
             const alarm = state.alarms[action.payload.id];
             state.alarms[action.payload.id] = {
                 ...alarm,
@@ -42,7 +42,7 @@ export const alarmSlice = createSlice({
     }
 })
 
-export const { 
+export const {
     addAlarm,
     removeAlarm,
     addNewAlarm,

@@ -22,12 +22,12 @@ export interface WidgetConfiguration {
     component: React.JSXElementConstructor<any>
 }
 
-export type RegistryType<T extends {type: string}> = {
+export type RegistryType<T extends { type: string }> = {
     registered: T[],
     register: (widget: T) => void
     getWidget: (type: string) => T
 }
 
-export interface PluginType  {
+export interface PluginType {
     [key: string]: React.JSXElementConstructor<any>
 }

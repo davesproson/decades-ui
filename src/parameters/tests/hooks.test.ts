@@ -70,21 +70,21 @@ describe("Test useGetParameters hook", async () => {
     }]
 
     it("Should return the correct parameters in live mode", async () => {
-        mocks.fetch.mockResolvedValueOnce({ json: () => liveParameters})
+        mocks.fetch.mockResolvedValueOnce({ json: () => liveParameters })
         const { result } = renderHookWithStore(useGetParameters)
         await waitFor(() => expect(result.current).toStrictEqual(liveParameters))
     });
 
     it("Should return the correct parameters in quicklook mode", async () => {
-        mocks.fetch.mockResolvedValueOnce({ json: () => liveParameters})
+        mocks.fetch.mockResolvedValueOnce({ json: () => liveParameters })
         const { store, result } = renderHookWithStore(useGetParameters)
-        mocks.fetch.mockResolvedValueOnce({ json: () => quicklookParameters})
-        
+        mocks.fetch.mockResolvedValueOnce({ json: () => quicklookParameters })
+
         act(() => {
             store.dispatch(setQcJob(1))
             store.dispatch(setQuickLookMode(true))
         })
-        
+
         await waitFor(() => expect(result.current).toStrictEqual(correctedQuicklookParameters))
     });
 });
