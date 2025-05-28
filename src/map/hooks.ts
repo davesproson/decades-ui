@@ -6,6 +6,7 @@ import { getData } from "@/data/utils";
 import { badData, mapLayerInterface } from "../settings";
 import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, LayerType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 import { LAYER_INTERFACES } from "./layers/interface";
+import { useLocalStorage } from "usehooks-ts";
 
 type OpenLayersMapArgs = {
     zoom?: number,
@@ -188,17 +189,17 @@ const useDecadesMapState = () => {
     const [showHeaderBar, setShowHeaderBar] = useState<boolean>(true)
     const [showLayersMenu, setShowLayersMenu] = useState<boolean>(false)
     const [showToolbox, setShowToolbox] = useState<boolean>(false)
-    const [showGraticule, setShowGraticule] = useState<boolean>(false)
+    const [showGraticule, setShowGraticule] = useLocalStorage<boolean>('decades-map-graticule', false)
     const [layers, setLayers] = useLayers() //useState<Array<LayerType>>([])
-    const [flags, setFlags] = useState([])
-    const [overlay, setOverlay] = useState<MapFlag & { x: number, y: number } | null>(null)
-    const [aircraftMeasures, setAircraftMeasures] = useState<PositionData[]>([])
-    const [measurements, setMeasurements] = useState<Array<Position[]>>([])
+    const [flags, setFlags] = useLocalStorage('decades-map-flags', [])
+    const [overlay, setOverlay] = useLocalStorage<MapFlag & { x: number, y: number } | null>('decades-map-overlay', null)
+    const [aircraftMeasures, setAircraftMeasures] = useLocalStorage<PositionData[]>('decades-map-aircraft-measures', [])
+    const [measurements, setMeasurements] = useLocalStorage<Array<Position[]>>('decades-map-measurements', [])
     const [mapModes, setMapModes] = useState<Array<DecadesMapModality>>([])
-    const [showWindVane, setShowWindVane] = useState<boolean>(false)
+    const [showWindVane, setShowWindVane] = useLocalStorage<boolean>('decades-map-windvane', false)
     const [pinAircraft, setPinAircraft] = useState<boolean>(true)
     const [drawMode, setDrawMode] = useState<DrawModeType>(null)
-    const [drifters, setDrifters] = useState<Array<PositionWithTime>>([])
+    const [drifters, setDrifters] = useLocalStorage<Array<PositionWithTime>>('decades-map-drifters', [])
 
     const toggleMapMode = (mode: DecadesMapModality) => {
         setMapModes(x => {
