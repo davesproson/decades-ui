@@ -163,8 +163,20 @@ export const plotHeaderDefaults = [
     'dew_point'
 ]
 
+const parseMapOptions = (mapOptions: string) => {
+    const options = mapOptions.split(",")
+    const nameUrlPairs = options.map(option => {
+        const [name, url] = option.split("|")
+        return {
+            name: name.trim(),
+            url: url.trim()
+        }
+    })
+    return nameUrlPairs;
+}
+
 // URI to retreive map slippy tiles from
-export const mapTilesUrl = import.meta.env.VITE_VISTA_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+export const mapTilesOptions = parseMapOptions(import.meta.env.VITE_VISTA_MAP_TILE_URL || "Default|https://tile.openstreetmap.org/{z}/{x}/{y}.png,OpenTopo|https://tile.opentopomap.org/{z}/{x}/{y}.png")
 // Map layer interface to use
 export const mapLayerInterface: LayerInterfaces = import.meta.env.VITE_VISTA_MAP_LAYER_INTERFACE || "GluxeAir"
 

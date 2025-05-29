@@ -3,7 +3,7 @@ import { Map as OlMap, View } from 'ol';
 import { fromLonLat } from 'ol/proj.js';
 import { defaults as controlDefaults } from 'ol/control/defaults';
 import { getData } from "@/data/utils";
-import { badData, mapLayerInterface } from "../settings";
+import { badData, mapLayerInterface, mapTilesOptions } from "../settings";
 import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, LayerType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 import { LAYER_INTERFACES } from "./layers/interface";
 import { useLocalStorage } from "usehooks-ts";
@@ -200,6 +200,7 @@ const useDecadesMapState = () => {
     const [pinAircraft, setPinAircraft] = useState<boolean>(true)
     const [drawMode, setDrawMode] = useState<DrawModeType>(null)
     const [drifters, setDrifters] = useLocalStorage<Array<PositionWithTime>>('decades-map-drifters', [])
+    const [tileset, setTileset] = useLocalStorage<{ name: string, url: string }>('decades-map-tileset', mapTilesOptions[0])
 
     const toggleMapMode = (mode: DecadesMapModality) => {
         setMapModes(x => {
@@ -225,7 +226,8 @@ const useDecadesMapState = () => {
             aircraftMeasures,
             measurements,
             drawMode,
-            drifters
+            drifters,
+            tileset,
         } as DecadesMapState,
         actions: {
             setShowHeaderBar,
@@ -241,7 +243,8 @@ const useDecadesMapState = () => {
             setAircraftMeasures,
             setMeasurements,
             setDrawMode,
-            setDrifters
+            setDrifters,
+            setTileset,
         } as DecadesMapActions
     }
 }

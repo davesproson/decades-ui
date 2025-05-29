@@ -16,9 +16,6 @@ type ToolbarActions = Pick<
 import { Grid, Layers, AppWindow, Pin, Search, ZoomIn, ZoomOut, Wrench } from "lucide-react"
 
 
-useState
-
-
 const ZoomControl = ({ size }: { size?: number }) => {
     const { state } = useContext(MapContext)
 
@@ -33,7 +30,6 @@ const ZoomControl = ({ size }: { size?: number }) => {
         })
     }
     const [zoomActive, setZoomActive] = useState(false)
-    zoomActive
     const zoomButtonVariant = zoomActive ? "success" : undefined
     const buttonClass = "pointer-events-auto mb-[2px]"
 

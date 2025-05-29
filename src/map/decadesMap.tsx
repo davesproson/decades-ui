@@ -24,7 +24,6 @@ import { Drawings } from './features/drawings';
 import { Drifter } from './features/drifters';
 import { Show } from '../components/flow';
 import { Optional } from '../types';
-import { mapTilesUrl } from '../settings';
 
 import entityIcon from '@/assets/map-icons/g-luxe.png';
 import markerIcon from '@/assets/map-icons/flag-marker.png';
@@ -113,7 +112,7 @@ const DecadesMap = ({ withMenu }: DecadesMapProps) => {
 
             <OpenLayersMap zoom={8} center={{ lon: 0, lat: 52 }} withMenu={withMenu}>
 
-                <BaseLayer url={mapTilesUrl} />
+                <BaseLayer url={state.tileset.url} />
 
                 <Show when={state.showGraticule}>
                     <Graticule />

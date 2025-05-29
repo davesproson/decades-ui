@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react"
 import { MapContext } from "../context"
 import TileLayer from "ol/layer/Tile"
 import { OSM } from "ol/source"
+import { useDecadesMapState } from "../hooks"
 
 type BaseLayerProps = {
     url?: string,
@@ -10,6 +11,7 @@ type BaseLayerProps = {
 
 const BaseLayer = (props: BaseLayerProps) => {
     const { state } = useContext(MapContext)
+    const { state: { tileset } } = useDecadesMapState()
 
     useEffect(() => {
         if (!state.map) {
@@ -18,8 +20,9 @@ const BaseLayer = (props: BaseLayerProps) => {
 
         const layer = new TileLayer({
             source: new OSM({
-                url: props.url
-            })
+                url: props.url,
+            }),
+            zIndex: -10,
         })
 
         state.map.addLayer(layer)
@@ -32,7 +35,7 @@ const BaseLayer = (props: BaseLayerProps) => {
             state.map.removeLayer(layer)
         }
 
-    }, [state.map])
+    }, [state.map, tileset])
 
     return null
 }

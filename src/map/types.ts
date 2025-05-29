@@ -76,7 +76,8 @@ export type DecadesMapState = {
     aircraftMeasures: Array<PositionData>,
     measurements: Array<Array<Position>>,
     drawMode: DrawModeType,
-    drifters: Array<PositionWithTime>
+    drifters: Array<PositionWithTime>,
+    tileset: { name: string, url: string },
 }
 
 export type DecadesMapActions = {
@@ -94,6 +95,7 @@ export type DecadesMapActions = {
     setMeasurements: Dispatch<SetStateAction<Array<Array<Position>>>>,
     setDrawMode: Dispatch<SetStateAction<DrawModeType>>
     setDrifters: Dispatch<SetStateAction<Array<PositionWithTime>>>
+    setTileset: Dispatch<SetStateAction<{ name: string, url: string }>>,
 }
 
 export enum DecadesMapModality {
