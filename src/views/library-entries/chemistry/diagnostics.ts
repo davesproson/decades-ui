@@ -2,7 +2,7 @@ import { LibraryView } from "@/views/types";
 
 export const corechemDiagnostics: LibraryView = {
     title: "Core Chemistry Diagnostics",
-    description: `A set of alarms and diagnostic panels for the FAAM core chemistry operator.`,
+    description: "Alarms and diagnostics for the FAAM Core Chemistry operator",
     config: {
         "version": 3,
         "type": "view",
@@ -53,16 +53,16 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "(prtaft01_wow_flag == 1) or (twbozo01_MFM > 1.2)"
                                     },
                                     {
-                                        "name": "CO Pressure",
-                                        "description": "CO cell pressure near 7.5 Torr",
+                                        "name": "CO Logging Glitch",
+                                        "description": "No RS232 register shift",
                                         "parameters": [
-                                            "al55co01_pcell"
+                                            "al55co01_dummy"
                                         ],
-                                        "rule": "(7.2 < al55co01_pcell) and (al55co01_pcell < 7.6)"
+                                        "rule": "(al55co01_dummy == 428.4)"
                                     },
                                     {
                                         "name": "2B O3 Conc. Glitch",
-                                        "description": "Checks that the TwoB ozone is in a sensible range",
+                                        "description": "2B ozone in sensible range",
                                         "parameters": [
                                             "twbozo01_conc"
                                         ],
@@ -70,14 +70,13 @@ export const corechemDiagnostics: LibraryView = {
                                     },
                                     {
                                         "name": "FGGA Wet Cal",
-                                        "description": "FGGA Calibration",
+                                        "description": "No water present in calibration",
                                         "parameters": [
                                             "chfgga02_h2o",
                                             "chfgga02_V1",
                                             "chfgga02_MFC1_mass_flow"
                                         ],
-                                        "rule": "(not((chfgga02_h2o <= 0) and (chfgga02_V1 == 0))) and chfgga02_MFC1_mass_flow > 4",
-                                        "disableFlash": true
+                                        "rule": "not((chfgga02_h2o > 0) and (chfgga02_V1 == 1) and (chfgga02_MFC1_mass_flow > 4))"
                                     },
                                     {
                                         "name": "FGGA Cell Pressure",
@@ -89,17 +88,17 @@ export const corechemDiagnostics: LibraryView = {
                                         "rule": "(138.5 < chfgga02_press_torr) and (chfgga02_press_torr < 141.5) or (chfgga02_V10 == 0)"
                                     },
                                     {
-                                        "name": "FGGA FastQ",
+                                        "name": "FGGA SlowQ",
                                         "disableFlash": true,
-                                        "description": "FGGA FastQ",
+                                        "description": "FGGA SlowQ",
                                         "parameters": [
                                             "chfgga02_MFC4_mass_flow"
                                         ],
                                         "rule": "(4.5 < chfgga02_MFC4_mass_flow) and (chfgga02_MFC4_mass_flow < 5.5)"
                                     },
                                     {
-                                        "name": "FGGA SlowQ",
-                                        "description": "FGGA SlowQ",
+                                        "name": "FGGA FastQ",
+                                        "description": "FGGA FastQ",
                                         "parameters": [
                                             "chfgga02_MFC4_mass_flow"
                                         ],
@@ -271,31 +270,33 @@ export const corechemDiagnostics: LibraryView = {
                     {
                         "type": "dashboard",
                         "params": [
-                            "chfgga02_rda_usec",
-                            "chfgga02_press_torr",
-                            "chfgga02_MFC4_mass_flow",
-                            "chtsoo02_MFC3_mass_flow",
-                            "chfgga02_rdb_usec",
-                            "corechem_apr_pressure",
-                            "chfgga02_MFC1_mass_flow",
                             "corechem_mfm",
-                            "twbozo01_flow",
+                            "corechem_apr_pressure",
+                            "chfgga02_press_torr",
+                            "chfgga02_rda_usec",
+                            "chfgga02_rdb_usec",
+                            "chfgga02_MFC4_mass_flow",
+                            "chfgga02_MFC1_mass_flow",
                             "chfgga02_h2o",
+                            "twbozo01_flow",
+                            "chtsoo02_MFC3_mass_flow",
                             "teiozo02_FlowA",
                             "teiozo02_FlowB",
                             "al55co01_pcell",
-                            "al55co01_counts",
                             "al55co01_flowlamp",
-                            "al55co01_flowmono"
+                            "al55co01_flowmono",
+                            "co_reg1_cylcont",
+                            "co_reg2_cylcont"
                         ],
                         "limits": [
                             {
                                 "param": "chfgga02_rda_usec",
-                                "max": 10
+                                "min": 13
                             },
                             {
                                 "param": "chfgga02_press_torr",
-                                "max": 141.5
+                                "max": 141.5,
+                                "min": 138.5
                             },
                             {
                                 "param": "chfgga02_MFC4_mass_flow",
@@ -307,7 +308,7 @@ export const corechemDiagnostics: LibraryView = {
                             },
                             {
                                 "param": "chfgga02_rdb_usec",
-                                "max": 10
+                                "min": 14.5
                             },
                             {
                                 "param": "corechem_apr_pressure",
@@ -315,7 +316,7 @@ export const corechemDiagnostics: LibraryView = {
                             },
                             {
                                 "param": "corechem_mfm",
-                                "min": 1
+                                "min": 5
                             },
                             {
                                 "param": "twbozo01_flow",
@@ -331,7 +332,16 @@ export const corechemDiagnostics: LibraryView = {
                             },
                             {
                                 "param": "al55co01_pcell",
+                                "min": 6,
                                 "max": 8
+                            },
+                            {
+                                "param": "co_reg1_cylcont",
+                                "min": 7
+                            },
+                            {
+                                "param": "co_reg2_cylcont",
+                                "min": 7
                             },
                             {
                                 "param": "al55co01_flowlamp",
