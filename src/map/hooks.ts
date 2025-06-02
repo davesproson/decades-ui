@@ -3,10 +3,11 @@ import { Map as OlMap, View } from 'ol';
 import { fromLonLat } from 'ol/proj.js';
 import { defaults as controlDefaults } from 'ol/control/defaults';
 import { getData } from "@/data/utils";
-import { badData, mapLayerInterface } from "../settings";
+import { badData, geoCoordsQuicklook, mapLayerInterface } from "../settings";
 import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, LayerType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 import { LAYER_INTERFACES } from "./layers/interface";
 import { useLocalStorage } from "usehooks-ts";
+import { useSelector } from "@/redux/store";
 
 type OpenLayersMapArgs = {
     zoom?: number,
@@ -62,6 +63,7 @@ const useOpenLayersMap = ({ zoom, center }: OpenLayersMapArgs) => {
 const useAircraftData = () => {
     const [aircraftData, setAircraftData] = useState<PositionData | null>(null);
     const [aircraftHistory, setAircraftHistory] = useState<PositionDataHistory>([]);
+    const quickLookMode = useSelector((state) => state.config.quickLookMode);
 
     const params = [
         "gin_latitude", "gin_longitude", "gin_altitude", "gin_heading",
@@ -98,7 +100,7 @@ const useAircraftData = () => {
         setAircraftHistory((oldState) => [...oldState, acData]);
     };
 
-    const initAircraft = async (signal: AbortSignal) => {
+    const initAircraftLive = async (signal: AbortSignal) => {
         const now = Math.floor(new Date().getTime() / 1000);
         try {
             let data = await getData({
@@ -143,18 +145,59 @@ const useAircraftData = () => {
         const controller = new AbortController();
         const { signal } = controller;
 
-        initAircraft(signal);
+        if (quickLookMode) {
+            return () => {
+                controller.abort(); // Cancel any ongoing `initAircraft` call
+            };
+        }
 
+        initAircraftLive(signal);
         const interval = setInterval(updateAircraft, 1000);
 
         return () => {
             controller.abort(); // Cancel any ongoing `initAircraft` call
             clearInterval(interval); // Clear the interval
         };
-    }, []);
+    }, [quickLookMode]);
 
     return { aircraftData, aircraftHistory };
 };
+
+const useQuickLookAircraftData = () => {
+    const quickLookMode = useSelector((state) => state.config.quickLookMode)
+    const params = useSelector((state) => state.vars.params)
+    const timeframe = useSelector((state) => state.options.customTimeframe)
+    const [visData, setVisData] = useState<number[]>([])
+    const [latData, setLatData] = useState<number[]>([])
+    const [lonData, setLonData] = useState<number[]>([])
+
+    useEffect(() => {
+        if (!quickLookMode || !params) {
+            return
+        }
+
+        (async () => {
+            let selectedParam = params?.find(x => x.selected)
+            const getParams = [
+                geoCoordsQuicklook.latitude,
+                geoCoordsQuicklook.longitude,
+            ]
+            if (selectedParam) {
+                getParams.push(selectedParam.raw)
+            }
+
+            const data = await getData({ params: getParams }, Math.floor((timeframe.start || 0) / 1000), Math.floor((timeframe.end || 9e9) / 1000))
+            if (selectedParam) {
+                setVisData(data[selectedParam.raw])
+            }
+            setLatData(data[geoCoordsQuicklook.latitude])
+            setLonData(data[geoCoordsQuicklook.longitude])
+        })()
+
+    }, [params, setVisData, setLatData, setLonData, quickLookMode])
+
+    return { visData, latData, lonData }
+}
 
 const useLayers = () => {
     const [layers, setLayers] = useState<Array<LayerType>>([])
@@ -246,4 +289,4 @@ const useDecadesMapState = () => {
     }
 }
 
-export { useOpenLayersMap, useAircraftData, useDecadesMapState }
+export { useOpenLayersMap, useAircraftData, useDecadesMapState, useQuickLookAircraftData }

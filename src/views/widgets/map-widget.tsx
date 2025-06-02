@@ -23,7 +23,7 @@ const useMapWidget = (registry: RegistryType<WidgetConfiguration>) => {
         },
         icon: mapIcon,
         tooltip: 'Display a map of the aircraft position',
-        component: DecadesMap
+        component: () => <DecadesMap withMenu={false} position="absolute" />,
     })
 }
 

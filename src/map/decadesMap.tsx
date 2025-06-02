@@ -1,7 +1,7 @@
 import OpenLayersMap from './map';
 
 import { DataContext } from './context';
-import { useAircraftData, useDecadesMapState } from './hooks';
+import { useAircraftData, useDecadesMapState, useQuickLookAircraftData } from './hooks';
 import { MapHeader } from './header';
 import { BaseLayer } from './layers/base';
 import { TrackedEntity } from './features/trackedEntity';
@@ -22,13 +22,17 @@ import { WindVane } from './features/windVane';
 import { MapCenter } from './utils/mapCenter';
 import { Drawings } from './features/drawings';
 import { Drifter } from './features/drifters';
-import { Show } from '../components/flow';
+import { LiveDataOnly, QuicklookOnly, Show } from '../components/flow';
 import { Optional } from '../types';
-import { mapTilesUrl } from '../settings';
+import { badData, mapTilesUrl } from '../settings';
 
 import entityIcon from '@/assets/map-icons/g-luxe.png';
 import markerIcon from '@/assets/map-icons/flag-marker.png';
 import { KMLFeature } from './features/kml';
+import { Track } from './features/track';
+import { ReliefTrack } from './features/reliefTrack';
+import ColourBar from './colourbar';
+import { useState } from 'react';
 
 const LayerHash = {
     'vector': VectorLayer,
@@ -84,12 +88,15 @@ const POIOverlay = (props: POIOverlayProps) => {
 }
 
 type DecadesMapProps = {
-    withMenu?: boolean
+    withMenu?: boolean,
+    position?: "fixed" | "absolute"
 }
-const DecadesMap = ({ withMenu }: DecadesMapProps) => {
+const DecadesMap = ({ withMenu, position }: DecadesMapProps) => {
+
     const { aircraftData, aircraftHistory } = useAircraftData()
     const { state, actions } = useDecadesMapState()
-
+    const { latData, lonData, visData } = useQuickLookAircraftData()
+    const [colorMap, setColorMap] = useState<string>("viridis")
     useScrollInhibitor(true)
 
     const toggleLayerVisibility = (name: string) => {
@@ -111,7 +118,7 @@ const DecadesMap = ({ withMenu }: DecadesMapProps) => {
                 <MapHeader />
             </Show>
 
-            <OpenLayersMap zoom={8} center={{ lon: 0, lat: 52 }} withMenu={withMenu}>
+            <OpenLayersMap zoom={8} center={{ lon: 0, lat: 52 }} withMenu={withMenu} position={position}>
 
                 <BaseLayer url={mapTilesUrl} />
 
@@ -127,16 +134,31 @@ const DecadesMap = ({ withMenu }: DecadesMapProps) => {
                     <POIOverlay {...state.overlay} />
                 </Show>
 
-                <VectorLayer>
-                    <TrackedEntity
-                        icon={{
-                            src: entityIcon,
-                            scale: 0.5,
-                        }}
-                        name='G-LUXE'
-                        history={aircraftHistory}
-                    />
-                </VectorLayer>
+                <LiveDataOnly>
+                    <VectorLayer>
+                        <TrackedEntity
+                            icon={{
+                                src: entityIcon,
+                                scale: 0.5,
+                            }}
+                            name='G-LUXE'
+                            history={aircraftHistory}
+                        />
+                    </VectorLayer>
+                </LiveDataOnly>
+
+                <QuicklookOnly>
+                    <MapCenter active={true} latitude={latData.filter((lat) => lat !== badData)[0]} longitude={lonData.filter((lon) => lon !== badData)[0]} />
+                    <VectorLayer>
+                        <Show when={visData.length > 0}>
+                            <ColourBar data={visData} colorMap={colorMap} onChangeColorMap={(cm) => setColorMap(cm)} />
+                            <ReliefTrack latitude={latData} longitude={lonData} data={visData} colorMap={colorMap} />
+                        </Show>
+                        <Show when={visData.length === 0}>
+                            <Track latitude={latData} longitude={lonData} />
+                        </Show>
+                    </VectorLayer>
+                </QuicklookOnly>
 
                 <Show when={state.showWindVane}>
                     <VectorLayer>
