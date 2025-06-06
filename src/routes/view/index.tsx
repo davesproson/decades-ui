@@ -5,11 +5,11 @@ type ViewSearchParams = {
 }
 
 export const Route = createFileRoute('/view/')({
-  
+
   validateSearch: (search: Record<string, unknown>): ViewSearchParams => {
     return {
       view: search.view ? String(search.view) : undefined,
     }
   },
-  beforeLoad: () => {}
+  beforeLoad: () => { }
 })
