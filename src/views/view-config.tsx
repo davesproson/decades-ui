@@ -421,7 +421,7 @@ const AdvancedViewConfig = () => {
     }
 
     const downloadConfigJson = () => {
-        const blob = new Blob([JSON.stringify(config)], { type: "text/json" });
+        const blob = new Blob([JSON.stringify({ ...config, "version": 3 })], { type: "text/json" });
         const link = document.createElement("a");
 
         link.download = 'view-config.json';
@@ -447,6 +447,17 @@ const AdvancedViewConfig = () => {
         fileReader.onload = e => {
             try {
                 const config = JSON.parse(e?.target?.result?.toString() || "")
+                if (!config.name) {
+                    config.name = config.title || "Imported View @ " + new Date().toLocaleString()
+                }
+                if (config.version !== 3) {
+                    toast.toast({
+                        title: "Invalid config file",
+                        description: "The config file must be version 3",
+                        variant: "destructive"
+                    })
+                    return
+                }
                 const parsedConfig = version3View.safeParse(config)
                 if (parsedConfig.success === false) {
                     console.error("Error parsing config file", parsedConfig.error)
