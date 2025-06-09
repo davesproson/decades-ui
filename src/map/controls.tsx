@@ -14,6 +14,10 @@ type ToolbarActions = Pick<
 >
 
 import { Grid, Layers, AppWindow, Pin, Search, ZoomIn, ZoomOut, Wrench } from "lucide-react"
+<<<<<<< HEAD
+=======
+import { LiveDataOnly } from "@/components/flow"
+>>>>>>> master
 
 
 const ZoomControl = ({ size }: { size?: number }) => {
@@ -64,29 +68,11 @@ type ToolbarProps = {
 }
 const Toolbar = (props: ToolbarProps) => {
 
-    // const style: React.CSSProperties = {
-    //     pointerEvents: 'none',
-    //     zIndex: 2,
-    //     position: 'absolute',
-    //     inset: "auto 0 0 0",
-    //     height: "50px",
-    //     padding: "10px",
-    //     display: "flex",
-    //     flexDirection: "row",
-    //     justifyContent: "space-between",
-    // }
-
     const layerButtonVariant = props.state.showLayersMenu ? "success" : undefined
     const headerButtonVariant = props.state.showHeaderBar ? "success" : undefined
     const graticuleButtonVariant = props.state.showGraticule ? "success" : undefined
     const toolboxButtonVariant = props.state.showToolbox ? "success" : undefined
     const pinAircraftButtonVariant = props.state.pinAircraft ? "success" : undefined
-
-    // const buttonStyle: React.CSSProperties = {
-    //     marginRight: "5px",
-    //     borderRadius: "5px",
-    //     pointerEvents: "auto",
-    // }
 
     const buttonClass = "mr-1 pointer-events-auto"
     const toggle = (x: boolean) => !x
@@ -97,23 +83,28 @@ const Toolbar = (props: ToolbarProps) => {
                 <Button size="sm" variant={layerButtonVariant} className={buttonClass} onClick={() => props.actions.setShowLayersMenu(toggle)}>
                     <Layers size={15} />
                 </Button>
-                <Button size="sm" variant={headerButtonVariant} className={buttonClass} onClick={() => props.actions.setShowHeaderBar(toggle)}>
-                    <AppWindow size={15} />
-                </Button>
+                <LiveDataOnly>
+                    <Button size="sm" variant={headerButtonVariant} className={buttonClass} onClick={() => props.actions.setShowHeaderBar(toggle)}>
+                        <AppWindow size={15} />
+                    </Button>
+                </LiveDataOnly>
                 <Button size="sm" variant={graticuleButtonVariant} className={buttonClass} onClick={() => props.actions.setShowGraticule(toggle)}>
                     <Grid size={15} />
                 </Button>
-                <Button size="sm" variant={pinAircraftButtonVariant} className={buttonClass} onClick={() => props.actions.setPinAircraft(toggle)}>
-                    <Pin size={15} />
-                </Button>
+                <LiveDataOnly>
+                    <Button size="sm" variant={pinAircraftButtonVariant} className={buttonClass} onClick={() => props.actions.setPinAircraft(toggle)}>
+                        <Pin size={15} />
+                    </Button>
+                </LiveDataOnly>
                 <ZoomControl size={15} />
+
             </div>
             <div>
                 <Button size="sm" variant={toolboxButtonVariant} className={buttonClass} onClick={() => props.actions.setShowToolbox(toggle)}>
                     <Wrench size={15} />
                 </Button>
             </div>
-        </div>
+        </div >
     )
 }
 

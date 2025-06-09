@@ -26,7 +26,7 @@ const TrackedEntity = (props: TrackedEntityProps) => {
     const { layer } = useContext(VectorLayerContext)
 
     useEffect(() => {
-        if(!layer) return
+        if (!layer) return
 
         console.log('TrackedEntity: Initializing')
         layer.setZIndex(99)
@@ -36,8 +36,8 @@ const TrackedEntity = (props: TrackedEntityProps) => {
 
         // Init the icon feature
         const iconFeature = new Feature({
-            geometry: new Point([0,0]),
-            name: props.name 
+            geometry: new Point([0, 0]),
+            name: props.name
         })
         const iconStyle = new Style({
             image: new Icon({
@@ -74,12 +74,12 @@ const TrackedEntity = (props: TrackedEntityProps) => {
 
 
     useEffect(() => {
-        if(!layer) return
-        
+        if (!layer) return
+
         const trackFeature = layer.getSource()?.getFeatures()[0]
         const iconFeature = layer.getSource()?.getFeatures()[1]
 
-        if(!trackFeature || !iconFeature) {
+        if (!trackFeature || !iconFeature) {
             console.warn('TrackedEntity: Could not find features in layer')
             return
         }
@@ -90,7 +90,7 @@ const TrackedEntity = (props: TrackedEntityProps) => {
         const trackGeometry = new LineString(coords)
         trackFeature.setGeometry(trackGeometry)
 
-        if(loc?.heading !== undefined) {
+        if (loc?.heading !== undefined) {
             const iconRotation = (loc.heading || 0) * Math.PI / 180
             const iconStyle = iconFeature?.getStyle() as Style
             iconStyle.getImage()?.setRotation(iconRotation)

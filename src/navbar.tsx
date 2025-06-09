@@ -162,11 +162,11 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                     </MenubarMenu>
                 </LiveDataOnly>
 
-                <LiveDataOnly>
-                    <MenubarMenu>
-                        <MenubarTrigger>More</MenubarTrigger>
-                        <MenubarContent>
-                            <MenubarItem onClick={() => navigate({ to: "/map" })}>Map...</MenubarItem>
+                <MenubarMenu>
+                    <MenubarTrigger>More</MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarItem onClick={() => navigate({ to: "/map" })}>Map...</MenubarItem>
+                        <LiveDataOnly>
                             <MenubarItem onClick={() => navigate({ to: "/flight-summary" })}>Flight Summary...</MenubarItem>
                             <Show when={enableChat}>
                                 <MenubarSeparator />
@@ -177,9 +177,9 @@ const Navbar = memo(({ children, className, fixedWidth }: { children: React.Reac
                             <MenubarSeparator />
                             <MenubarItem onClick={() => navigate({ to: '/alarms/config' })}>Alarms...</MenubarItem>
                             <MenubarItem onClick={() => navigate({ to: '/gauges/config' })}>Gauges...</MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                </LiveDataOnly>
+                        </LiveDataOnly>
+                    </MenubarContent>
+                </MenubarMenu>
 
                 <MenubarMenu>
                     <MenubarTrigger>Options</MenubarTrigger>

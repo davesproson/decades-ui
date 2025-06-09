@@ -39,7 +39,6 @@ const URLViewConfig = z.object({
 
 const MapViewConfig = z.object({
     type: z.literal('map'),
-    url: z.string(),
 })
 
 const ClockViewConfig = z.object({
@@ -62,6 +61,10 @@ const TephigramViewConfig = z.object({
     type: z.literal('tephi'),
 })
 
+const FlightSummaryViewConfig = z.object({
+    type: z.literal('flight-summary'),
+})
+
 const TimerViewConfig = z.object({
     type: z.literal('timers'),
     initialTimers: z.array(z.object({
@@ -82,6 +85,7 @@ const PlotViewConfig = z.object({
     ordvar: z.string(),
     swapxy: z.boolean(),
     job: z.number().int().optional(),
+    mask: z.boolean().optional(),
 })
 
 const _BASEversion3ViewElement = z.object({
@@ -106,6 +110,7 @@ type _ViewType = z.infer<typeof _BASEversion3ViewElement> & {
         | z.infer<typeof TephigramViewConfig>
         | z.infer<typeof TimerViewConfig>
         | z.infer<typeof PlotViewConfig>
+        | z.infer<typeof FlightSummaryViewConfig>
         | _ViewType
     >
 }
@@ -122,6 +127,7 @@ const nonRecursiveElements = z.union([
     TephigramViewConfig,
     TimerViewConfig,
     PlotViewConfig,
+    FlightSummaryViewConfig,
 ])
 
 export const version3ViewElement: z.ZodType<_ViewType> = _BASEversion3ViewElement.extend({

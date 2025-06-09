@@ -414,20 +414,65 @@ const AdvancedViewConfig = () => {
 
     // Launch the view in a new tab
     const launch = () => {
-        localStorage.setItem("viewConfig", JSON.stringify(currentConfig))
+
+        // We want to ensure that the config has a title, as this is used
+        // to identify the view in the session storage, and also as the
+        // title of the view in the new tab
+        const title = config.title
+        if (!title) {
+            toast.toast({
+                title: "View title is required",
+                description: "Please set a title for the view before launching.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        // Store the config in session storage, so we can retrieve it in
+        // the new tab
+        // We use sessionStorage here to avoid cluttering localStorage with
+        // view configs that are likely only used for a single session.
+        const ssConfig: { [key: string]: AdvancedConfig } = JSON.parse(sessionStorage.getItem("viewConfig") || "{}")
+        ssConfig[title] = config
+        sessionStorage.setItem("viewConfig", JSON.stringify(ssConfig))
+
+        // Open the view in a new tab, using the current URL and the view
+        // title as the search parameter
         const url = new URL(window.location.href)
         url.pathname = base + "view"
+        url.searchParams.set("view", title)
         window.open(url, "_blank")
     }
 
+    // Download the config as a JSON file
+    // This is useful for sharing the config with others, or for backing it up
+    // We use a blob to create a downloadable file
     const downloadConfigJson = () => {
-        const blob = new Blob([JSON.stringify(config)], { type: "text/json" });
-        const link = document.createElement("a");
 
-        link.download = 'view-config.json';
+        // Ensure the config has a title before downloading
+        // as this is required for the file name and to identify the view
+        // in the session storage
+        if (!config.title) {
+            toast.toast({
+                title: "View title is required",
+                description: "Please set a title for the view before downloading.",
+                variant: "destructive"
+            })
+            return
+        }
+
+        // Create a blob from the config, and set the version to 3
+        const blob = new Blob([JSON.stringify({ ...config, "version": 3 })], { type: "text/json" });
+
+        // Create a link to download the blob
+        const link = document.createElement("a");
+        const titleWithoutSpaces = config.title.split(" ").join("-").toLowerCase();
+        link.download = `view-config-${titleWithoutSpaces}.json`;
         link.href = window.URL.createObjectURL(blob);
         link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
 
+        // Append the link to the body, click it to trigger the download,
+        // and then remove it from the DOM
         const evt = new MouseEvent("click", {
             view: window,
             bubbles: true,
@@ -447,6 +492,17 @@ const AdvancedViewConfig = () => {
         fileReader.onload = e => {
             try {
                 const config = JSON.parse(e?.target?.result?.toString() || "")
+                if (!config.name) {
+                    config.name = config.title || "Imported View @ " + new Date().toLocaleString()
+                }
+                if (config.version !== 3) {
+                    toast.toast({
+                        title: "Invalid config file",
+                        description: "The config file must be version 3",
+                        variant: "destructive"
+                    })
+                    return
+                }
                 const parsedConfig = version3View.safeParse(config)
                 if (parsedConfig.success === false) {
                     console.error("Error parsing config file", parsedConfig.error)

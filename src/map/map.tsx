@@ -1,5 +1,7 @@
 import { useOpenLayersMap } from "./hooks";
 import { MapContext } from "./context";
+import { MapParamSelector } from "./param-select";
+import { QuicklookOnly } from "@/components/flow";
 
 type MapProps = {
     children: React.ReactNode,
@@ -9,6 +11,7 @@ type MapProps = {
         lat: number,
         lon: number
     }
+    position?: "fixed" | "absolute"
 }
 
 const OpenLayersMap = (props: MapProps) => {
@@ -21,7 +24,10 @@ const OpenLayersMap = (props: MapProps) => {
 
     return (
         <MapContext.Provider value={{ state, actions }}>
-            <div ref={mapRef} style={{ position: "absolute", bottom: 0, left: 0, right: 0, top: top }}>
+            <QuicklookOnly>
+                <MapParamSelector />
+            </QuicklookOnly>
+            <div ref={mapRef} style={{ position: props.position || "fixed", bottom: 0, left: 0, right: 0, top: top }}>
                 {props.children}
             </div>
         </MapContext.Provider>
