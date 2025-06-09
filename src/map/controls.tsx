@@ -14,10 +14,7 @@ type ToolbarActions = Pick<
 >
 
 import { Grid, Layers, AppWindow, Pin, Search, ZoomIn, ZoomOut, Wrench } from "lucide-react"
-<<<<<<< HEAD
-=======
 import { LiveDataOnly } from "@/components/flow"
->>>>>>> master
 
 
 const ZoomControl = ({ size }: { size?: number }) => {

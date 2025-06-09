@@ -24,10 +24,7 @@ import { Drawings } from './features/drawings';
 import { Drifter } from './features/drifters';
 import { LiveDataOnly, QuicklookOnly, Show } from '../components/flow';
 import { Optional } from '../types';
-<<<<<<< HEAD
-=======
-import { badData, mapTilesUrl } from '../settings';
->>>>>>> master
+import { badData } from '../settings';
 
 import entityIcon from '@/assets/map-icons/g-luxe.png';
 import markerIcon from '@/assets/map-icons/flag-marker.png';
