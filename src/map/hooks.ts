@@ -60,86 +60,58 @@ const useOpenLayersMap = ({ zoom, center }: OpenLayersMapArgs) => {
     return { mapRef, state, actions }
 }
 
+
+const PARAMS = [
+    "gin_latitude", "gin_longitude", "gin_altitude", "gin_heading",
+    "gin_speed", "utc_time"
+];
+
+const initAircraftLive = async (signal: AbortSignal, setAircraftData: (data: PositionData) => void, setAircraftHistory: (data: PositionDataHistory) => void) => {
+    const now = Math.floor(new Date().getTime() / 1000);
+    try {
+        let data = await getData({
+            params: PARAMS
+        }, now - 3600 * 4, now - 1);
+
+        if (signal.aborted) return; // Exit if the signal is aborted
+
+        const acData = {
+            lat: data.gin_latitude[data.gin_latitude.length - 1],
+            lon: data.gin_longitude[data.gin_longitude.length - 1],
+            alt: data.gin_altitude[data.gin_altitude.length - 1],
+            heading: data.gin_heading[data.gin_heading.length - 1],
+            groundSpeed: data.gin_speed[data.gin_speed.length - 1],
+            time: data.utc_time[data.utc_time.length - 1],
+        };
+
+        const acHistory = data.gin_latitude.map((_, i) => {
+            return {
+                lat: data.gin_latitude[i],
+                lon: data.gin_longitude[i],
+                alt: data.gin_altitude[i],
+                heading: data.gin_heading[i],
+                groundSpeed: data.gin_speed[i],
+                time: data.utc_time[i],
+            };
+        }).filter((pos) => pos.lat !== badData && pos.lon !== badData)
+            .filter((_pos, i) => i % 3 === 0);
+
+        if (signal.aborted) return; // Exit if the signal is aborted
+
+        setAircraftData(acData);
+        setAircraftHistory(acHistory);
+    } catch (e) {
+        if (!signal.aborted) {
+            console.error('Error initializing aircraft data', e);
+        }
+    }
+};
+
 const useAircraftData = () => {
     const [aircraftData, setAircraftData] = useState<PositionData | null>(null);
     const [aircraftHistory, setAircraftHistory] = useState<PositionDataHistory>([]);
+    const [noDataReturned, setNoDataReturned] = useState<boolean>(false);
     const quickLookMode = useSelector((state) => state.config.quickLookMode);
-
-    const params = [
-        "gin_latitude", "gin_longitude", "gin_altitude", "gin_heading",
-        "gin_speed", "utc_time"
-    ];
-
-    const updateAircraft = async () => {
-        const now = Math.floor(new Date().getTime() / 1000);
-        let data = await getData({
-            params: params
-        }, now - 2, now - 1);
-
-        let acData: PositionData;
-        try {
-            acData = {
-                lat: data.gin_latitude[data.gin_latitude.length - 1],
-                lon: data.gin_longitude[data.gin_longitude.length - 1],
-                alt: data.gin_altitude[data.gin_altitude.length - 1],
-                heading: data.gin_heading[data.gin_heading.length - 1],
-                groundSpeed: data.gin_speed[data.gin_speed.length - 1],
-                time: data.utc_time[data.utc_time.length - 1],
-            };
-        } catch (e) {
-            console.error('Error updating aircraft data', e);
-            return;
-        }
-
-        if (acData.lat === badData || acData.lon === badData) return;
-        if (acData.lat === null || acData.lon === null) return;
-        if (acData.lat === undefined || acData.lon === undefined) return;
-        if (isNaN(acData.lat) || isNaN(acData.lon)) return;
-
-        setAircraftData(acData);
-        setAircraftHistory((oldState) => [...oldState, acData]);
-    };
-
-    const initAircraftLive = async (signal: AbortSignal) => {
-        const now = Math.floor(new Date().getTime() / 1000);
-        try {
-            let data = await getData({
-                params: params
-            }, now - 3600 * 4, now - 1);
-
-            if (signal.aborted) return; // Exit if the signal is aborted
-
-            const acData = {
-                lat: data.gin_latitude[data.gin_latitude.length - 1],
-                lon: data.gin_longitude[data.gin_longitude.length - 1],
-                alt: data.gin_altitude[data.gin_altitude.length - 1],
-                heading: data.gin_heading[data.gin_heading.length - 1],
-                groundSpeed: data.gin_speed[data.gin_speed.length - 1],
-                time: data.utc_time[data.utc_time.length - 1],
-            };
-
-            const acHistory = data.gin_latitude.map((_, i) => {
-                return {
-                    lat: data.gin_latitude[i],
-                    lon: data.gin_longitude[i],
-                    alt: data.gin_altitude[i],
-                    heading: data.gin_heading[i],
-                    groundSpeed: data.gin_speed[i],
-                    time: data.utc_time[i],
-                };
-            }).filter((pos) => pos.lat !== badData && pos.lon !== badData)
-                .filter((_pos, i) => i % 3 === 0);
-
-            if (signal.aborted) return; // Exit if the signal is aborted
-
-            setAircraftData(acData);
-            setAircraftHistory(acHistory);
-        } catch (e) {
-            if (!signal.aborted) {
-                console.error('Error initializing aircraft data', e);
-            }
-        }
-    };
 
     useEffect(() => {
         const controller = new AbortController();
@@ -151,14 +123,67 @@ const useAircraftData = () => {
             };
         }
 
-        initAircraftLive(signal);
-        const interval = setInterval(updateAircraft, 1000);
+        initAircraftLive(signal, setAircraftData, setAircraftHistory);
 
         return () => {
             controller.abort(); // Cancel any ongoing `initAircraft` call
-            clearInterval(interval); // Clear the interval
         };
     }, [quickLookMode]);
+
+    useEffect(() => {
+        if (quickLookMode) return;
+
+        const timeout = setTimeout(async () => {
+            if (!aircraftData?.time) return;
+
+            const startTime = aircraftData.time + 1;
+            const now = Math.max(
+                Math.floor(new Date().getTime() / 1000) - 1,
+                startTime
+            );
+
+            const data = await getData({
+                params: PARAMS,
+            }, startTime, now)
+
+            if (data.gin_latitude.length === 0) {
+                setNoDataReturned(x => !x);
+                return; // No new data to process
+            }
+
+            const history = data.gin_latitude.map((_, i) => {
+                return {
+                    lat: data.gin_latitude[i],
+                    lon: data.gin_longitude[i],
+                    alt: data.gin_altitude[i],
+                    heading: data.gin_heading[i],
+                    groundSpeed: data.gin_speed[i],
+                    time: data.utc_time[i],
+                };
+            }).filter((pos) => pos.lat !== badData && pos.lon !== badData)
+
+            if (history.length === 0) {
+                setNoDataReturned(x => !x);
+                return; // No valid data to process
+            }
+
+            setAircraftHistory((state) => [...state, ...history]);
+            setAircraftData({
+                lat: history[history.length - 1].lat,
+                lon: history[history.length - 1].lon,
+                alt: history[history.length - 1].alt,
+                heading: history[history.length - 1].heading,
+                groundSpeed: history[history.length - 1].groundSpeed,
+                time: history[history.length - 1].time,
+            });
+
+        }, 1000)
+
+        return () => {
+            clearTimeout(timeout);
+        };
+
+    }, [quickLookMode, aircraftData, noDataReturned, setAircraftData, setAircraftHistory]);
 
     return { aircraftData, aircraftHistory };
 };
