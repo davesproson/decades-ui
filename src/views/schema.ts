@@ -1,7 +1,21 @@
 import { z } from 'zod'
 
+const GaugeConfig = z.object({
+    type: z.literal('gauge'),
+    direction: z.union([z.literal('row'), z.literal('column')]),
+    configs: z.array(z.object({
+        parameter: z.string(),
+        min: z.number(),
+        max: z.number(),
+        dangerBelow: z.union([z.number(), z.null()]),
+        dangerAbove: z.union([z.number(), z.null()]),
+        value: z.null().optional(),
+    }))
+})
+
 const AlarmConfig = z.object({
     name: z.string(),
+    id: z.string().optional(),
     description: z.string(),
     parameters: z.array(z.string()),
     rule: z.string(),
@@ -20,6 +34,7 @@ const AlarmViewConfig = z.object({
 
 const DashboardViewConfig = z.object({
     type: z.literal('dashboard'),
+    size: z.union([z.literal('small'), z.literal('large')]).optional(),
     params: z.array(z.string()),
     limits: z.array(z.union([z.object(
         {
@@ -63,6 +78,10 @@ const TephigramViewConfig = z.object({
 
 const FlightSummaryViewConfig = z.object({
     type: z.literal('flight-summary'),
+})
+
+const ChatViewConfig = z.object({
+    type: z.literal('chat'),
 })
 
 const TimerViewConfig = z.object({
@@ -111,6 +130,8 @@ type _ViewType = z.infer<typeof _BASEversion3ViewElement> & {
         | z.infer<typeof TimerViewConfig>
         | z.infer<typeof PlotViewConfig>
         | z.infer<typeof FlightSummaryViewConfig>
+        | z.infer<typeof ChatViewConfig>
+        | z.infer<typeof GaugeConfig>
         | _ViewType
     >
 }
@@ -128,6 +149,8 @@ const nonRecursiveElements = z.union([
     TimerViewConfig,
     PlotViewConfig,
     FlightSummaryViewConfig,
+    ChatViewConfig,
+    GaugeConfig,
 ])
 
 export const version3ViewElement: z.ZodType<_ViewType> = _BASEversion3ViewElement.extend({
