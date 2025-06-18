@@ -89,13 +89,11 @@ const useAlarm = (props: AlarmProps) => {
             }
 
             for (let param of Object.keys(data)) {
-                try {
-                    dataOut[param] = data[param].filter((d) => d !== null)
-                        .filter((d) => d !== badData)
-                        .reverse()[0]
-                    if (data[param] === undefined) throw ("No data")
-                } catch (e) {
-                    dataOut[param] = null
+                dataOut[param] = data[param].filter((d) => d !== null)
+                    .filter((d) => d !== badData)
+                    .reverse()[0]
+                console.log(`Alarm data for ${param}:`, dataOut[param])
+                if (dataOut[param] === undefined) {
                     const alarmValue = props.failOnNoData ? false : undefined
                     setPassing(alarmValue)
                     return
