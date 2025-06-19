@@ -179,7 +179,7 @@ const Redash = (props: RedashProps) => {
     }
 
     const ratio = width / height
-    const nCols = Math.min(Math.floor(ratio * 2.5), props.params.length)
+    const nCols = Math.min(Math.floor(ratio * 2.5), props.params.length) || 1
     const nRows = Math.ceil(props.params.length / nCols)
 
     const _width = width / nCols
