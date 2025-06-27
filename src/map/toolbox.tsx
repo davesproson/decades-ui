@@ -67,6 +67,7 @@ const DefaultToolboxContent = ({ state, actions, toggle }: ToolboxProps & { togg
     const measureFromAircraft = state.mapModes.includes(DecadesMapModality.ADD_AIRCRAFT_MEASURE)
     const lineMeasureActive = state.mapModes.includes(DecadesMapModality.START_MEASUREMENT)
     const deleteFlagActive = state.mapModes.includes(DecadesMapModality.DELETE_FLAG)
+    const addFlagActive = state.mapModes.includes(DecadesMapModality.ADD_FLAG)
     const lineDrawActive = state.drawMode === "LineString"
     const circleDrawActive = state.drawMode === "Circle"
     const polygonDrawActive = state.drawMode === "Polygon"
@@ -76,6 +77,7 @@ const DefaultToolboxContent = ({ state, actions, toggle }: ToolboxProps & { togg
         <>
             <ToolBoxSection title="Flags">
                 <Button size="sm" className="flex-1 mr-1" onClick={addFlag}>Drop</Button>
+                <Button size="sm" variant={addFlagActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.ADD_FLAG)}>Mouse</Button>
                 <Button size="sm" className="flex-1 mr-1" onClick={toggle}>Add</Button>
                 <Button size="sm" variant={deleteFlagActive ? "success" : "default"} className="flex-1 mr-1" onClick={() => actions.toggleMapMode(DecadesMapModality.DELETE_FLAG)}>Remove</Button>
                 <Button size="sm" variant="destructive" className="flex-1 mr-1" onClick={() => actions.setFlags([])}>Clear</Button>
@@ -124,7 +126,7 @@ const AddFlagContent = ({ toggle, state, actions }: { toggle: () => void, state:
 
         let lastFlag = state.flags[state.flags.length - 1]
         let numFlags: number
-        if (!lastFlag.name) {
+        if (!lastFlag?.name) {
             numFlags = 0
         } else {
             numFlags = parseInt(lastFlag.name.split(' ')[1])

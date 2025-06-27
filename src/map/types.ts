@@ -101,6 +101,7 @@ export type DecadesMapActions = {
 export enum DecadesMapModality {
     DEFAULT,
     DELETE_FLAG,
+    ADD_FLAG,
     ADD_AIRCRAFT_MEASURE,
     START_MEASUREMENT,
     DELETE_DRAWING

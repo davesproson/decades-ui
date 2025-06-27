@@ -61,10 +61,42 @@ const MapClickEvent = ({ state, actions }: DecadesProps) => {
         }
     }, [mapState.map, state.mapModes, actions.setAircraftMeasures])
 
+    // Add a flag when the add flag mode is active
+    useEffect(() => {
+        if (!mapState.map) return
+        if (!state.mapModes.includes(DecadesMapModality.ADD_FLAG)) return
+
+        const addFlag = (e: any) => {
+            if (!mapState.map) return
+            const pixel = mapState.map.getEventPixel(e.originalEvent)
+            const lonLat = toLonLat(mapState.map.getCoordinateFromPixel(pixel))
+            const lastFlag = state.flags[state.flags.length - 1]
+            let numFlags: number
+            if (!lastFlag?.name) {
+                numFlags = 0
+            } else {
+                numFlags = parseInt(lastFlag.name.split(' ')[1])
+            }
+            const newFlag = {
+                lat: lonLat[1],
+                lon: lonLat[0],
+                name: `Flag ${numFlags + 1}`
+            }
+            actions.setFlags(x => [...x, newFlag])
+        }
+
+        mapState.map.on('click', addFlag)
+
+        return () => {
+            mapState.map?.un('click', addFlag)
+        }
+
+    }, [mapState.map, state.flags, state.mapModes, actions.setFlags])
+
     return null
 }
 
-const MouseMoveEvent = ({ actions }: DecadesProps) => {
+const MouseMoveEvent = ({ state, actions }: DecadesProps) => {
     const { state: mapState } = useContext(MapContext)
 
     useEffect(() => {
@@ -105,6 +137,44 @@ const MouseMoveEvent = ({ actions }: DecadesProps) => {
             mapState.map?.un('pointermove', updateCoords)
         }
     }, [mapState.map])
+
+
+    // Show and update the mouse position overlay when the add flag mode is active
+    // This is useful for adding flags at a specific location when the coordinates are not known
+    useEffect(() => {
+        // If the map is not available or the add flag mode is not active, do nothing
+        if (!mapState.map) return
+        if (!state.mapModes.includes(DecadesMapModality.ADD_FLAG)) return
+
+        // Update the overlay with the mouse position
+        const updateCoords = (e: any) => {
+            if (!mapState.map) return
+
+            // Get the current mouse position in pixel coordinates
+            // and convert it to longitude and latitude
+            const mousePos = mapState.map.getEventPixel(e.originalEvent)
+            const lonLat = toLonLat(mapState.map.getCoordinateFromPixel(mousePos))
+
+            // Set the overlay with the current mouse position
+            actions.setOverlay({
+                lon: lonLat[0],
+                lat: lonLat[1],
+                name: 'Mouse Position',
+                x: mousePos[0],
+                y: mousePos[1]
+            })
+        }
+
+        // Add the pointermove event listener to the map
+        mapState.map.on('pointermove', updateCoords)
+
+        // Cleanup function to remove the event listener and reset the overlay
+        // when the component is unmounted or the map or actions change
+        return () => {
+            actions.setOverlay(null)
+            mapState.map?.un('pointermove', updateCoords)
+        }
+    }, [mapState.map, actions.setOverlay, state.mapModes])
 
     return null
 }
