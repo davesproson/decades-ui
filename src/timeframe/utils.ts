@@ -24,7 +24,7 @@ const getTimeLims = (tf: string): [number, number] => {
         } catch {
             endTime = nowSecs()
         }
-        return [startTime, endTime]
+        return [startTime, isNaN(endTime) ? nowSecs() : endTime]
     }
 
     const end = nowSecs()

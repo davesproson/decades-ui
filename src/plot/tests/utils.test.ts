@@ -2,13 +2,13 @@ import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
 import {
     canSlide,
     getAxesArray,
-    getTimeLims,
     getXAxis,
     getYAxis,
     paramFromRawName,
     plotIsOngoing,
     slideLength,
 } from '../utils'
+import { getTimeLims } from '@/timeframe/utils'
 import { PlotURLOptions } from '../types'
 
 const getOptions = (options: Partial<PlotURLOptions>) => {
