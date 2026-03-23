@@ -1,5 +1,3 @@
-// TODO. There are some ts-ignore statements in here which need to be fixed.
-
 import { useContext, useEffect, useState } from 'react';
 import { ChatContext } from '@/chat/provider';
 import { useSelector } from "@store";
@@ -507,7 +505,8 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         if (chatState.config.chatActive && chatState.connectionStatus === 'Open' && !quicklookMode) {
             config.modeBarButtonsToAdd.push({
                 name: "Share plot",
-                icon: ShareIcon as any,
+                // @ts-expect-error - ShareIcon is a React component, Plotly expects its own Icon type
+                icon: ShareIcon,
                 click: () => {
                     const url = new URL(window.location.href)
                     const [staticStart, now] = getTimeLims(options.timeframe)
@@ -520,12 +519,12 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 
         import('plotly.js-dist-min').then(Plotly => {
             setLoadDone(true);
-            // @ts-ignore - assign the icons to the modebar buttons which are initially null
+            // @ts-expect-error - Plotly types icon as null initially but it accepts Icon at runtime
             config.modeBarButtonsToAdd[0].icon = Plotly.Icons.disk;
-            // @ts-ignore - assign the icons to the modebar buttons which are initially null
+            // @ts-expect-error - Plotly types icon as null initially but it accepts Icon at runtime
             config.modeBarButtonsToAdd[1].icon = Plotly.Icons.eraseshape;
 
-            // @ts-ignore - plotly typing is a pain in the hole
+            // @ts-expect-error - ref may be a callback ref without .current; PlotlyTrace.type is string not a literal
             Plotly.newPlot(ref.current, traces, layout, config)
                 .then(() => setInitDone(true))
         })

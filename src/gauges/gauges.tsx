@@ -42,7 +42,7 @@ const Gauge = (props: GaugeConfig) => {
 
     useEffect(() => {
         if (!ref.current) return
-        // @ts-ignore - Plotly typing.... TODO
+        // @ts-expect-error - gauge trace type is 'indicator' which is not in Plotly's Data union
         Plotly.react(ref.current, data, layout);
     }, [props.value, ref])
 
@@ -66,7 +66,7 @@ const Gauge = (props: GaugeConfig) => {
     useEffect(() => {
         if (initDone) return
 
-        // @ts-ignore - Plotly typing.... TODO
+        // @ts-expect-error - gauge trace type is 'indicator' which is not in Plotly's Data union
         Plotly.newPlot(ref.current, data, layout, config);
         setInitDone(true)
     }, [ref.current, setInitDone, initDone])
