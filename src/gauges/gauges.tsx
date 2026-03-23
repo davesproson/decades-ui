@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react"
 import { useDarkMode } from "@/components/theme-provider"
 import { GaugeConfig, GaugePanelProps } from "./types"
 import { useGauge } from "./hooks"
@@ -20,7 +21,20 @@ const arcPath = (startAngle: number, endAngle: number): string => {
 }
 
 const Gauge = (props: GaugeConfig) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
     const darkMode = useDarkMode()
+
+    useEffect(() => {
+        const el = containerRef.current
+        if (!el) return
+        const observer = new ResizeObserver(([entry]) => {
+            const { width, height } = entry.contentRect
+            setDimensions({ width, height })
+        })
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
 
     const min = props.min ?? 0
     const max = props.max ?? 100
@@ -48,63 +62,67 @@ const Gauge = (props: GaugeConfig) => {
     const displayValue = value !== null ? value.toFixed(1) : '---'
 
     return (
-        <svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 200 138"
-            style={{ display: 'block', background: bgColor }}
-        >
-                {/* Background track */}
-                <path
-                    d={arcPath(Math.PI, 0)}
-                    fill="none" stroke={trackColor}
-                    strokeWidth={STROKE_WIDTH} strokeLinecap="round"
-                />
-                {/* Danger zones — flat inner cap, rounded outer cap via circle */}
-                {props.dangerBelow != null && props.dangerBelow > min && (
-                    <>
-                        <path
-                            d={arcPath(Math.PI, toAngle(props.dangerBelow))}
-                            fill="none" stroke="#aa0000"
-                            strokeWidth={STROKE_WIDTH} strokeLinecap="butt"
-                        />
-                        <circle cx={CX - R} cy={CY} r={STROKE_WIDTH / 2} fill="#aa0000" />
-                    </>
-                )}
-                {props.dangerAbove != null && props.dangerAbove < max && (
-                    <>
-                        <path
-                            d={arcPath(toAngle(props.dangerAbove), 0)}
-                            fill="none" stroke="#aa0000"
-                            strokeWidth={STROKE_WIDTH} strokeLinecap="butt"
-                        />
-                        <circle cx={CX + R} cy={CY} r={STROKE_WIDTH / 2} fill="#aa0000" />
-                    </>
-                )}
-                {/* Value arc — narrower so danger zones show through */}
-                {normalised !== null && normalised > 0 && (
+        <div ref={containerRef} style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
+            {dimensions.width > 0 && (
+                <svg
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    viewBox="0 0 200 138"
+                    style={{ display: 'block', background: bgColor }}
+                >
+                    {/* Background track */}
                     <path
-                        d={arcPath(Math.PI, Math.PI * (1 - normalised))}
-                        fill="none" stroke={valueColor}
-                        strokeWidth={VALUE_STROKE_WIDTH} strokeLinecap="round"
+                        d={arcPath(Math.PI, 0)}
+                        fill="none" stroke={trackColor}
+                        strokeWidth={STROKE_WIDTH} strokeLinecap="round"
                     />
-                )}
-                {/* Numeric value */}
-                <text x={CX} y={CY - 5} textAnchor="middle" fontSize="26" fontWeight="bold" fill={textColor}>
-                    {displayValue}
-                </text>
-                {/* Range labels — aligned with arc endpoints */}
-                <text x={CX - R} y={CY + 22} textAnchor="middle" fontSize="11" fill={textColor}>
-                    {min}
-                </text>
-                <text x={CX + R} y={CY + 22} textAnchor="middle" fontSize="11" fill={textColor}>
-                    {max}
-                </text>
-                {/* Title */}
-                <text x={CX} y={132} textAnchor="middle" fontSize="10" fill={textColor}>
-                    {title}
-                </text>
-            </svg>
+                    {/* Danger zones — flat inner cap, rounded outer cap via circle */}
+                    {props.dangerBelow != null && props.dangerBelow > min && (
+                        <>
+                            <path
+                                d={arcPath(Math.PI, toAngle(props.dangerBelow))}
+                                fill="none" stroke="#aa0000"
+                                strokeWidth={STROKE_WIDTH} strokeLinecap="butt"
+                            />
+                            <circle cx={CX - R} cy={CY} r={STROKE_WIDTH / 2} fill="#aa0000" />
+                        </>
+                    )}
+                    {props.dangerAbove != null && props.dangerAbove < max && (
+                        <>
+                            <path
+                                d={arcPath(toAngle(props.dangerAbove), 0)}
+                                fill="none" stroke="#aa0000"
+                                strokeWidth={STROKE_WIDTH} strokeLinecap="butt"
+                            />
+                            <circle cx={CX + R} cy={CY} r={STROKE_WIDTH / 2} fill="#aa0000" />
+                        </>
+                    )}
+                    {/* Value arc — narrower so danger zones show through */}
+                    {normalised !== null && normalised > 0 && (
+                        <path
+                            d={arcPath(Math.PI, Math.PI * (1 - normalised))}
+                            fill="none" stroke={valueColor}
+                            strokeWidth={VALUE_STROKE_WIDTH} strokeLinecap="round"
+                        />
+                    )}
+                    {/* Numeric value */}
+                    <text x={CX} y={CY - 5} textAnchor="middle" fontSize="26" fontWeight="bold" fill={textColor}>
+                        {displayValue}
+                    </text>
+                    {/* Range labels — aligned with arc endpoints */}
+                    <text x={CX - R} y={CY + 22} textAnchor="middle" fontSize="11" fill={textColor}>
+                        {min}
+                    </text>
+                    <text x={CX + R} y={CY + 22} textAnchor="middle" fontSize="11" fill={textColor}>
+                        {max}
+                    </text>
+                    {/* Title */}
+                    <text x={CX} y={132} textAnchor="middle" fontSize="10" fill={textColor}>
+                        {title}
+                    </text>
+                </svg>
+            )}
+        </div>
     )
 }
 
@@ -114,33 +132,16 @@ const GaugePanel = (props: GaugePanelProps) => {
 
     if (!configs) return <></>
 
-    let direction = props.direction || "row"
-
-    if (direction === "row") {
-        var templateColumns = "1fr ".repeat(configs.length)
-        var templateRows = "1fr"
-    } else {
-        var templateColumns = "1fr"
-        var templateRows = "1fr ".repeat(configs.length)
-    }
+    const direction = props.direction || "row"
 
     return (
         <div style={{
-            position: "relative",
-            top: 0,
-            left: 0,
+            display: "flex",
+            flexDirection: direction === "row" ? "row" : "column",
             height: "100%",
             width: "100%",
         }}>
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: templateColumns,
-                gridTemplateRows: templateRows,
-                height: "100%",
-                width: "100%",
-            }}>
-                {configs.map((config, i) => <Gauge key={i} {...config} />)}
-            </div>
+            {configs.map((config, i) => <Gauge key={i} {...config} />)}
         </div>
     )
 }
