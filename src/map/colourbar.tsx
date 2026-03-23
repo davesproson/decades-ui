@@ -107,6 +107,7 @@ type ColourBarProps = {
 const ColourBar = ({ data, colorMap, onChangeColorMap }: ColourBarProps) => {
     const [selectorOpen, setSelectorOpen] = useState(false);
     let fData = data.filter(d => d !== badData);
+    if (fData.length === 0) return null;
     const dataMean = fData.reduce((a, b) => a + b, 0) / fData.length;
     const dataMin = Math.min(...fData);
     const dataMax = Math.max(...fData);

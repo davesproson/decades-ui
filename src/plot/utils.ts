@@ -207,12 +207,15 @@ const updatePlot = (options: PlotURLOptions, data: DataType, ref: any/*TODO: typ
         if (options.caxis && options.params.length === 1) {
             const currentData = ref.current.data
             const newColorArray: Array<number> = [...currentData[0].marker.color, ...cData[0]]
+            const validColors = newColorArray.filter(x => x !== badData)
 
-            Plotly.restyle(ref.current, {
-                'marker.color': [newColorArray],
-                'marker.cmin': Math.min(...newColorArray.filter(x => x === badData ? null : x)),
-                'marker.cmax': Math.max(...newColorArray.filter(x => x === badData ? null : x))
-            } as any, 0)
+            if (validColors.length > 0) {
+                Plotly.restyle(ref.current, {
+                    'marker.color': [newColorArray],
+                    'marker.cmin': Math.min(...validColors),
+                    'marker.cmax': Math.max(...validColors)
+                } as any, 0)
+            }
         }
 
     })

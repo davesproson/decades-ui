@@ -21,10 +21,12 @@ type TrackProps = {
 
 const ReliefTrack = (props: TrackProps) => {
     const ColorMap = (data: number[], value: number): string => {
-        const min = Math.min(...data.filter((v) => v !== badData));
-        const max = Math.max(...data.filter((v) => v !== badData));
+        const valid = data.filter((v) => v !== badData);
+        if (valid.length === 0) return 'rgba(0, 0, 0, 0)';
+        const min = Math.min(...valid);
+        const max = Math.max(...valid);
         // Viridis color map
-        const normalized = (value - min) / (max - min);
+        const normalized = min === max ? 0 : (value - min) / (max - min);
         const [r, g, b] = colourMaps.interpolate(colourMaps.maps[props.colorMap || "viridis"] || colourMaps.maps.viridis, normalized);
         // Convert to 0-255 range
         const r255 = Math.floor(r * 255);
