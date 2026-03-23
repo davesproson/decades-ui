@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { AdvancedConfig } from '@/redux/viewSlice';
 
 import { useWidgets } from "./widgets/register"
+import { ConfigWidgetProps } from "./widgets/types"
 import { useDarkMode } from '@/components/theme-provider';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/navbar';
@@ -25,13 +26,6 @@ import { v4 } from 'uuid';
 import { version3View } from './schema';
 import { useToast } from '@/components/ui/use-toast';
 
-interface ConfigWidgetProps {
-    visible: boolean,
-    split: (rows: number, cols: number, rowPc: number[], colPc: number[]) => void,
-    hide: () => void,
-    top: boolean,
-    setData: (data: any) => void
-}
 /**
  * Display the configuration widget. 
  * 
