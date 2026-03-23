@@ -50,23 +50,15 @@ interface Version1View {
 type Version3ViewElement = z.infer<typeof version3ViewElement>
 type Version3View = z.infer<typeof version3View>
 
-interface Version3LibraryView {
+interface LibraryViewBase<T> {
     title: string,
     description?: string,
-    config: Version3View
+    config: T
 }
 
-interface Version2LibraryView {
-    title: string,
-    description?: string,
-    config: Version2View
-}
-
-interface Version1LibraryView {
-    title: string,
-    description?: string,
-    config: Version1View
-}
+type Version3LibraryView = LibraryViewBase<Version3View>
+type Version2LibraryView = LibraryViewBase<Version2View>
+type Version1LibraryView = LibraryViewBase<Version1View>
 
 type LibraryView = Version3LibraryView | Version2LibraryView | Version1LibraryView
 
