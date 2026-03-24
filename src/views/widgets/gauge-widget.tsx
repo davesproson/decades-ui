@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 import { useSelector } from '@store'
 import type { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './types'
 import type { GaugePanelProps } from '@/gauges/types'
@@ -27,7 +27,7 @@ const ConfigGaugeArea = forwardRef((_props, ref) => {
 
 const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const ref = useRef<ConfigHandle<GaugePanelProps>>(null)
-    const widget = {
+    const widget = useMemo(() => ({
         name: "Gauge",
         type: "gauge",
         configComponent: <ConfigGaugeArea ref={ref} />,
@@ -41,7 +41,7 @@ const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
         icon: gaugeIcon,
         tooltip: 'Display one or more gauges - realtime parameter values',
         component: GaugePanel
-    }
+    }), []) // ref is stable — no deps needed
     registry.register(widget)
 }
 

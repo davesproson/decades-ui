@@ -25,6 +25,9 @@ class Registry implements RegistryType<WidgetConfiguration> {
         if (w) return w
         throw new Error(`Widget ${type} not found`)
     }
+    findWidget(type: string) {
+        return this.registered.find(x => x.type.toLowerCase() === type.toLowerCase())
+    }
     register(widget: WidgetConfiguration) {
         if (this.registered.find(x => x.type.toLowerCase() === widget.type.toLowerCase())) {
             return

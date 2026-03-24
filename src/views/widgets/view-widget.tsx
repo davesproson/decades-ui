@@ -1,4 +1,4 @@
-import { useState, useImperativeHandle, forwardRef, useRef, useEffect } from "react"
+import { useState, useImperativeHandle, forwardRef, useRef, useEffect, useMemo  } from "react"
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import { useWidgets } from "./register"
 import { Input } from "@/components/ui/input"
@@ -152,7 +152,7 @@ const _View = (props: ViewProps) => {
 
 const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const ref = useRef<ConfigHandle<ConfigViewData>>(null)
-    registry.register({
+    const widget = useMemo(() => ({
         name: "View",
         type: "view",
         configComponent: <ConfigViewArea ref={ref} />,
@@ -169,7 +169,8 @@ const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
         icon: '',
         tooltip: 'Configure the view layout for this area',
         component: _View
-    })
+    }), []) // ref is stable — no deps needed
+    registry.register(widget)
 }
 
 export { useViewWidget, _View }

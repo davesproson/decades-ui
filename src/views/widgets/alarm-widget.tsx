@@ -3,7 +3,7 @@ import type { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration
 import AlarmList from "@/alarms/alarm"
 import alarmIcon from "@/assets/view-icons/alarm.svg"
 import { useSelector } from "@store"
-import { forwardRef, useImperativeHandle, useRef } from "react"
+import { forwardRef, useImperativeHandle, useMemo, useRef } from "react"
 
 const AlarmsConfigArea = forwardRef<ConfigHandle<Array<AlarmProps>>, {}>((_props, ref) => {
     const alarms = useSelector(state => state.alarms)
@@ -32,7 +32,7 @@ const AlarmsConfigArea = forwardRef<ConfigHandle<Array<AlarmProps>>, {}>((_props
 
 const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const ref = useRef<ConfigHandle<Array<AlarmProps>>>(null)
-    registry.register({
+    const widget = useMemo(() => ({
         name: "Alarms",
         type: "alarms",
         configComponent: <AlarmsConfigArea ref={ref} />,
@@ -46,7 +46,8 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
         icon: alarmIcon,
         tooltip: 'Be alerted when data are out of spec',
         component: AlarmList
-    })
+    }), []) // ref is stable — no deps needed
+    registry.register(widget)
 }
 
 export { useAlarmsWidget }

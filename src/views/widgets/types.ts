@@ -26,6 +26,7 @@ export type RegistryType<T extends { type: string }> = {
     registered: T[],
     register: (widget: T) => void
     getWidget: (type: string) => T
+    findWidget: (type: string) => T | undefined
 }
 
 export interface PluginType {

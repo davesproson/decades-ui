@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react'
+import React, { useImperativeHandle, useMemo } from 'react'
 import { useSelector } from '@store'
 import { Badge } from '@/components/ui/badge'
 import { ConfigHandle, ConfigWidgetProps, RegistryType, WidgetConfiguration } from './types'
@@ -53,8 +53,7 @@ const ConfigDashboardArea = React.forwardRef<ConfigHandle<ConfigDashboardData>, 
 
 const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
     const ref = React.useRef<ConfigHandle<ConfigDashboardData>>(null)
-
-    registry.register({
+    const widget = useMemo(() => ({
         name: "Dash",
         type: "dashboard",
         configComponent: <ConfigDashboardArea ref={ref} />,
@@ -71,12 +70,8 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
         component: (props: DashboardProps) => {
             return <Redash {...props} useURL={false} />
         }
-        // if(useNewDashboard) {
-        //     return
-        // }
-        // return <Dashboard {...props} useURL={false} />
-        // }
-    })
+    }), []) // ref is stable — no deps needed
+    registry.register(widget)
 }
 
 export { useDashWidget }

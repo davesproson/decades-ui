@@ -1,4 +1,3 @@
-
 import RollIndicator from "@/roll-indicator/roll-indicator"
 import type { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
 import rollIcon from "@/assets/view-icons/roll.svg"
