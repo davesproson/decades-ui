@@ -24,7 +24,7 @@ export interface WidgetConfiguration {
 
 export type RegistryType<T extends { type: string }> = {
     registered: T[],
-    register: (widget: T) => void
+    register: (widget: T, order?: number) => void
     getWidget: (type: string) => T
     findWidget: (type: string) => T | undefined
 }

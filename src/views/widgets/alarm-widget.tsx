@@ -30,7 +30,7 @@ const AlarmsConfigArea = forwardRef<ConfigHandle<Array<AlarmProps>>, {}>((_props
     )
 })
 
-const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
+const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>, order?: number) => {
     const ref = useRef<ConfigHandle<Array<AlarmProps>>>(null)
     const widget = useMemo(() => ({
         name: "Alarms",
@@ -47,7 +47,7 @@ const useAlarmsWidget = (registry: RegistryType<WidgetConfiguration>) => {
         tooltip: 'Be alerted when data are out of spec',
         component: AlarmList
     }), []) // ref is stable — no deps needed
-    registry.register(widget)
+    registry.register(widget, order)
 }
 
 export { useAlarmsWidget }

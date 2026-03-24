@@ -115,7 +115,7 @@ const ConfigPlotArea = forwardRef<ConfigHandle<PlotInternalOptions>, {}>((_props
  * This hook creates a Plot widget plugin with a configuration component, save functionality, icon, tooltip, and main component.
  * The configuration component uses a ref to manage internal options and save data.
  */
-const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
+const usePlotWidget = (registry: RegistryType<WidgetConfiguration>, order?: number) => {
     const ref = useRef<ConfigHandle<PlotInternalOptions>>(null)
     const plugin = useMemo(() => ({
         name: "Plot",
@@ -132,7 +132,7 @@ const usePlotWidget = (registry: RegistryType<WidgetConfiguration>) => {
         tooltip: 'Display a timeseries plot',
         component: (props: PlotURLOptions) => PlotDispatcher({ ...props, containerStyle: containerStyle }),
     }), []) // ref is stable — no deps needed
-    registry.register(plugin)
+    registry.register(plugin, order)
 }
 
 export { usePlotWidget }

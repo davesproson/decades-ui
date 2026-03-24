@@ -150,7 +150,7 @@ const _View = (props: ViewProps) => {
 
 }
 
-const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
+const useViewWidget = (registry: RegistryType<WidgetConfiguration>, order?: number) => {
     const ref = useRef<ConfigHandle<ConfigViewData>>(null)
     const widget = useMemo(() => ({
         name: "View",
@@ -170,7 +170,7 @@ const useViewWidget = (registry: RegistryType<WidgetConfiguration>) => {
         tooltip: 'Configure the view layout for this area',
         component: _View
     }), []) // ref is stable — no deps needed
-    registry.register(widget)
+    registry.register(widget, order)
 }
 
 export { useViewWidget, _View }

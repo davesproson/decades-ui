@@ -51,7 +51,7 @@ const ConfigDashboardArea = React.forwardRef<ConfigHandle<ConfigDashboardData>, 
     )
 })
 
-const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
+const useDashWidget = (registry: RegistryType<WidgetConfiguration>, order?: number) => {
     const ref = React.useRef<ConfigHandle<ConfigDashboardData>>(null)
     const widget = useMemo(() => ({
         name: "Dash",
@@ -71,7 +71,7 @@ const useDashWidget = (registry: RegistryType<WidgetConfiguration>) => {
             return <Redash {...props} useURL={false} />
         }
     }), []) // ref is stable — no deps needed
-    registry.register(widget)
+    registry.register(widget, order)
 }
 
 export { useDashWidget }

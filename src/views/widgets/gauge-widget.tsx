@@ -25,7 +25,7 @@ const ConfigGaugeArea = forwardRef((_props, ref) => {
 })
 
 
-const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
+const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>, order?: number) => {
     const ref = useRef<ConfigHandle<GaugePanelProps>>(null)
     const widget = useMemo(() => ({
         name: "Gauge",
@@ -42,7 +42,7 @@ const useGaugeWidget = (registry: RegistryType<WidgetConfiguration>) => {
         tooltip: 'Display one or more gauges - realtime parameter values',
         component: GaugePanel
     }), []) // ref is stable — no deps needed
-    registry.register(widget)
+    registry.register(widget, order)
 }
 
 export { useGaugeWidget }
