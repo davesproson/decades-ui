@@ -151,4 +151,4 @@ const GaugePanelDispatcher = () => {
 }
 
 export default GaugePanelDispatcher
-export { GaugePanel }
+export { Gauge, GaugePanel }
