@@ -1,4 +1,4 @@
-import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import { ConfigWidgetProps, WidgetConfiguration } from "./types"
 import { containerStyle } from "./utils"
 import { TephigramOptions } from "@/tephigram/types"
 import Tephigram from "@/tephigram/tephigram"
@@ -6,9 +6,9 @@ import tephigramIcon from "@/assets/view-icons/tephigram.svg"
 
 
 /**
- * Add a tephigram to the advanced view. We currenly just use the 
+ * Add a tephigram to the advanced view. We currenly just use the
  * default tephigram options.
- * 
+ *
 */
 const ConfigTephiArea = () => {
     return (
@@ -19,21 +19,17 @@ const ConfigTephiArea = () => {
     )
 }
 
-const useTephiWidget = (registry: RegistryType<WidgetConfiguration>) => {
-    registry.register({
-        name: "Tephigram",
-        type: "tephi",
-        configComponent: <ConfigTephiArea />,
-        save: (props: ConfigWidgetProps) => {
-            props.setData({
-                type: "tephi",
-            })
-            return true
-        },
-        icon: tephigramIcon,
-        tooltip: 'Display a tephigram',
-        component: (props: TephigramOptions) => Tephigram({ ...props, containerStyle: containerStyle }),
-    })
+export const tephiWidgetConfig: WidgetConfiguration = {
+    name: "Tephigram",
+    type: "tephi",
+    configComponent: <ConfigTephiArea />,
+    save: (props: ConfigWidgetProps) => {
+        props.setData({
+            type: "tephi",
+        })
+        return true
+    },
+    icon: tephigramIcon,
+    tooltip: 'Display a tephigram',
+    component: (props: TephigramOptions) => Tephigram({ ...props, containerStyle: containerStyle }),
 }
-
-export { useTephiWidget }

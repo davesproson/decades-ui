@@ -1,5 +1,5 @@
 import HeadingIndicator from "@/heading-indicator/heading-indicator"
-import type { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import type { ConfigWidgetProps, WidgetConfiguration } from "./types"
 import headingIcon from "@/assets/view-icons/heading.svg"
 
 const ConfigHeadingArea = () => {
@@ -11,21 +11,17 @@ const ConfigHeadingArea = () => {
     )
 }
 
-const useHeadingWidget = (registry: RegistryType<WidgetConfiguration>) => {
-    registry.register({
-        name: "Heading",
-        type: "heading",
-        configComponent: <ConfigHeadingArea />,
-        save: (props: ConfigWidgetProps) => {
-            props.setData({
-                type: "heading",
-            })
-            return true
-        },
-        icon: headingIcon,
-        tooltip: 'Display an aircraft heading indicator',
-        component: HeadingIndicator
-    })
+export const headingWidgetConfig: WidgetConfiguration = {
+    name: "Heading",
+    type: "heading",
+    configComponent: <ConfigHeadingArea />,
+    save: (props: ConfigWidgetProps) => {
+        props.setData({
+            type: "heading",
+        })
+        return true
+    },
+    icon: headingIcon,
+    tooltip: 'Display an aircraft heading indicator',
+    component: HeadingIndicator
 }
-
-export { useHeadingWidget }

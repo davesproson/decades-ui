@@ -1,6 +1,6 @@
 import { ChatWidget } from "../../chat/chat"
 import { enableChat } from "../../settings"
-import { ConfigWidgetProps, RegistryType, WidgetConfiguration } from "./types"
+import { ConfigWidgetProps, WidgetConfiguration } from "./types"
 import chatIcon from "@/assets/view-icons/chat.svg"
 
 const ChatConfig = () => {
@@ -11,9 +11,10 @@ const ChatConfig = () => {
     )
 }
 
-const useChatWidget = (registry: RegistryType<WidgetConfiguration>) => {
-    if (!enableChat) return
-    registry.register({
+// enableChat is a build-time constant — the conditional is resolved at
+// compile time and the unused branch is tree-shaken.
+export const chatWidgetConfig: WidgetConfiguration | null = enableChat
+    ? {
         name: "Chat",
         type: "chat",
         configComponent: <ChatConfig />,
@@ -26,7 +27,5 @@ const useChatWidget = (registry: RegistryType<WidgetConfiguration>) => {
         icon: chatIcon,
         tooltip: 'Display a chat window',
         component: ChatWidget
-    })
-}
-
-export { useChatWidget }
+    }
+    : null

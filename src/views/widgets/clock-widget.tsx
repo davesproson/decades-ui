@@ -1,4 +1,4 @@
-import { RegistryType, WidgetConfiguration, ConfigWidgetProps } from "./types"
+import { WidgetConfiguration, ConfigWidgetProps } from "./types"
 import { useEffect, useState } from "react"
 import clockIcon from "@/assets/view-icons/clock.svg"
 
@@ -43,21 +43,17 @@ const ClockWidget = () => {
     )
 }
 
-const useClockWidget = (registry: RegistryType<WidgetConfiguration>) => {
-    registry.register({
-        name: "Clock",
-        type: "clock",
-        configComponent: <ClockConfig />,
-        save: (props: ConfigWidgetProps) => {
-            props.setData({
-                type: "clock",
-            })
-            return true
-        },
-        icon: clockIcon,
-        tooltip: 'Display the current (UTC) time',
-        component: ClockWidget
-    })
+export const clockWidgetConfig: WidgetConfiguration = {
+    name: "Clock",
+    type: "clock",
+    configComponent: <ClockConfig />,
+    save: (props: ConfigWidgetProps) => {
+        props.setData({
+            type: "clock",
+        })
+        return true
+    },
+    icon: clockIcon,
+    tooltip: 'Display the current (UTC) time',
+    component: ClockWidget
 }
-
-export { useClockWidget }

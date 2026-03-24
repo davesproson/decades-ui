@@ -1,17 +1,18 @@
 import { useViewWidget } from './view-widget';
 import { usePlotWidget } from './plot-widget';
 import { useDashWidget } from './dash-widget';
-import { useTephiWidget } from './tephigram-widget';
 import { useGaugeWidget } from './gauge-widget';
-import { useHeadingWidget } from './heading-widget';
-import { useMapWidget } from './map-widget';
 import { useAlarmsWidget } from './alarm-widget';
-import { useTimersWidget } from './timers-widget';
-import { useRollWidget } from './roll-indicator-widget';
-import { usePitchWidget } from './pitch-indicator-widget';
-import { useClockWidget } from './clock-widget';
-import { useChatWidget } from './chat-widget';
-import { useFlightSummaryWidget } from './flight-summary-widget';
+
+import { headingWidgetConfig } from './heading-widget';
+import { mapWidgetConfig } from './map-widget';
+import { rollWidgetConfig } from './roll-indicator-widget';
+import { pitchWidgetConfig } from './pitch-indicator-widget';
+import { tephiWidgetConfig } from './tephigram-widget';
+import { timersWidgetConfig } from './timers-widget';
+import { clockWidgetConfig } from './clock-widget';
+import { flightSummaryWidgetConfig } from './flight-summary-widget';
+import { chatWidgetConfig } from './chat-widget';
 
 import type { RegistryType, WidgetConfiguration } from './types';
 
@@ -38,24 +39,26 @@ class Registry implements RegistryType<WidgetConfiguration> {
 
 const registry = new Registry()
 
-// A hook which registers all the widgets and returns the registry
-const useWidgets = () => {
+// Static widgets have no React hook dependencies and are registered once at
+// module load time, before any component renders.
+registry.register(headingWidgetConfig)
+registry.register(mapWidgetConfig)
+registry.register(rollWidgetConfig)
+registry.register(pitchWidgetConfig)
+registry.register(tephiWidgetConfig)
+registry.register(timersWidgetConfig)
+registry.register(clockWidgetConfig)
+registry.register(flightSummaryWidgetConfig)
+if (chatWidgetConfig) registry.register(chatWidgetConfig)
 
+// A hook which registers the remaining widgets — those that use useRef to
+// wire a config dialog component to its save callback — and returns the registry.
+const useWidgets = () => {
     useViewWidget(registry)
     usePlotWidget(registry)
     useDashWidget(registry)
-    useTephiWidget(registry)
     useGaugeWidget(registry)
-    useHeadingWidget(registry)
-    useMapWidget(registry)
     useAlarmsWidget(registry)
-    useTimersWidget(registry)
-    useRollWidget(registry)
-    usePitchWidget(registry)
-    useChatWidget(registry)
-    useClockWidget(registry)
-    useFlightSummaryWidget(registry)
-
 
     return registry
 }
