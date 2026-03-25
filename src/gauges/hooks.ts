@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { GaugeConfig } from './types'
 import { useGetParameters } from '@/parameters/hooks'
-import { getData } from '@/data/utils'
+import { usePollingData } from '@/data/hooks'
 import { useDispatch } from '../redux/store'
 import { nullNaN } from '../utils'
 import { updateNthGauge } from '@/redux/gaugeSlice'
@@ -32,24 +32,20 @@ const useGauge = (configsIn: Array<GaugeConfig>) => {
         setConfigs(_cf)
     }, [parameters])
 
+    const params = configsIn.map(config => config.parameter)
+    const { data, error } = usePollingData({ params })
+
     useEffect(() => {
-        if (!configs) return
-        const params = configs.map(config => config.parameter)
-        const interval = setInterval(() => {
-            if (!(document.visibilityState === "visible")) return
-            getData({ params: params }).then(data => {
-                const _cf = configs.map(config => {
-                    const value = data[config.parameter]
-                    return {
-                        ...config,
-                        value: value[value.length - 1]
-                    }
-                })
-                setConfigs(_cf)
-            })
-        }, 1000)
-        return () => clearInterval(interval)
-    }, [configsIn, configs])
+        if (error) {
+            setConfigs(prev => prev ? prev.map(config => ({ ...config, value: null })) : null)
+            return
+        }
+        if (!data) return
+        setConfigs(prev => prev ? prev.map(config => {
+            const values = data[config.parameter]
+            return { ...config, value: values[values.length - 1] }
+        }) : null)
+    }, [data, error])
 
     return configs
 }
