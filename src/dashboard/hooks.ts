@@ -1,7 +1,6 @@
 import { useSelector } from '@store'
-import { useEffect, useState } from 'react'
 import { base as siteBase } from '@/settings'
-import { getData } from '@/data/utils';
+import { usePollingData } from '@/data/hooks';
 import type { DashboardOptions } from './types';
 import type { DecadesDataResponse } from '@/data/types';
 
@@ -18,20 +17,8 @@ const useDashboardUrl = () => {
 }
 
 const useDashboardData = (dataOptions: DashboardOptions) => {
-  const [data, setData] = useState<DecadesDataResponse>()
-
-  useEffect(() => {
-    getData(dataOptions).then(data => setData(data))
-      .catch(() => setData({ 'utc_time': [] }))
-
-    const interval = setInterval(() => {
-      if (!(document.visibilityState === "visible")) return
-      getData(dataOptions).then(data => setData(data))
-        .catch(() => setData({ 'utc_time': [] }))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [setData])
-
+  const { data, error } = usePollingData(dataOptions)
+  if (error) return { utc_time: [] } as DecadesDataResponse
   return data
 }
 
