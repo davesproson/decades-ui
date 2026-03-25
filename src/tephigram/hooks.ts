@@ -1,7 +1,8 @@
 import { useSelector } from "../redux/store"
 import { badData, base as siteBase } from "../settings"
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getData } from "@/data/utils";
+import { usePollingData } from "@/data/hooks";
 import { populateTephigram } from "./utils";
 import { getTraces } from "./traces";
 import { useDarkMode } from "@/components/theme-provider";
@@ -112,21 +113,23 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
     const darkMode = useDarkMode()
     const quickLookMode = useSelector(state => state.config.quickLookMode)
 
+    const tephiOptions: TephigramOptions = {
+        timeframe,
+        params: paramsArray,
+        ordvar: quickLookMode ? 'PS_RVSM' : 'static_pressure',
+    }
+
+    const nRef = useRef(0)
+    const { data } = usePollingData(tephiOptions)
+
     useEffect(() => {
-
-        const options: TephigramOptions = {
-            timeframe: timeframe,
-            params: paramsArray,
-            ordvar: quickLookMode ? 'PS_RVSM' : 'static_pressure',
-        }
-
         let plotTraces: Array<BackgroundTrace | TephigramTrace> = getTraces(darkMode ? true : false)
-        const n = plotTraces.length;
+        nRef.current = plotTraces.length
         const colors = [
             "#0000aa", "#00aa00", "#aa0000", "#00aaaa", "#aa00aa"
         ]
 
-        options.params.forEach((p, i) => {
+        tephiOptions.params.forEach((p, i) => {
             plotTraces.push({
                 x: [],
                 y: [],
@@ -180,27 +183,19 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
             })
         });
 
-
-        getData(options, ...getTimeLims(options.timeframe))
+        getData(tephiOptions, ...getTimeLims(tephiOptions.timeframe))
             .then(data => {
                 const normalizedData = normalizeTephiData(data as TephigramData)
-                populateTephigram(n, normalizedData, ref)
+                populateTephigram(nRef.current, normalizedData, ref)
             })
 
-        if (plotIsOngoing(options)) {
-            const interval = setInterval(() => {
-                if (!(document.visibilityState === "visible")) return
-                getData(options).then(data => {
-                    const normalizedData = normalizeTephiData(data as TephigramData)
-                    populateTephigram(n, normalizedData, ref)
-                })
-            }, 1000);
-
-            return () => clearInterval(interval)
-        }
-
-
     }, [quickLookMode])
+
+    useEffect(() => {
+        if (!data || !plotIsOngoing(tephiOptions)) return
+        const normalizedData = normalizeTephiData(data as TephigramData)
+        populateTephigram(nRef.current, normalizedData, ref)
+    }, [data])
 }
 
 export {
