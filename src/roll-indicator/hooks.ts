@@ -1,21 +1,17 @@
 import { useEffect, useRef, useState } from "react"
-import { getData } from "@/data/utils"
+import { usePollingData } from "@/data/hooks"
 import { badData } from "@/settings"
 
 const useRollIndicator = () => {
     const [roll, setRoll] = useState<number | undefined>(0)
 
+    const { data } = usePollingData({ params: ["gin_roll"] })
+
     useEffect(() => {
-        const params = ["gin_roll"]
-        const interval = setInterval(() => {
-            if (!(document.visibilityState === "visible")) return
-            getData({ params: params }).then(data => {
-                const r = data["gin_roll"].filter(x => x !== badData).reverse()[0]
-                setRoll(r)
-            })
-        }, 1000)
-        return () => clearInterval(interval)
-    }, [setRoll])
+        if (!data) return
+        const r = data["gin_roll"].filter(x => x !== badData).reverse()[0]
+        setRoll(r)
+    }, [data])
 
     return { roll }
 }

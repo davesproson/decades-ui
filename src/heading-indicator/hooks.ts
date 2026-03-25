@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { getData } from "@/data/utils"
+import { usePollingData } from "@/data/hooks"
 import { badData } from "@/settings"
 
 const useHeadingIndicator = () => {
@@ -7,21 +7,17 @@ const useHeadingIndicator = () => {
     const [trackAngle, setTrackAngle] = useState<number | undefined>(95)
     const [windAngle, setWindAngle] = useState<number | undefined>(30)
 
+    const { data } = usePollingData({ params: ["gin_heading", "gin_track_angle", "adc_wind_angle"] })
+
     useEffect(() => {
-        const params = ["gin_heading", "gin_track_angle", "adc_wind_angle"]
-        const interval = setInterval(() => {
-            if (!(document.visibilityState === "visible")) return
-            getData({ params: params }).then(data => {
-                const h = data["gin_heading"].filter(x => x !== badData).reverse()[0]
-                const t = data["gin_track_angle"].filter(x => x !== badData).reverse()[0]
-                const w = data["adc_wind_angle"].filter(x => x !== badData).reverse()[0]
-                setHeading(h)
-                setTrackAngle(t)
-                setWindAngle(w)
-            })
-        }, 1000)
-        return () => clearInterval(interval)
-    }, [setHeading, setTrackAngle, setWindAngle])
+        if (!data) return
+        const h = data["gin_heading"].filter(x => x !== badData).reverse()[0]
+        const t = data["gin_track_angle"].filter(x => x !== badData).reverse()[0]
+        const w = data["adc_wind_angle"].filter(x => x !== badData).reverse()[0]
+        setHeading(h)
+        setTrackAngle(t)
+        setWindAngle(w)
+    }, [data])
 
     return { heading, trackAngle, windAngle }
 }

@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react"
-import { getData } from "@/data/utils"
+import { usePollingData } from "@/data/hooks"
 import { badData } from "@/settings"
 
 const usePitchIndicator = () => {
     const [pitch, setPitch] = useState<number | undefined>(0)
 
+    const { data } = usePollingData({ params: ["gin_pitch"] })
+
     useEffect(() => {
-        const params = ["gin_pitch"]
-        const interval = setInterval(() => {
-            if (!(document.visibilityState === "visible")) return
-            getData({ params: params }).then(data => {
-                const r = data["gin_pitch"].filter(x => x !== badData).reverse()[0]
-                setPitch(r)
-            })
-        }, 1000)
-        return () => clearInterval(interval)
-    }, [setPitch])
+        if (!data) return
+        const r = data["gin_pitch"].filter(x => x !== badData).reverse()[0]
+        setPitch(r)
+    }, [data])
 
     return { pitch: pitch }
 }
