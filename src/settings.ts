@@ -186,3 +186,6 @@ export const enableChat = booleanEnv("VITE_VISTA_ENABLE_CHAT", false)
 export const enableMap = booleanEnv("VITE_VISTA_ENABLE_MAP", false)
 export const enableTabbedPlots = booleanEnv("VITE_VISTA_ENABLE_TABBED_PLOTS", false)
 
+// Number of seconds since the last data point before a plot is considered stale
+export const STALE_DATA_THRESHOLD_SECS = 5
+

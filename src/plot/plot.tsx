@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef, useEffect } from 'react'
+import React, { useRef, forwardRef, useEffect, useState } from 'react'
 import { usePlot, usePlotOptions } from './hooks'
 import { PlotHeaderDash } from '../dashboard/dashboard'
 import { plotHeaderDefaults } from '../settings'
@@ -8,10 +8,34 @@ import { useDispatch } from 'react-redux'
 import { setQcJob } from '@/redux/quicklookSlice'
 import { setQuickLookMode } from '@/redux/configSlice'
 
+interface StaleOverlayProps {
+    staleSeconds: number,
+    onDismiss: () => void,
+}
+
+const StaleOverlay = ({ staleSeconds, onDismiss }: StaleOverlayProps) => (
+    <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+        <div className="bg-background rounded-lg p-6 text-center w-72 shadow-lg border">
+            <p className="text-lg font-semibold mb-2">Data feed not updating</p>
+            <p className="text-sm text-muted-foreground mb-4">Last data received {staleSeconds} seconds ago.</p>
+            <button
+                onClick={onDismiss}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90"
+            >
+                Dismiss
+            </button>
+        </div>
+    </div>
+)
+
 interface PlotProps {
     parameters: string[] | null,
     loadDone?: boolean,
     style?: React.CSSProperties,
+    isStale?: boolean,
+    staleSeconds?: number,
+    dismissed?: boolean,
+    onDismiss?: () => void,
 }
 /**
  * A React forwardRef component that renders a plot with an optional header and a loading indicator.
@@ -44,6 +68,8 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
         flexDirection: "column",
     }
 
+    const showStale = props.isStale && !props.dismissed
+
     return (
         <div style={style}>
             {dash}
@@ -51,6 +77,7 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
                 width: "100%",
                 height: "100%",
             }}>{load}</div>
+            {showStale && <StaleOverlay staleSeconds={props.staleSeconds ?? 0} onDismiss={props.onDismiss ?? (() => {})} />}
         </div>
     )
 })
@@ -134,8 +161,9 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
 
     const ref = useRef<HTMLDivElement>(null)
     const options = usePlotOptions(props);
-    const loadDone = usePlot(options, ref)
+    const { loadDone, isStale, staleSeconds } = usePlot(options, ref)
     const dispatch = useDispatch()
+    const [dismissed, setDismissed] = useState(false)
 
     useEffect(() => {
         const job = options?.job
@@ -146,6 +174,11 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
         dispatch(setQcJob(job))
         dispatch(setQuickLookMode(true))
     }, [options?.job, dispatch, setQcJob, setQuickLookMode])
+
+    // Reset dismissed state when data recovers so the overlay re-appears on the next stale episode
+    useEffect(() => {
+        if (!isStale) setDismissed(false)
+    }, [isStale])
 
     if (!options) return <></>
     if (!props) return <></>
@@ -158,6 +191,10 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
         parameters={headerParams}
         loadDone={loadDone}
         style={props.containerStyle}
+        isStale={isStale}
+        staleSeconds={staleSeconds}
+        dismissed={dismissed}
+        onDismiss={() => setDismissed(true)}
     />
 }
 

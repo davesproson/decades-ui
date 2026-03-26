@@ -268,10 +268,11 @@ function getXAxis(options: PlotURLOptions, param: string) {
 interface StartDataArgs {
     options: PlotURLOptions,
     callback?: Function,
+    onTimestamp?: (t: number) => void,
     ref: any,
     signal: any
 }
-const startDataWS = ({ options, callback, ref, signal }: StartDataArgs) => {
+const startDataWS = ({ options, callback, onTimestamp, ref, signal }: StartDataArgs) => {
 
     if (!callback) callback = updatePlot
 
@@ -323,6 +324,7 @@ const startDataWS = ({ options, callback, ref, signal }: StartDataArgs) => {
         if (sendData) {
             if (!callback) callback = updatePlot
             callback(options, consolidatedData, ref)
+            onTimestamp?.(newTime)
             consolidatedData = { utc_time: [newTime] }
         }
     }
@@ -346,7 +348,7 @@ interface StartDataExtendedArgs extends StartDataArgs {
  * @param args.signal - The signal object to abort the data fetch
  * @returns void
  */
-const startData = ({ options, start, end, callback, ref, signal }: StartDataExtendedArgs) => {
+const startData = ({ options, start, end, callback, onTimestamp, ref, signal }: StartDataExtendedArgs) => {
 
     if (!callback) callback = updatePlot
 
@@ -357,7 +359,7 @@ const startData = ({ options, start, end, callback, ref, signal }: StartDataExte
         return
     }
 
-    const callOpts = { options: options, callback: callback, ref: ref, signal: signal }
+    const callOpts = { options: options, callback: callback, onTimestamp: onTimestamp, ref: ref, signal: signal }
     let newStart = start;
 
     if (!(document.visibilityState === 'visible')) {
@@ -398,10 +400,19 @@ const startData = ({ options, start, end, callback, ref, signal }: StartDataExte
                 if (!callback) callback = updatePlot
                 callback(options, data, ref)
 
-                // GTFO if using websockets
-                if (useWebSocketData) return startDataWS({ options, callback, ref, signal })
+                const lastTimestamp = data.utc_time[data.utc_time.length - 1]
+                if (lastTimestamp !== undefined) {
+                    const hasGoodParam = options.params.some(p => {
+                        const arr = data[p]
+                        return arr && arr.length > 0 && arr[arr.length - 1] !== badData
+                    })
+                    if (hasGoodParam) onTimestamp?.(lastTimestamp)
+                }
 
-                newStart = data.utc_time[data.utc_time.length - 1] + 1 || start
+                // GTFO if using websockets
+                if (useWebSocketData) return startDataWS({ options, callback, onTimestamp, ref, signal })
+
+                newStart = lastTimestamp + 1 || start
 
                 setTimeout(() => {
                     startData({ ...callOpts, start: newStart })

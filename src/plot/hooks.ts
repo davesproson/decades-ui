@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { ChatContext } from '@/chat/provider';
 import { useSelector } from "@store";
-import { base as siteBase } from '@/settings';
+import { base as siteBase, STALE_DATA_THRESHOLD_SECS } from '@/settings';
+import { nowSecs } from '@/timeframe/utils';
 import { useDarkMode } from '@/components/theme-provider';
 import { PlotInternalOptions, PlotURLOptions } from './types';
 import {
@@ -201,6 +202,11 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     // Local state
     const [initDone, setInitDone] = useState(false)
     const [loadDone, setLoadDone] = useState(false)
+    const [isStale, setIsStale] = useState(false)
+    const [staleSeconds, setStaleSeconds] = useState(0)
+    const lastTimestampRef = useRef<number | null>(null)
+
+    const ongoing = options ? plotIsOngoing(options) : false
 
     const darkMode = useDarkMode()
 
@@ -223,7 +229,14 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         const [start, end] = getTimeLims(options.timeframe)
 
         // Start the data fetching process
-        startData({ options: options, start: start, end: end, ref: ref, signal: signal })
+        startData({
+            options: options,
+            start: start,
+            end: end,
+            ref: ref,
+            signal: signal,
+            onTimestamp: (t: number) => { lastTimestampRef.current = t },
+        })
 
         // If the plot is not ongoing, abort the data fetching process immediately
         if (!plotIsOngoing(options)) signal.abort = true
@@ -531,7 +544,21 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 
     }, [params, server, setInitDone, setLoadDone])
 
-    return loadDone
+    // Check for stale data once per second, but only for ongoing plots outside quicklook mode
+    useEffect(() => {
+        if (!ongoing || quicklookMode || !initDone) return
+
+        const interval = setInterval(() => {
+            if (lastTimestampRef.current === null) return
+            const secs = Math.floor(nowSecs() - lastTimestampRef.current)
+            setIsStale(secs > STALE_DATA_THRESHOLD_SECS)
+            setStaleSeconds(secs)
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [ongoing, quicklookMode, initDone])
+
+    return { loadDone, isStale, staleSeconds }
 }
 
 /**
