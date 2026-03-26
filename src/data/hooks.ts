@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { getData } from './utils'
-import { DecadesDataResponse, GetDataOptions } from './types'
+import { DataMode, DecadesDataResponse, GetDataOptions, LIVE_DATA_MODE } from './types'
 
 export const usePollingData = (
     options: GetDataOptions,
-    intervalMs: number = 1000
+    intervalMs: number = 1000,
+    mode: DataMode = LIVE_DATA_MODE
 ): { data: DecadesDataResponse | undefined, error: unknown } => {
     const [data, setData] = useState<DecadesDataResponse | undefined>(undefined)
     const [error, setError] = useState<unknown>(null)
 
     const optionsRef = useRef(options)
     const intervalRef = useRef(intervalMs)
+    const modeRef = useRef(mode)
     optionsRef.current = options
     intervalRef.current = intervalMs
+    modeRef.current = mode
 
     useEffect(() => {
         let mounted = true
@@ -27,7 +30,7 @@ export const usePollingData = (
                 schedule()
                 return
             }
-            getData(optionsRef.current)
+            getData(optionsRef.current, undefined, undefined, modeRef.current)
                 .then(result => {
                     if (!mounted) return
                     setData(result)

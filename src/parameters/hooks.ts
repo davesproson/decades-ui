@@ -14,14 +14,13 @@ import { authFetch as fetch } from "@/utils";
  * 
  * @returns The correct endpoint for parameter availability.
  */
-export const useParameterEndpoint = (withAvailability: boolean) => {
+export const useParameterEndpoint = (withAvailability: boolean): string | null => {
     const paramSet = useSelector(state => state.vars.paramSet);
     const quickLookMode = useSelector(state => state.config.quickLookMode);
     const quickLookJob = useSelector(state => state.quicklook.qcJob);
 
     if (quickLookMode) {
-        if (!quickLookJob)
-            throw new Error("No quicklook job selected")
+        if (!quickLookJob) return null
         return `${apiEndpoints.quicklook_jobs}/${quickLookJob}/`
     }
     let endPoint = withAvailability
@@ -52,6 +51,7 @@ export const useGetParameters = () => {
     const endPoint = useParameterEndpoint(false)
 
     useEffect(() => {
+        if (!endPoint) return
         fetch(endPoint)
             .then(response => response.json())
             .then(data => {

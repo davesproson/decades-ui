@@ -14,4 +14,11 @@ type GetDataOptions = PlotURLOptions
 // | (AlarmOptions & DummyExtras)
 type GetDataPlotOptions = PlotURLOptions | TephigramOptions
 
-export type { GetDataOptions, GetDataPlotOptions, DecadesDataResponse }
+type DataMode =
+    | { quickLookMode: false; qcJob?: null }
+    | { quickLookMode: true; qcJob: number }
+
+const LIVE_DATA_MODE: DataMode = { quickLookMode: false }
+
+export type { GetDataOptions, GetDataPlotOptions, DecadesDataResponse, DataMode }
+export { LIVE_DATA_MODE }

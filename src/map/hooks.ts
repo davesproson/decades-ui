@@ -3,6 +3,7 @@ import { Map as OlMap, View } from 'ol';
 import { fromLonLat } from 'ol/proj.js';
 import { defaults as controlDefaults } from 'ol/control/defaults';
 import { getData } from "@/data/utils";
+import { DataMode, LIVE_DATA_MODE } from "@/data/types";
 import { badData, geoCoordsQuicklook, mapLayerInterface, mapTilesOptions } from "../settings";
 import { DecadesMapActions, DecadesMapModality, DecadesMapState, DrawModeType, LayerType, MapFlag, Position, PositionData, PositionDataHistory, PositionWithTime } from "./types";
 import { LAYER_INTERFACES } from "./layers/interface";
@@ -190,7 +191,12 @@ const useAircraftData = () => {
 
 const useQuickLookAircraftData = () => {
     const quickLookMode = useSelector((state) => state.config.quickLookMode)
+    const qcJob = useSelector((state) => state.quicklook.qcJob)
     const params = useSelector((state) => state.vars.params)
+
+    const mode: DataMode = quickLookMode && qcJob !== null
+        ? { quickLookMode: true, qcJob }
+        : LIVE_DATA_MODE
     const timeframe = useSelector((state) => state.options.customTimeframe)
     const [visData, setVisData] = useState<number[]>([])
     const [latData, setLatData] = useState<number[]>([])
@@ -211,7 +217,7 @@ const useQuickLookAircraftData = () => {
                 getParams.push(selectedParam.raw)
             }
 
-            const data = await getData({ params: getParams }, Math.floor((timeframe.start || 0) / 1000), Math.floor((timeframe.end || 9e9) / 1000))
+            const data = await getData({ params: getParams }, Math.floor((timeframe.start || 0) / 1000), Math.floor((timeframe.end || 9e9) / 1000), mode)
             if (selectedParam) {
                 setVisData(data[selectedParam.raw])
             }

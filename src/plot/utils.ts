@@ -1,14 +1,13 @@
-import type { GetDataOptions, GetDataPlotOptions } from "@/data/types"
+import type { GetDataPlotOptions, DataMode } from "@/data/types"
 import {
     wsProtocol, apiEndpoints, badData, useWebSocketData
 } from '@/settings'
 
 import type { PlotURLOptions } from './types'
-import type { DecadesDataResponse } from "@/data/types"
 import { DecadesParameter, ParamsState } from '@/redux/parametersSlice'
 import { authFetch as fetch } from '@/utils'
 import { getDataUrl } from "@/data/utils"
-import { nowSecs, getTimeLims } from "@/timeframe/utils"
+import { getTimeLims } from "@/timeframe/utils"
 
 
 /**
@@ -332,7 +331,8 @@ const startDataWS = ({ options, callback, onTimestamp, ref, signal }: StartDataA
 
 interface StartDataExtendedArgs extends StartDataArgs {
     start: number,
-    end?: number
+    end?: number,
+    mode: DataMode
 }
 /**
  * Start fetching data from the server. This function will call itself
@@ -348,18 +348,18 @@ interface StartDataExtendedArgs extends StartDataArgs {
  * @param args.signal - The signal object to abort the data fetch
  * @returns void
  */
-const startData = ({ options, start, end, callback, onTimestamp, ref, signal }: StartDataExtendedArgs) => {
+const startData = ({ options, start, end, callback, onTimestamp, ref, signal, mode }: StartDataExtendedArgs) => {
 
     if (!callback) callback = updatePlot
 
-    const url = getDataUrl(options, start, end)
+    const url = getDataUrl(options, start, end, mode)
 
     if (signal.abort) {
         console.log('Aborting data fetch due to signal')
         return
     }
 
-    const callOpts = { options: options, callback: callback, onTimestamp: onTimestamp, ref: ref, signal: signal }
+    const callOpts = { options: options, callback: callback, onTimestamp: onTimestamp, ref: ref, signal: signal, mode: mode }
     let newStart = start;
 
     if (!(document.visibilityState === 'visible')) {
@@ -430,28 +430,6 @@ const startData = ({ options, start, end, callback, onTimestamp, ref, signal }: 
     }
 }
 
-/**
- * Get data from the server
- * 
- * @param options - The plot options object
- * @param start - The start time
- * @param end - The end time
- *
- * @returns A promise that resolves to the data
- */
-const getData = async (
-    options: GetDataOptions, start?: number, end?: number
-): Promise<DecadesDataResponse> => {
-
-    if (start === undefined) start = nowSecs() - 5
-
-    const url = getDataUrl(options, start, end)
-
-    const response = await fetch(url)
-    return await response.json()
-
-}
-
 interface TempAxisContainer {
     [key: string | number]: {
         params: Array<string>,
@@ -510,6 +488,6 @@ const getAxesArray = (vars: ParamsState) => {
 }
 
 export {
-    getData, startData, paramFromRawName, getYAxis, getXAxis, getTimeLims, updatePlot,
+    startData, paramFromRawName, getYAxis, getXAxis, getTimeLims, updatePlot,
     plotIsOngoing, getAxesArray, canSlide, slideLength
 }

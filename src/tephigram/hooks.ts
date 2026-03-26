@@ -3,6 +3,7 @@ import { badData, base as siteBase } from "../settings"
 import { useEffect, useRef } from "react";
 import { getData } from "@/data/utils";
 import { usePollingData } from "@/data/hooks";
+import { DataMode, LIVE_DATA_MODE } from "@/data/types";
 import { populateTephigram } from "./utils";
 import { getTraces } from "./traces";
 import { useDarkMode } from "@/components/theme-provider";
@@ -112,6 +113,11 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
     const paramsArray = params.split(',')
     const darkMode = useDarkMode()
     const quickLookMode = useSelector(state => state.config.quickLookMode)
+    const qcJob = useSelector(state => state.quicklook.qcJob)
+
+    const mode: DataMode = quickLookMode && qcJob !== null
+        ? { quickLookMode: true, qcJob }
+        : LIVE_DATA_MODE
 
     const tephiOptions: TephigramOptions = {
         timeframe,
@@ -120,7 +126,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
     }
 
     const nRef = useRef(0)
-    const { data } = usePollingData(tephiOptions)
+    const { data } = usePollingData(tephiOptions, 1000, mode)
 
     useEffect(() => {
         let plotTraces: Array<BackgroundTrace | TephigramTrace> = getTraces(darkMode ? true : false)
@@ -183,7 +189,7 @@ const useTephigram = (ref: React.RefObject<HTMLDivElement>, options?: TephigramS
             })
         });
 
-        getData(tephiOptions, ...getTimeLims(tephiOptions.timeframe))
+        getData(tephiOptions, ...getTimeLims(tephiOptions.timeframe), mode)
             .then(data => {
                 const normalizedData = normalizeTephiData(data as TephigramData)
                 populateTephigram(nRef.current, normalizedData, ref)

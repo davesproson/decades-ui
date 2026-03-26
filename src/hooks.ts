@@ -34,6 +34,7 @@ export const useDispatchParameters = () => {
 
     useEffect(() => {
         if (dispatchDone) return
+        if (!endPoint) return
         fetch(endPoint).then(
             response => response.json()
         ).then(data => {

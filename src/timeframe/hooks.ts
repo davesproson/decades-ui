@@ -8,7 +8,7 @@ import { useDarkMode } from '@/components/theme-provider';
 import { useDispatch, useSelector } from '@store';
 import { getTimeLims } from './utils';
 import { setCustomTimeframe } from '@/redux/optionsSlice';
-import { DecadesDataResponse } from '@/data/types.ts';
+import { DataMode, DecadesDataResponse, LIVE_DATA_MODE } from '@/data/types.ts';
 import { getData } from '@/data/utils.ts';
 
 /**
@@ -29,6 +29,10 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
     const quicklookMode = useSelector(state => state.config.quickLookMode)
     const qcJob = useSelector(state => state.quicklook.qcJob)
     const dispatch = useDispatch()
+
+    const mode: DataMode = quicklookMode && qcJob !== null
+        ? { quickLookMode: true, qcJob }
+        : LIVE_DATA_MODE
 
     let startTime = useCustomTimeframe
         ? customTimeframe.start
@@ -122,7 +126,7 @@ const useSelectorPlot = (ref: RefObject<PlotlyHTMLDivElement>) => {
         getData({
             params: ['utc_time', altitudeParam],
             server: window.location.host
-        }, ...timeLims).then((data: DecadesDataResponse) => {
+        }, timeLims[0] as number, timeLims[1] as number | undefined, mode).then((data: DecadesDataResponse) => {
             // ...filter out bad data...
             data[altitudeParam] = data[altitudeParam].map((x: number) => {
                 if (x === badData) return NaN

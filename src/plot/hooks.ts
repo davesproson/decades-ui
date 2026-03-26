@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { ChatContext } from '@/chat/provider';
 import { useSelector } from "@store";
 import { base as siteBase, STALE_DATA_THRESHOLD_SECS } from '@/settings';
+import { DataMode, LIVE_DATA_MODE } from '@/data/types';
 import { nowSecs } from '@/timeframe/utils';
 import { useDarkMode } from '@/components/theme-provider';
 import { PlotInternalOptions, PlotURLOptions } from './types';
@@ -197,7 +198,12 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     // Custom hooks
     const params = useGetParameters();
     const quicklookMode = useSelector(state => state.config.quickLookMode)
+    const qcJob = useSelector(state => state.quicklook.qcJob)
     const { state: chatState, actions: chatActions } = useContext(ChatContext)
+
+    const mode: DataMode = quicklookMode && qcJob !== null
+        ? { quickLookMode: true, qcJob }
+        : LIVE_DATA_MODE
 
     // Local state
     const [initDone, setInitDone] = useState(false)
@@ -235,6 +241,7 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
             end: end,
             ref: ref,
             signal: signal,
+            mode: mode,
             onTimestamp: (t: number) => { lastTimestampRef.current = t },
         })
 

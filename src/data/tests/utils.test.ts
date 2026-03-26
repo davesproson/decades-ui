@@ -1,20 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, Mock, vi } from "vitest"
 import { getData, getDataUrl } from "../utils"
 import { apiEndpoints } from "@/settings"
-
-const mocks = vi.hoisted(() => {
-    return {
-        getState: vi.fn(),
-    }
-})
-
-vi.mock('@store', () => {
-    return {
-        default: {
-            getState: mocks.getState
-        }
-    }
-})
+import type { DataMode } from "../types"
 
 global.fetch = vi.fn((args) => {
     const searchParams = new URL(args).searchParams
@@ -37,18 +24,17 @@ global.fetch = vi.fn((args) => {
     })
 }) as Mock
 
+const liveMode: DataMode = { quickLookMode: false }
+const quicklookMode: DataMode = { quickLookMode: true, qcJob: 123 }
+
 describe('Check getData behaviour', async () => {
     beforeAll(() => {
         vi.useFakeTimers()
         vi.setSystemTime(new Date(2020, 1, 1))
-        mocks.getState.mockReturnValue({
-            quicklook: { qcJob: 123 },
-            config: { quickLookMode: false }
-        })
     })
 
     it('Should return last 5s given a single parameter and no time lims', async () => {
-        const data = await getData({ params: ['param1'] })
+        const data = await getData({ params: ['param1'] }, undefined, undefined, liveMode)
         expect(Object.keys(data)).toContain('param1')
         expect(Object.keys(data)).toContain('utc_time')
         expect(data['param1'].length).toBe(5)
@@ -58,7 +44,7 @@ describe('Check getData behaviour', async () => {
     })
 
     it('Should return last 5s given a two parameters and no time lims', async () => {
-        const data = await getData({ params: ['param1', 'param2'] })
+        const data = await getData({ params: ['param1', 'param2'] }, undefined, undefined, liveMode)
         expect(Object.keys(data)).toContain('param1')
         expect(Object.keys(data)).toContain('param2')
         expect(Object.keys(data)).toContain('utc_time')
@@ -70,7 +56,7 @@ describe('Check getData behaviour', async () => {
     })
 
     it('Should return last 30s of data when given a start time', async () => {
-        const data = await getData({ params: ['param1'] }, 1580515200 - 30)
+        const data = await getData({ params: ['param1'] }, 1580515200 - 30, undefined, liveMode)
         expect(Object.keys(data)).toContain('param1')
         expect(Object.keys(data)).toContain('utc_time')
         expect(data['param1'].length).toBe(30)
@@ -80,7 +66,7 @@ describe('Check getData behaviour', async () => {
     })
 
     it('Should return the requested time range', async () => {
-        const data = await getData({ params: ['param1'] }, 1580515200 - 30, 1580515200 - 20)
+        const data = await getData({ params: ['param1'] }, 1580515200 - 30, 1580515200 - 20, liveMode)
         expect(Object.keys(data)).toContain('param1')
         expect(Object.keys(data)).toContain('utc_time')
         expect(data['param1'].length).toBe(10)
@@ -97,40 +83,17 @@ describe('Check getData behaviour', async () => {
 describe('Check the correct data URL is returned by getDataUrl', () => {
 
     it('Should return correct url for live data with no end time', () => {
-        mocks.getState.mockReturnValue({
-            quicklook: { qcJob: 123 },
-            config: { quickLookMode: false }
-        })
-        const url = new URL(getDataUrl({ params: ['param1', 'param2'] }, 2000))
+        const url = new URL(getDataUrl({ params: ['param1', 'param2'] }, 2000, undefined, liveMode))
         expect(url.searchParams.get('frm')).toBe('2000')
         expect(url.searchParams.get('to')).toBe(null)
         expect(url.searchParams.getAll('para')).toContain('param1')
         expect(url.searchParams.getAll('para')).toContain('param2')
         expect(url.searchParams.get('job')).toBe(null)
         expect(url.pathname).toBe(apiEndpoints.data)
-    })
-
-    it('Should return correct url for live data with no end time', () => {
-        mocks.getState.mockReturnValue({
-            quicklook: { qcJob: 123 },
-            config: { quickLookMode: false }
-        })
-        const url = new URL(getDataUrl({ params: ['param1', 'param2'] }, 2000))
-        expect(url.searchParams.get('frm')).toBe('2000')
-        expect(url.searchParams.get('to')).toBe(null)
-        expect(url.searchParams.getAll('para')).toContain('param1')
-        expect(url.searchParams.getAll('para')).toContain('param2')
-        expect(url.searchParams.get('job')).toBe(null)
-        expect(url.pathname).toBe(apiEndpoints.data)
-
     })
 
     it('Should return correct url for live data with specified end time', () => {
-        mocks.getState.mockReturnValue({
-            quicklook: { qcJob: 123 },
-            config: { quickLookMode: false }
-        })
-        const url = new URL(getDataUrl({ params: ['param1'] }, 2000, 5000))
+        const url = new URL(getDataUrl({ params: ['param1'] }, 2000, 5000, liveMode))
         expect(url.searchParams.get('frm')).toBe('2000')
         expect(url.searchParams.get('to')).toBe('5000')
         expect(url.searchParams.getAll('para')).toContain('param1')
@@ -139,11 +102,7 @@ describe('Check the correct data URL is returned by getDataUrl', () => {
     })
 
     it('Should return correct url for live data with non standard ordinate variable', () => {
-        mocks.getState.mockReturnValue({
-            quicklook: { qcJob: 123 },
-            config: { quickLookMode: false }
-        })
-        const url = new URL(getDataUrl({ params: ['param1'], ordvar: 'ordparam' }, 2000, 5000))
+        const url = new URL(getDataUrl({ params: ['param1'], ordvar: 'ordparam' }, 2000, 5000, liveMode))
         expect(url.searchParams.get('frm')).toBe('2000')
         expect(url.searchParams.get('to')).toBe('5000')
         expect(url.searchParams.getAll('para')).toContain('param1')
@@ -153,11 +112,7 @@ describe('Check the correct data URL is returned by getDataUrl', () => {
     })
 
     it('Should use the quicklook endpoint if quicklook mode is enabled', () => {
-        mocks.getState.mockReturnValue({
-            quicklook: { qcJob: 123 },
-            config: { quickLookMode: true }
-        })
-        const url = new URL(getDataUrl({ params: ['param1'] }, 2000, 5000))
+        const url = new URL(getDataUrl({ params: ['param1'] }, 2000, 5000, quicklookMode))
         expect(url.searchParams.get('frm')).toBe('2000')
         expect(url.searchParams.get('to')).toBe('5000')
         expect(url.searchParams.getAll('para')).toContain('param1')
@@ -165,4 +120,3 @@ describe('Check the correct data URL is returned by getDataUrl', () => {
         expect(url.origin + url.pathname).toBe(`${apiEndpoints.quicklook_data}`)
     })
 })
-

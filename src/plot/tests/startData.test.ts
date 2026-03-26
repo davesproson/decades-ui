@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { act } from '@testing-library/react'
 import { startData } from '../utils'
+import { LIVE_DATA_MODE } from '@/data/types'
 
 const mocks = vi.hoisted(() => ({
     authFetch: vi.fn(),
@@ -37,6 +38,7 @@ const makeArgs = (overrides = {}) => ({
     ref: null,
     signal: { abort: false },
     callback: vi.fn(),
+    mode: LIVE_DATA_MODE,
     ...overrides,
 })
 

@@ -78,6 +78,7 @@ export const ParameterFilter = memo(() => {
     }, [dispatch, setFilterText, unselectAllParams])
 
     const reloadParams = useCallback(() => {
+        if (!parameterEndpoint) return
         setLastUpdate(Date.now())
         setEnabled(false)
         setSpin(true)

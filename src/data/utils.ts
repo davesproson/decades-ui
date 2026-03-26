@@ -1,8 +1,7 @@
-import { DecadesDataResponse } from "./types"
+import { DecadesDataResponse, DataMode, LIVE_DATA_MODE } from "./types"
 import { apiEndpoints, serverProtocol } from "@/settings"
 import { GetDataOptions } from "./types"
 import { nowSecs } from "@/timeframe/utils"
-import store from '@store'
 import { PlotURLOptions } from "@/plot/types"
 
 /**
@@ -15,12 +14,12 @@ import { PlotURLOptions } from "@/plot/types"
  * @returns A promise that resolves to the data
  */
 export const getData = async (
-    options: GetDataOptions, start?: number, end?: number
+    options: GetDataOptions, start?: number, end?: number, mode: DataMode = LIVE_DATA_MODE
 ): Promise<DecadesDataResponse> => {
 
     if (start === undefined) start = nowSecs() - 5
 
-    const url = getDataUrl(options, start, end)
+    const url = getDataUrl(options, start, end, mode)
 
     const response = await fetch(url)
     return await response.json()
@@ -40,19 +39,18 @@ const isPlotURLOptions = (options: GetDataOptions): options is PlotURLOptions =>
  * @param end - The end time
  * @returns The data url
  */
-export const getDataUrl = (options: GetDataOptions, start: number, end?: number) => {
+export const getDataUrl = (options: GetDataOptions, start: number, end?: number, mode: DataMode = LIVE_DATA_MODE) => {
     const server = options.server ? options.server : location.host
-    const job = store.getState().quicklook.qcJob
-    const quicklookMode = store.getState().config.quickLookMode
+    const { quickLookMode, qcJob } = mode as { quickLookMode: boolean, qcJob: number | null | undefined }
 
-    let url = (job && quicklookMode)
+    let url = (qcJob && quickLookMode)
         ? new URL(`${apiEndpoints.quicklook_data}`)
         : new URL(`${serverProtocol}://${server}${apiEndpoints.data}`)
 
-    if (job && quicklookMode)
-        url.searchParams.set('job', job.toString())
+    if (qcJob && quickLookMode)
+        url.searchParams.set('job', qcJob.toString())
 
-    if (quicklookMode) {
+    if (quickLookMode) {
         // TODO: this is terrible typeguarding
         if ('mask' in options) {
             url.searchParams.set('mask', options.mask.toString())

@@ -43,6 +43,15 @@ describe("Test useParameterEndpoint hook", async () => {
         })
         await waitFor(() => expect(result.current).toBe(`${apiEndpoints.quicklook_jobs}/1/`))
     })
+
+    it("Should return null when quicklook mode is enabled but no job is selected", async () => {
+        const { store, result } = renderHookWithStore(() => useParameterEndpoint(false))
+
+        act(() => {
+            store.dispatch(setQuickLookMode(true))
+        })
+        await waitFor(() => expect(result.current).toBeNull())
+    })
 });
 
 describe("Test useGetParameters hook", async () => {
