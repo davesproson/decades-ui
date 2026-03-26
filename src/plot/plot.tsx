@@ -7,6 +7,7 @@ import { PlotURLOptions } from "./types"
 import { useDispatch } from 'react-redux'
 import { setQcJob } from '@/redux/quicklookSlice'
 import { setQuickLookMode } from '@/redux/configSlice'
+import type { StaleState } from './types'
 
 interface StaleOverlayProps {
     staleSeconds: number,
@@ -28,12 +29,6 @@ const StaleOverlay = ({ staleSeconds, onDismiss }: StaleOverlayProps) => (
     </div>
 )
 
-interface StaleState {
-    isStale: boolean,
-    staleSeconds: number,
-    dismissed: boolean,
-    onDismiss: () => void,
-}
 
 interface PlotProps {
     parameters: string[] | null,
@@ -82,7 +77,7 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
                 width: "100%",
                 height: "100%",
             }}>{load}</div>
-            {showStale && <StaleOverlay staleSeconds={staleSeconds ?? 0} onDismiss={onDismiss ?? (() => {})} />}
+            {showStale && <StaleOverlay staleSeconds={staleSeconds ?? 0} onDismiss={onDismiss ?? (() => { })} />}
         </div>
     )
 })
@@ -202,4 +197,3 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
 
 export default PlotDispatcher
 export { SimplePlot, Plot }
-export type { StaleState }

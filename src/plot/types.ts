@@ -13,6 +13,13 @@ type PlotURLOptions = {
     mask: boolean,
 };
 
+interface StaleState {
+    isStale: boolean,
+    staleSeconds: number,
+    dismissed: boolean,
+    onDismiss: () => void,
+}
+
 /* Urgh. Why have we used two different interfaces for the same thing?
  * Actually it's probably actually three different interfaces. 
  * Think this has to do with maintaining backwards compatibility from some
@@ -25,4 +32,4 @@ interface _PlotInternalOptions extends PlotURLOptions {
 }
 interface PlotInternalOptions extends Omit<_PlotInternalOptions, 'style' | 'header'> { }
 
-export type { PlotURLOptions, PlotInternalOptions }
+export type { PlotURLOptions, PlotInternalOptions, StaleState }
