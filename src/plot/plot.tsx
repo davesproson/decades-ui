@@ -28,14 +28,18 @@ const StaleOverlay = ({ staleSeconds, onDismiss }: StaleOverlayProps) => (
     </div>
 )
 
+interface StaleState {
+    isStale: boolean,
+    staleSeconds: number,
+    dismissed: boolean,
+    onDismiss: () => void,
+}
+
 interface PlotProps {
     parameters: string[] | null,
     loadDone?: boolean,
     style?: React.CSSProperties,
-    isStale?: boolean,
-    staleSeconds?: number,
-    dismissed?: boolean,
-    onDismiss?: () => void,
+    staleState?: StaleState,
 }
 /**
  * A React forwardRef component that renders a plot with an optional header and a loading indicator.
@@ -68,7 +72,8 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
         flexDirection: "column",
     }
 
-    const showStale = props.isStale && !props.dismissed
+    const { isStale, staleSeconds, dismissed, onDismiss } = props.staleState ?? {}
+    const showStale = isStale && !dismissed
 
     return (
         <div style={style}>
@@ -77,7 +82,7 @@ const Plot = forwardRef((props: PlotProps, ref: React.Ref<HTMLDivElement>) => {
                 width: "100%",
                 height: "100%",
             }}>{load}</div>
-            {showStale && <StaleOverlay staleSeconds={props.staleSeconds ?? 0} onDismiss={props.onDismiss ?? (() => {})} />}
+            {showStale && <StaleOverlay staleSeconds={staleSeconds ?? 0} onDismiss={onDismiss ?? (() => {})} />}
         </div>
     )
 })
@@ -191,12 +196,10 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
         parameters={headerParams}
         loadDone={loadDone}
         style={props.containerStyle}
-        isStale={isStale}
-        staleSeconds={staleSeconds}
-        dismissed={dismissed}
-        onDismiss={() => setDismissed(true)}
+        staleState={{ isStale, staleSeconds, dismissed, onDismiss: () => setDismissed(true) }}
     />
 }
 
 export default PlotDispatcher
 export { SimplePlot, Plot }
+export type { StaleState }
