@@ -1,6 +1,8 @@
 import { useState } from "react"
+import { FlipHorizontal2 } from "lucide-react"
 import { FlexCenter } from "@/components/layout"
 import { useDarkMode } from "@/components/theme-provider"
+import { Button } from "@/components/ui/button"
 
 import { useRollIndicator, useRollResizer } from "./hooks"
 
@@ -135,13 +137,24 @@ const RollIndicator = (props: RollIndicatorProps) => {
     }
 
     return (
-        <div ref={ref} style={containerStyle} onClick={() => setFwdAspect(x => !x)}>
+        <div ref={ref} style={containerStyle} className="group">
             <FlexCenter>
                 <RollIndicatorGraphic
                     roll={castRoll(data.roll)}
                     fwdAspect={fwdAspect}
                     widthOrHeight={widthOrHeight} />
             </FlexCenter>
+            {data.roll !== undefined && (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={fwdAspect ? "Switch to rear aspect" : "Switch to forward aspect"}
+                    onClick={() => setFwdAspect(x => !x)}
+                    className="absolute top-[15%] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity z-10"
+                >
+                    <FlipHorizontal2 />
+                </Button>
+            )}
         </div>
     )
 }
