@@ -189,3 +189,7 @@ export const enableTabbedPlots = booleanEnv("VITE_VISTA_ENABLE_TABBED_PLOTS", fa
 // Number of seconds since the last data point before a plot is considered stale
 export const STALE_DATA_THRESHOLD_SECS = 5
 
+// Number of seconds to suppress the stale overlay after a tab becomes visible again,
+// to avoid a false alarm while the data feed restarts
+export const STALE_COOLDOWN_SECS = 3
+

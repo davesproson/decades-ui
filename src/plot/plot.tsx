@@ -161,7 +161,7 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
 
     const ref = useRef<HTMLDivElement>(null)
     const options = usePlotOptions(props);
-    const { loadDone, isStale, staleSeconds } = usePlot(options, ref)
+    const { loadDone, isStale, staleSeconds, visibilityRevealCount } = usePlot(options, ref)
     const dispatch = useDispatch()
     const [dismissed, setDismissed] = useState(false)
 
@@ -179,6 +179,12 @@ const PlotDispatcher = (props?: PlotDispatcherProps) => {
     useEffect(() => {
         if (!isStale) setDismissed(false)
     }, [isStale])
+
+    // Reset dismissed state when the tab becomes visible again, so the user is reminded
+    // of any stale plot they may have forgotten about
+    useEffect(() => {
+        if (visibilityRevealCount > 0) setDismissed(false)
+    }, [visibilityRevealCount])
 
     if (!options) return <></>
     if (!props) return <></>

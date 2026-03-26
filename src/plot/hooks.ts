@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { ChatContext } from '@/chat/provider';
 import { useSelector } from "@store";
-import { base as siteBase, STALE_DATA_THRESHOLD_SECS } from '@/settings';
+import { base as siteBase, STALE_COOLDOWN_SECS, STALE_DATA_THRESHOLD_SECS } from '@/settings';
 import { DataMode, LIVE_DATA_MODE } from '@/data/types';
 import { nowSecs } from '@/timeframe/utils';
 import { useDarkMode } from '@/components/theme-provider';
@@ -210,7 +210,9 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
     const [loadDone, setLoadDone] = useState(false)
     const [isStale, setIsStale] = useState(false)
     const [staleSeconds, setStaleSeconds] = useState(0)
+    const [visibilityRevealCount, setVisibilityRevealCount] = useState(0)
     const lastTimestampRef = useRef<number | null>(null)
+    const isCoolingDown = useRef(false)
 
     const ongoing = options ? plotIsOngoing(options) : false
 
@@ -551,6 +553,32 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
 
     }, [params, server, setInitDone, setLoadDone])
 
+    // Suppress the stale overlay briefly when the tab becomes visible again, to avoid a
+    // false alarm while the data feed restarts. Also increment visibilityRevealCount so
+    // PlotDispatcher can reset the dismissed state on each reveal.
+    useEffect(() => {
+        if (!ongoing || quicklookMode) return
+
+        let cooldownTimer: ReturnType<typeof setTimeout> | null = null
+
+        const onVisibilityChange = () => {
+            if (document.visibilityState !== 'visible') return
+            if (cooldownTimer !== null) clearTimeout(cooldownTimer)
+            isCoolingDown.current = true
+            setIsStale(false)
+            setVisibilityRevealCount(c => c + 1)
+            cooldownTimer = setTimeout(() => {
+                isCoolingDown.current = false
+            }, STALE_COOLDOWN_SECS * 1000)
+        }
+
+        document.addEventListener('visibilitychange', onVisibilityChange)
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange)
+            if (cooldownTimer !== null) clearTimeout(cooldownTimer)
+        }
+    }, [ongoing, quicklookMode])
+
     // Check for stale data once per second, but only for ongoing plots outside quicklook mode
     useEffect(() => {
         if (!ongoing || quicklookMode || !initDone) return
@@ -558,14 +586,15 @@ const usePlot = (options: PlotURLOptions | undefined, ref: React.Ref<HTMLDivElem
         const interval = setInterval(() => {
             if (lastTimestampRef.current === null) return
             const secs = Math.floor(nowSecs() - lastTimestampRef.current)
-            setIsStale(secs > STALE_DATA_THRESHOLD_SECS)
+            if (secs > STALE_DATA_THRESHOLD_SECS && !isCoolingDown.current) setIsStale(true)
+            if (secs <= STALE_DATA_THRESHOLD_SECS) setIsStale(false)
             setStaleSeconds(secs)
         }, 1000)
 
         return () => clearInterval(interval)
     }, [ongoing, quicklookMode, initDone])
 
-    return { loadDone, isStale, staleSeconds }
+    return { loadDone, isStale, staleSeconds, visibilityRevealCount }
 }
 
 /**
